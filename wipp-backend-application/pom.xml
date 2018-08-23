@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>gov.nist.itl.ssd.wipp</groupId>
+	<artifactId>wipp-backend-application</artifactId>
+	<name>wipp-backend-app</name>
+	<version>3.0.0-SNAPSHOT</version>
+
+	<packaging>war</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.1.RELEASE</version>
+		<relativePath></relativePath>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>gov.nist.itl.ssd.wipp.backend.Application</mainClass>
+					<addResources>false</addResources>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<classifier>exec</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<compilerArgs>
+						<arg>-Xlint</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<mongodb.host>localhost</mongodb.host>
+				<mongodb.database>wipp-plugins</mongodb.database>
+				<workflow.management.system>argo</workflow.management.system>
+				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
+				<storage.collections>/data/WIPP-plugins/images-upload</storage.collections>
+				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<ome.converter.threads>6</ome.converter.threads>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<properties>
+				<mongodb.host>localhost</mongodb.host>
+				<mongodb.database>wipp-plugins</mongodb.database>
+				<workflow.management.system>argo</workflow.management.system>
+				<storage.workflows>/data/WIPP-plugins/Workflows</storage.workflows>
+				<storage.collections>/data/WIPP-plugins/imagesUpload</storage.collections>
+				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<ome.converter.threads>6</ome.converter.threads>
+			</properties>
+		</profile>
+
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>gov.nist.itl.ssd.wipp</groupId>
+			<artifactId>wipp-backend-images</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>

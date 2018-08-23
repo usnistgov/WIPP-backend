@@ -1,0 +1,18 @@
+**/nbactions.xml
+**/nbproject
+**/target
+**/.settings
+**/.classpath
+**/.project
+**/.DS_Store
+**/.tmp
+**/dist
+
+wipp-backend-application/logs
+
+# IntelliJ Idea files
+*.iml
+.idea
+wipp-backend-application/bin
+wipp-backend-core/bin
+wipp-backend-images/bin

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gov.nist.itl.ssd</groupId>
+    <artifactId>wipp-backend-parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>wipp-backend-core</module>
+        <module>wipp-backend-images</module>
+        <module>wipp-backend-application</module>
+    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <build>
+        <!-- Put the following configuration in Maven settings.xml
+            <pluginGroups>
+              <pluginGroup>external.atlassian.jgitflow</pluginGroup>
+            </pluginGroups>
+        -->
+        <plugins>
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <flowInitContext>
+                        <masterBranchName>master</masterBranchName>
+                        <developBranchName>develop</developBranchName>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </flowInitContext>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushFeatures>true</pushFeatures>
+                    <pushReleases>true</pushReleases>
+                    <pushHotfixes>true</pushHotfixes>
+                    <noDeploy>true</noDeploy>
+                    <allowSnapshots>true</allowSnapshots>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <tagMessage>"WIPP-backend v${project.version}"</tagMessage>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+    </build>
+</project>
