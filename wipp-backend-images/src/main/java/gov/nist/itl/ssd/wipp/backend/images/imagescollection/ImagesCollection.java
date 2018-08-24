@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.images.imagescollection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.data.WippData;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.WippJob;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
@@ -33,7 +34,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @IdExposed
 @Document
-public class ImagesCollection {
+public class ImagesCollection extends WippData {
 
     @Id
     private String id;
