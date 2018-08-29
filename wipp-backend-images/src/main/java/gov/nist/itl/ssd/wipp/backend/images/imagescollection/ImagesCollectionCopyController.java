@@ -17,6 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.images.imagescollection.images.ImageHandler
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.metadatafiles.MetadataFileHandler;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,9 @@ public class ImagesCollectionCopyController {
 
         imagesCollectionLogic.assertCollectionNameUnique(name);
 
-        ImagesCollection tc = imagesCollectionRepository.findOne(
+        Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
                 imagesCollectionId);
-        if (tc == null) {
+        if (!tc.isPresent()) {
             throw new ResourceNotFoundException(
                     "Images collection " + imagesCollectionId + " not found.");
         }
@@ -93,7 +94,7 @@ public class ImagesCollectionCopyController {
         }
 
         // Refresh with correct number of files and images
-        copy = imagesCollectionRepository.findOne(copy.getId());
+        copy = imagesCollectionRepository.findById(copy.getId()).get();
         return new ResponseEntity<>(copy, HttpStatus.CREATED);
     }
 

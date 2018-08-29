@@ -11,11 +11,9 @@
  */
 package gov.nist.itl.ssd.wipp.backend.images.imagescollection;
 
-import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
 
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.images.Image;
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.metadatafiles.MetadataFile;
@@ -24,6 +22,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -42,47 +41,50 @@ public class ImagesCollectionRepositoryImpl
 
     @Override
     public void updateImagesCaches(String imagesCollectionId) {
-        DBCollection collection = mongoTemplate.getCollection(
+    	MongoCollection<Document> collection = mongoTemplate.getCollection(
                 mongoTemplate.getCollectionName(Image.class));
-        List<DBObject> pipeline = Arrays.asList(
-                new BasicDBObject("$match",
-                        new BasicDBObject("imagesCollection",
+    	
+    	List<Document> pipeline = Arrays.asList(
+                new Document("$match",
+                        new Document("imagesCollection",
                                 imagesCollectionId)),
-                new BasicDBObject("$group",
-                        BasicDBObjectBuilder.start()
-                        .add("_id", "aggregation")
-                        .add("numberOfImages", new BasicDBObject("$sum", 1))
-                        .add("imagesTotalSize",
-                                new BasicDBObject("$sum", "$fileSize"))
-                        .add("numberOfImportingImages",
-                                new BasicDBObject("$sum",
-                                        new BasicDBObject("$cond",
-                                                Arrays.asList(
-                                                        "$importing",
-                                                        1,
-                                                        0))))
-                        .add("numberOfImportErrors",
-                                new BasicDBObject("$sum",
-                                        new BasicDBObject("$cond",
-                                                Arrays.asList(
-                                                        "$importError",
-                                                        1,
-                                                        0))))
-                        .get()
-                ));
-        AggregationOutput output = collection.aggregate(pipeline);
+                new Document("$group",
+                		new Document()
+	                        .append("_id", "aggregation")
+	                        .append("numberOfImages", new BasicDBObject("$sum", 1))
+	                        .append("imagesTotalSize",
+	                                new Document("$sum", "$fileSize"))
+	                        .append("numberOfImportingImages",
+	                                new Document("$sum",
+	                                        new Document("$cond",
+	                                                Arrays.asList(
+	                                                        "$importing",
+	                                                        1,
+	                                                        0))))
+	                        .append("numberOfImportErrors",
+	                                new Document("$sum",
+	                                        new Document("$cond",
+	                                                Arrays.asList(
+	                                                        "$importError",
+	                                                        1,
+	                                                        0))))
+				));
+    	AggregateIterable<Document> output = collection.aggregate(pipeline);
         int numberOfImages = 0;
         long imagesTotalSize = 0;
         int numberOfImportingImages = 0;
         int numberOfImportErrors = 0;
-        Iterator<DBObject> iterator = output.results().iterator();
+        
+        Iterator<Document> iterator = output.iterator();
+        
         if (iterator.hasNext()) {
-            DBObject dbo = iterator.next();
-            numberOfImages = (int) dbo.get("numberOfImages");
-            imagesTotalSize = (long) dbo.get("imagesTotalSize");
-            numberOfImportingImages = (int) dbo.get("numberOfImportingImages");
-            numberOfImportErrors = (int) dbo.get("numberOfImportErrors");
+        	Document dbo = iterator.next();
+            numberOfImages = dbo.getInteger("numberOfImages");
+            imagesTotalSize = dbo.getLong("imagesTotalSize");
+            numberOfImportingImages = dbo.getInteger("numberOfImportingImages");
+            numberOfImportErrors = dbo.getInteger("numberOfImportErrors");
         }
+        
         mongoTemplate.updateFirst(
                 Query.query(Criteria.where("id").is(imagesCollectionId)),
                 new Update()
@@ -95,29 +97,30 @@ public class ImagesCollectionRepositoryImpl
 
     @Override
     public void updateMetadataFilesCaches(String imagesCollectionId) {
-        DBCollection collection = mongoTemplate.getCollection(
+    	MongoCollection<Document> collection = mongoTemplate.getCollection(
                 mongoTemplate.getCollectionName(MetadataFile.class));
-        List<DBObject> pipeline = Arrays.asList(
-                new BasicDBObject("$match",
-                        new BasicDBObject("imagesCollection",
+    	
+    	List<Document> pipeline = Arrays.asList(
+                new Document("$match",
+                        new Document("imagesCollection",
                                 imagesCollectionId)),
-                new BasicDBObject("$group",
-                        BasicDBObjectBuilder.start()
-                        .add("_id", "aggregation")
-                        .add("numberOfMetadataFiles",
-                                new BasicDBObject("$sum", 1))
-                        .add("metadataFilesTotalSize",
-                                new BasicDBObject("$sum", "$fileSize"))
-                        .get()
+                new Document("$group",
+                		new Document()
+	                		.append("_id", "aggregation")
+	                        .append("numberOfMetadataFiles",
+	                                new Document("$sum", 1))
+	                        .append("metadataFilesTotalSize",
+	                                new Document("$sum", "$fileSize"))
                 ));
-        AggregationOutput output = collection.aggregate(pipeline);
-        int numberOfMetadataFiles = 0;
+    	AggregateIterable<Document> output = collection.aggregate(pipeline);
+        
+    	int numberOfMetadataFiles = 0;
         long metadataFilesTotalSize = 0;
-        Iterator<DBObject> iterator = output.results().iterator();
+        Iterator<Document> iterator = output.iterator();
         if (iterator.hasNext()) {
-            DBObject dbo = iterator.next();
-            numberOfMetadataFiles = (int) dbo.get("numberOfMetadataFiles");
-            metadataFilesTotalSize = (long) dbo.get("metadataFilesTotalSize");
+        	Document dbo = iterator.next();
+            numberOfMetadataFiles = dbo.getInteger("numberOfMetadataFiles");
+            metadataFilesTotalSize = dbo.getLong("metadataFilesTotalSize");
         }
         mongoTemplate.updateFirst(
                 Query.query(Criteria.where("id").is(imagesCollectionId)),

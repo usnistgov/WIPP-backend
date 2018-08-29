@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,13 +78,13 @@ public abstract class FileUploadController extends FlowjsController {
     }
 
     private void assertCollectionModifiable(String imagesCollectionId) {
-        ImagesCollection oldTc = imagesCollectionRepository.findOne(
+    	Optional<ImagesCollection> oldTc = imagesCollectionRepository.findById(
                 imagesCollectionId);
-        if (oldTc == null) {
+        if (! oldTc.isPresent()) {
             throw new ClientException("Collection " + imagesCollectionId
                     + " does not exist.");
         }
-        if (oldTc.isLocked()) {
+        if (oldTc.get().isLocked()) {
             throw new ClientException("Collection locked.");
         }
     }

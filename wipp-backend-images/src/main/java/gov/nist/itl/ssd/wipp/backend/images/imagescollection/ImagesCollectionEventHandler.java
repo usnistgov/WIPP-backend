@@ -12,11 +12,13 @@
 package gov.nist.itl.ssd.wipp.backend.images.imagescollection;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.metadatafiles.MetadataFileHandler;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
@@ -55,8 +57,14 @@ public class ImagesCollectionEventHandler {
 
     @HandleBeforeSave
     public void handleBeforeSave(ImagesCollection imagesCollection) {
-        ImagesCollection oldTc = imagesCollectionRepository.findOne(
+    	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
+    	if (!result.isPresent()) {
+        	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
+        }
+        
+        ImagesCollection oldTc = result.get();
+
 
         if (!Objects.equals(
                 imagesCollection.getCreationDate(),
@@ -86,8 +94,13 @@ public class ImagesCollectionEventHandler {
 
     @HandleBeforeDelete
     public void handleBeforeDelete(ImagesCollection imagesCollection) {
-        ImagesCollection oldTc = imagesCollectionRepository.findOne(
+    	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
+    	if (!result.isPresent()) {
+        	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
+        }
+        
+        ImagesCollection oldTc = result.get();
         imagesCollectionLogic.assertCollectionNotLocked(oldTc);
     }
 

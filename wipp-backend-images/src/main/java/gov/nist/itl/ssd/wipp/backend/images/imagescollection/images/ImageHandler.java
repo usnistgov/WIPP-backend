@@ -59,7 +59,7 @@ public class ImageHandler extends FileHandler {
         List<Image> images = Arrays.stream(files).map(f -> new Image(
                 imagesCollectionId, f.getName(), f.getName(), getFileSize(f), false))
                 .collect(Collectors.toList());
-        imageRepository.save(images);
+        imageRepository.saveAll(images);
         imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
     }
 
