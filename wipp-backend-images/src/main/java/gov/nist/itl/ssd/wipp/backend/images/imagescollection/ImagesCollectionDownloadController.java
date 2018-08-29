@@ -22,6 +22,7 @@ import gov.nist.itl.ssd.wipp.backend.images.imagescollection.metadatafiles.Metad
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -65,15 +66,15 @@ public class ImagesCollectionDownloadController {
     public void get(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletResponse response) throws IOException {
-        ImagesCollection tc = imagesCollectionRepository.findOne(
+    	Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
                 imagesCollectionId);
-        if (tc == null) {
+        if (!tc.isPresent()) {
             throw new ResourceNotFoundException(
                     "Images collection " + imagesCollectionId + " not found.");
         }
 
         response.setHeader("Content-disposition",
-                "attachment;filename=" + tc.getName() + ".zip");
+                "attachment;filename=" + tc.get().getName() + ".zip");
 
         ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
         List<Image> images = imageRepository.findByImagesCollection(

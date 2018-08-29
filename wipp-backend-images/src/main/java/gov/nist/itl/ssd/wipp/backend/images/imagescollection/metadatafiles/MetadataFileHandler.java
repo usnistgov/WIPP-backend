@@ -51,7 +51,7 @@ public class MetadataFileHandler extends FileHandler {
                         imagesCollectionId, f.getName(), getFileSize(f)))
                 .collect(Collectors.toList());
 
-        metadataFileRepository.save(metadataFiles);
+        metadataFileRepository.saveAll(metadataFiles);
         imagesCollectionRepository.updateMetadataFilesCaches(imagesCollectionId);
     }
 

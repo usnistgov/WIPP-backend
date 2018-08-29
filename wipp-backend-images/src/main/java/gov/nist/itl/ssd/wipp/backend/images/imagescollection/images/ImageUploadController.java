@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -92,16 +93,23 @@ public class ImageUploadController extends FileUploadController {
     protected void onUploadFinished(FlowFile flowFile, Path tempPath)
             throws IOException {
     	String collectionId = getCollectionId(flowFile);
-    	ImagesCollection imgCol = imagesCollectionRepository.findOne(collectionId);
-    	UploadOption uploadOption = imgCol.getUploadOption();
-    	String imgColPattern = imgCol.getPattern();
-    	
     	String fileName = flowFile.getFlowFilename();
         Path fileRelativePath =  Paths.get(flowFile.getFlowRelativePath());
-        
-        if(imgColPattern != null && !imgColPattern.isEmpty()){
-        	fileName = fileNameFilter(imgColPattern, fileName);
-        }
+    	UploadOption uploadOption = UploadOption.REGULAR;
+    	
+    	try {
+    		ImagesCollection imgCol = imagesCollectionRepository.findById(collectionId).get();
+    		uploadOption = imgCol.getUploadOption();
+    		String imgColPattern = imgCol.getPattern();
+    		if(imgColPattern != null && !imgColPattern.isEmpty()){
+            	fileName = fileNameFilter(imgColPattern, fileName);
+            }
+    	} catch (NoSuchElementException e){
+    		// TODO: better handling of this case
+    		LOG.log(Level.WARNING, "Error finding collection " + collectionId
+    				+ " when uploading file " + fileName,
+                    e);
+    	}
         
         if(fileName != null){
 	    	fileName = fileName.replaceAll("[\\p{Punct}&&[^.-]]", "_");

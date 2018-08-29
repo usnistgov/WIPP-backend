@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -93,10 +94,13 @@ public class ImageController {
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void deleteAllFiles(
             @PathVariable("imagesCollectionId") String imagesCollectionId) {
-        ImagesCollection tc = imagesCollectionRepository.findOne(
+    	Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
                 imagesCollectionId);
-        if (tc.isLocked()) {
-            throw new ClientException("Collection locked.");
+        if (!tc.isPresent()) {
+        	throw new NotFoundException("Collection not found");
+        }
+        if (tc.get().isLocked()) {
+        	throw new ClientException("Collection locked.");
         }
         imageHandler.deleteAll(imagesCollectionId);
     }
@@ -132,10 +136,13 @@ public class ImageController {
     public void deleteFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName) {
-        ImagesCollection tc = imagesCollectionRepository.findOne(
+    	Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
                 imagesCollectionId);
-        if (tc.isLocked()) {
-            throw new ClientException("Collection locked.");
+        if (!tc.isPresent()) {
+        	throw new NotFoundException("Collection not found");
+        }
+        if (tc.get().isLocked()) {
+        	throw new ClientException("Collection locked.");
         }
         imageHandler.delete(imagesCollectionId, fileName);
     }

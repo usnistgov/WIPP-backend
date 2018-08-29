@@ -32,7 +32,7 @@ import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoRepositoryFactoryBean;
 import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoTemplate;
@@ -49,7 +49,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 @EnableEntityLinks
 @EnableWebMvc
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class Application extends WebMvcConfigurerAdapter {
+public class Application implements WebMvcConfigurer {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(
