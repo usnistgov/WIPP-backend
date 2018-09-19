@@ -9,20 +9,19 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.model.job;
+package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
 /**
+ * @author Mylene Simon <mylene.simon at nist.gov>
  *
- * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
-public enum JobStatus {
+public enum WorkflowStatus {
 
-    CREATED,
-    SUBMITTED,
-    QUEUED,
+	CREATED,
+	SUBMITTED,
     RUNNING,
     DONE,
     FAILED,
     CANCELLED;
-
+	
 }

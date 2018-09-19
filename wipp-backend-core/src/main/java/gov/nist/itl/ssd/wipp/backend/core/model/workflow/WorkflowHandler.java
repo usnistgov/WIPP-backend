@@ -13,22 +13,22 @@ package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
 import java.util.List;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.job.WippJob;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 
 /**
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-public abstract class WippWorkflowHandler<W extends WippWorkflow> {
+public abstract class WorkflowHandler<W extends Workflow> {
 	
 	public abstract W createWorkflow(String name);
 	
-	public abstract void addJob(W workflow, WippJob job, List<String> arguments,
-			List<WippNotification> notifications);
+	public abstract void addJob(W workflow, Job job, List<String> arguments,
+								List<WorkflowNotification> notifications);
 	
 	public abstract void addDependency(W workflow, String child, String parent);
 	
-	public abstract void addWorkflowNotification(W workflow, WippNotification notification);
+	public abstract void addWorkflowNotification(W workflow, WorkflowNotification notification);
 	
 	public abstract void submitWorkflow(W workflow);
 	

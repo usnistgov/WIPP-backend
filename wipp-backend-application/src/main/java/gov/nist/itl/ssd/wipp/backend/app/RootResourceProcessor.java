@@ -12,7 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.app;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
-import gov.nist.itl.ssd.wipp.backend.core.model.job.WippJob;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 
 //import gov.nist.itl.ssd.wipp.backend.core.job.Job;
@@ -85,7 +85,7 @@ public class RootResourceProcessor
 
             //TODO: manage exposed ids and entity links for jobs
             // Manually add Job because it is not a bean
-            URI uri = entityLinks.linkFor(WippJob.class).toUri();
+            URI uri = entityLinks.linkFor(Job.class).toUri();
             links.add(new Link(uri + "/{id}", "job"));
         }
         return links;

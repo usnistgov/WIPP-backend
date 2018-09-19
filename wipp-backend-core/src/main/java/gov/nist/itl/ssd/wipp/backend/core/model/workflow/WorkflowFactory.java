@@ -11,17 +11,34 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+
 /**
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-public enum WippWorkflowStatus {
+@Service
+public class WorkflowFactory {
 
-	CREATED,
-	SUBMITTED,
-    RUNNING,
-    DONE,
-    FAILED,
-    CANCELLED;
+	@Autowired
+	private CoreConfig config;
 	
+	@Autowired
+    private ApplicationContext context;
+
+//	public WorkflowHandler<? extends Workflow> getWorkflowHandler() {
+//
+//		String workflowType = config.getWorkflowManagementSystem();
+//
+//		if(workflowType.equals("pegasus"))
+//			return context.getBean(PegasusWippWorkflowHandler.class);
+//
+//		else
+//			throw new InternalError("Unknown Wipp Workflow type " + workflowType);
+//
+//	}
 }

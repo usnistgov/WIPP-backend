@@ -9,6 +9,7 @@
         <module>wipp-backend-core</module>
         <module>wipp-backend-images</module>
         <module>wipp-backend-application</module>
+        <module>wipp-backend-argo-workflows</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
