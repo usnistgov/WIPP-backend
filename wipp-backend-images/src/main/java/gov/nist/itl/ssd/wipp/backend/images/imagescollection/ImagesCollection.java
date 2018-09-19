@@ -14,8 +14,8 @@ package gov.nist.itl.ssd.wipp.backend.images.imagescollection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.data.WippData;
-import gov.nist.itl.ssd.wipp.backend.core.model.job.WippJob;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 
@@ -34,7 +34,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @IdExposed
 @Document
-public class ImagesCollection extends WippData {
+public class ImagesCollection extends Data {
 
     @Id
     private String id;
@@ -45,7 +45,7 @@ public class ImagesCollection extends WippData {
     private Date creationDate;
 
     @Indexed(unique = true, sparse = true)
-    @ManualRef(WippJob.class)
+    @ManualRef(Job.class)
     private String sourceJob;
 
     private boolean locked;
@@ -85,7 +85,7 @@ public class ImagesCollection extends WippData {
         this.creationDate = new Date();
     }
 
-    public ImagesCollection(WippJob job) {
+    public ImagesCollection(Job job) {
         this.name = job.getName();
         this.sourceJob = job.getId();
         this.locked = true;

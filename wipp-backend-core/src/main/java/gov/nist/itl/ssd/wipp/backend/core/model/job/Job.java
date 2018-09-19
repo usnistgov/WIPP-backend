@@ -12,14 +12,15 @@
 package gov.nist.itl.ssd.wipp.backend.core.model.job;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.List;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
+import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualListRef;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.computation.WippExecutable;
-import gov.nist.itl.ssd.wipp.backend.core.model.job.JobStatus;
-import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WippWorkflow;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.Updatable;
@@ -27,11 +28,11 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.Updatable;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  */
 @IdExposed
 @Document(collection = "job")
-public abstract class WippJob {
-
+public class Job {
     @Id
     private String id;
 
@@ -50,10 +51,17 @@ public abstract class WippJob {
     private Date endTime;
 
     private String error;
+
+    // FIXME ManualRef not working on abstract class
+    // @ManualRef(value = Computation.class)
+    private String wippExecutable;
+
+    @ManualListRef(value = Job.class)
+    private List<String> dependencies;
+
+    private Map<String, String> parameters;
     
-    private WippExecutable executable;
-    
-    @ManualRef(value = WippWorkflow.class)
+    @ManualRef(value = Workflow.class)
     private String wippWorkflow;
     
     private String wippVersion;
@@ -111,12 +119,24 @@ public abstract class WippJob {
         return type.substring(0, 1).toLowerCase() + type.substring(1);
     }
 
-	public WippExecutable getExecutable() {
-		return executable;
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public String getParameter(String key) {
+        return this.parameters.get(key);
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getWippExecutable() {
+		return wippExecutable;
 	}
 
-	public void setExecutable(WippExecutable executable) {
-		this.executable = executable;
+	public void setWippExecutable(String wippExecutable) {
+		this.wippExecutable = wippExecutable;
 	}
 
 	public String getWippWorkflow() {
@@ -135,4 +155,19 @@ public abstract class WippJob {
 		this.wippVersion = wippVersion;
 	}
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<String> dependencies) {
+        this.dependencies = dependencies;
+    }
 }

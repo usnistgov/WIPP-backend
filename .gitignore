@@ -7,8 +7,7 @@
 **/.DS_Store
 **/.tmp
 **/dist
-
-wipp-backend-application/logs
+**/logs
 
 # IntelliJ Idea files
 *.iml
@@ -16,3 +15,4 @@ wipp-backend-application/logs
 wipp-backend-application/bin
 wipp-backend-core/bin
 wipp-backend-images/bin
+wipp-backend-argo-workflows/bin

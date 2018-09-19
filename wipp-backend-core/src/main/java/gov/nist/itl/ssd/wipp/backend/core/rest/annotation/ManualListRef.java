@@ -9,43 +9,27 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
+package gov.nist.itl.ssd.wipp.backend.core.rest.annotation;
+
+import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import gov.nist.itl.ssd.wipp.backend.core.rest.ManualListRefDeserializer;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-public class WippNotification {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@JacksonAnnotationsInside
+@JsonDeserialize(using = ManualListRefDeserializer.class)
 
-	public enum WHEN {
-		START,
-		SUCCESS,
-		ERROR,
-		END
-	}
-	
-	private WHEN event;
-	
-	private String command;
-	
-	public WippNotification(WHEN event, String command) {
-		this.setEvent(event);
-		this.setCommand(command);
-	}
+public @interface ManualListRef {
 
-	public WHEN getEvent() {
-		return event;
-	}
+    Class value();
 
-	public void setEvent(WHEN event) {
-		this.event = event;
-	}
-
-	public String getCommand() {
-		return command;
-	}
-
-	public void setCommand(String command) {
-		this.command = command;
-	}
 }
