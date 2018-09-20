@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -96,6 +98,13 @@ public class WorkflowSubmitController {
                 config.getImagesCollectionsFolder()
             );
             // FIXME assign appropriate workflow name
+            File workflowFolder = new File(config.getWorkflowsFolder());
+            if(!workflowFolder.exists()) {
+                if(!workflowFolder.mkdirs()) {
+                    throw new IOException("Problem when creating the workflow folder");
+                }
+            }
+
             converter.convert(config.getWorkflowsFolder()+"/test0001.yaml");
 
             // Save the workflow and send the HTTP response

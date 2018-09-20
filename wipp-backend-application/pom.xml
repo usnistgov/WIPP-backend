@@ -80,7 +80,7 @@
 				<mongodb.host>localhost</mongodb.host>
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
-				<storage.workflows>/data/WIPP-plugins/Workflows</storage.workflows>
+				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
 				<storage.collections>/data/WIPP-plugins/imagesUpload</storage.collections>
 				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
