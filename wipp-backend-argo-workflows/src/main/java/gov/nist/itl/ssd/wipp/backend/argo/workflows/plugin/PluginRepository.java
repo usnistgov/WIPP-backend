@@ -1,7 +1,11 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
+
 
 /**
  *
@@ -10,5 +14,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource
 public interface PluginRepository extends MongoRepository<Plugin, String> {
-
+    @Query("{}")
+    List<Plugin> findCompleteList();
 }
