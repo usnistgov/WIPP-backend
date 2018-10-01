@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.computation.Computation;
+import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ import java.util.List;
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  */
+@IdExposed
 public class Plugin extends Computation {
     private String containerId;
 
