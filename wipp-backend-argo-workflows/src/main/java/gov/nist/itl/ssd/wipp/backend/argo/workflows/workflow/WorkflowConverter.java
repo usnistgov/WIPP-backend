@@ -19,6 +19,7 @@ import java.util.*;
  */
 public class WorkflowConverter {
     private Workflow workflow;
+    private String workflowBinary;
     private Map<Job, List<String>> jobsDependencies;
     private Map<Job, Plugin> jobsPlugins;
     private String imagesCollectionsFolder;
@@ -27,11 +28,13 @@ public class WorkflowConverter {
 
     public WorkflowConverter(
         Workflow workflow,
+        String workflowBinary,
         Map<Job, List<String>> jobsDependencies,
         Map<Job, Plugin> jobsPlugins,
         String imagesCollectionsFolder
     ) {
         this.workflow = workflow;
+        this.workflowBinary = workflowBinary;
         this.jobsDependencies = jobsDependencies;
         this.jobsPlugins = jobsPlugins;
         this.imagesCollectionsFolder = imagesCollectionsFolder;
@@ -181,6 +184,14 @@ public class WorkflowConverter {
 
         File workflowFile = new File(workflowFilePath);
         mapper.writeValue(workflowFile, argoWorkflow);
+
+        // Launch separate submission of the argo workflow
+        ProcessBuilder builder = new ProcessBuilder();
+        builder.command(this.workflowBinary, "submit", workflowFilePath);
+        Process process = builder.start();
+
+        int exitCode = process.waitFor();
+        assert exitCode == 0;
 
         this.workflow.setStatus(WorkflowStatus.SUBMITTED);
     }

@@ -93,6 +93,7 @@ public class WorkflowSubmitController {
         try {
             WorkflowConverter converter = new WorkflowConverter(
                 wippWorkflow.get(),
+                config.getWorflowsBinary(),
                 jobsDependencies,
                 jobsPlugins,
                 config.getImagesCollectionsFolder()
