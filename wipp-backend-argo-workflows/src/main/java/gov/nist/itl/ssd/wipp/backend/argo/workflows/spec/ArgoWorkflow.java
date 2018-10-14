@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ArgoWorkflow {
     private static String apiVersion = "argoproj.io/v1alpha1";
-    private static String kind = "workflow";
+    private static String kind = "Workflow";
     private Map<String, String> metadata;
     private ArgoWorkflowSpec spec;
 

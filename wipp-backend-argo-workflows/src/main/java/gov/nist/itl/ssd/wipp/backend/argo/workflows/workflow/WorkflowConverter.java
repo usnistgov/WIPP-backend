@@ -42,7 +42,7 @@ public class WorkflowConverter {
 
     private HashMap<String, String> generateMetadata() {
         HashMap<String, String> metadata = new HashMap<>();
-        metadata.put("generatedName", this.workflow.getName());
+        metadata.put("generateName", this.workflow.getName().toLowerCase());
 
         return metadata;
     }
@@ -73,6 +73,11 @@ public class WorkflowConverter {
             argoPluginContainerArgs.add("--" + parameter);
             argoPluginContainerArgs.add("{{ inputs.parameters." + parameter + " }}");
         }
+
+        // Automatically add the output
+        argoPluginContainerArgs.add("--output");
+        argoPluginContainerArgs.add("outputCollection"); // FIXME generate it automatically
+
         container.setArgs(argoPluginContainerArgs);
 
         // Setup the volume for the data
