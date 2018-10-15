@@ -191,8 +191,12 @@ public class WorkflowConverter {
         mapper.writeValue(workflowFile, argoWorkflow);
 
         // Launch separate submission of the argo workflow
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.command(this.workflowBinary, "submit", workflowFilePath);
+        List<String> builderCommands = new ArrayList<>();
+        Collections.addAll(builderCommands, this.workflowBinary.split(" "));
+        builderCommands.add("submit");
+        builderCommands.add(workflowFilePath);
+
+        ProcessBuilder builder = new ProcessBuilder(builderCommands);
         Process process = builder.start();
 
         int exitCode = process.waitFor();
