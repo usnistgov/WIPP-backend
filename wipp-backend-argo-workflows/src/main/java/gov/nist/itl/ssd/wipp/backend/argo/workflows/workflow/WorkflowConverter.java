@@ -71,7 +71,7 @@ public class WorkflowConverter {
         List<String> argoPluginContainerArgs = new ArrayList<>();
         for(String parameter: parameters) {
             argoPluginContainerArgs.add("--" + parameter);
-            argoPluginContainerArgs.add("{{ inputs.parameters." + parameter + " }}");
+            argoPluginContainerArgs.add("{{inputs.parameters." + parameter + "}}");
         }
 
         // Automatically add the output
