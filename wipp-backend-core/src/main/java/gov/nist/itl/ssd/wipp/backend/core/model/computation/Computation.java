@@ -39,7 +39,8 @@ public abstract class Computation {
 	}
 
 	public String getIdentifier() {
-		return name + "-" + version;
+		String identifier = name + "-" + version;
+		return identifier.toLowerCase().replaceAll("[^a-z0-9\\-]", "-");
 	}
 	
 	public String getName() {

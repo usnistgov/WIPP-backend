@@ -19,6 +19,7 @@ import java.util.*;
  */
 public class WorkflowConverter {
     private Workflow workflow;
+    private String workflowBinary;
     private Map<Job, List<String>> jobsDependencies;
     private Map<Job, Plugin> jobsPlugins;
     private String imagesCollectionsFolder;
@@ -27,11 +28,13 @@ public class WorkflowConverter {
 
     public WorkflowConverter(
         Workflow workflow,
+        String workflowBinary,
         Map<Job, List<String>> jobsDependencies,
         Map<Job, Plugin> jobsPlugins,
         String imagesCollectionsFolder
     ) {
         this.workflow = workflow;
+        this.workflowBinary = workflowBinary;
         this.jobsDependencies = jobsDependencies;
         this.jobsPlugins = jobsPlugins;
         this.imagesCollectionsFolder = imagesCollectionsFolder;
@@ -39,7 +42,7 @@ public class WorkflowConverter {
 
     private HashMap<String, String> generateMetadata() {
         HashMap<String, String> metadata = new HashMap<>();
-        metadata.put("generatedName", this.workflow.getName());
+        metadata.put("generateName", this.workflow.getName().toLowerCase());
 
         return metadata;
     }
@@ -68,8 +71,13 @@ public class WorkflowConverter {
         List<String> argoPluginContainerArgs = new ArrayList<>();
         for(String parameter: parameters) {
             argoPluginContainerArgs.add("--" + parameter);
-            argoPluginContainerArgs.add("{{ inputs.parameters." + parameter + " }}");
+            argoPluginContainerArgs.add("{{inputs.parameters." + parameter + "}}");
         }
+
+        // Automatically add the output
+        argoPluginContainerArgs.add("--output");
+        argoPluginContainerArgs.add("outputCollection"); // FIXME generate it automatically
+
         container.setArgs(argoPluginContainerArgs);
 
         // Setup the volume for the data
@@ -181,6 +189,18 @@ public class WorkflowConverter {
 
         File workflowFile = new File(workflowFilePath);
         mapper.writeValue(workflowFile, argoWorkflow);
+
+        // Launch separate submission of the argo workflow
+        List<String> builderCommands = new ArrayList<>();
+        Collections.addAll(builderCommands, this.workflowBinary.split(" "));
+        builderCommands.add("submit");
+        builderCommands.add(workflowFilePath);
+
+        ProcessBuilder builder = new ProcessBuilder(builderCommands);
+        Process process = builder.start();
+
+        int exitCode = process.waitFor();
+        assert exitCode == 0;
 
         this.workflow.setStatus(WorkflowStatus.SUBMITTED);
     }

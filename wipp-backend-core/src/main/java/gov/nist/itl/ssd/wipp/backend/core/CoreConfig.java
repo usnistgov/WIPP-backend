@@ -30,6 +30,9 @@ public class CoreConfig {
     @Value("${storage.workflows}")
     private String workflowsFolder;
 
+    @Value("${workflow.binary}")
+    private String worflowBinary;
+
     @Value("${storage.collections}")
     private String imagesCollectionsFolder;
 
@@ -62,6 +65,10 @@ public class CoreConfig {
 	public String getWorkflowsFolder() {
 		return workflowsFolder;
 	}
+
+	public String getWorflowBinary() {
+	    return worflowBinary;
+    }
 
 	public String getImagesCollectionsFolder() {
         return imagesCollectionsFolder;
