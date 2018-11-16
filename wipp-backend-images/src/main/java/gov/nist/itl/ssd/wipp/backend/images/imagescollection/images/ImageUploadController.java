@@ -15,7 +15,6 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.images.flowjs.FlowFile;
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.ImagesCollectionRepository;
-import gov.nist.itl.ssd.wipp.backend.images.imagescollection.ImagesCollection.UploadOption;
 import gov.nist.itl.ssd.wipp.backend.images.imagescollection.files.FileUploadController;
 
 import java.awt.image.BufferedImage;
@@ -23,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
@@ -94,12 +92,9 @@ public class ImageUploadController extends FileUploadController {
             throws IOException {
     	String collectionId = getCollectionId(flowFile);
     	String fileName = flowFile.getFlowFilename();
-        Path fileRelativePath =  Paths.get(flowFile.getFlowRelativePath());
-    	UploadOption uploadOption = UploadOption.REGULAR;
     	
     	try {
     		ImagesCollection imgCol = imagesCollectionRepository.findById(collectionId).get();
-    		uploadOption = imgCol.getUploadOption();
     		String imgColPattern = imgCol.getPattern();
     		if(imgColPattern != null && !imgColPattern.isEmpty()){
             	fileName = fileNameFilter(imgColPattern, fileName);
@@ -113,24 +108,8 @@ public class ImageUploadController extends FileUploadController {
         
         if(fileName != null){
 	    	fileName = fileName.replaceAll("[\\p{Punct}&&[^.-]]", "_");
-	    	fileName = fileName.replace(" ", "");
-	    	switch (uploadOption) {
-	    		case REGULAR:
-	    			uploadImg(flowFile, tempPath, fileName);
-	    			break;
-	    		case IGNORE_SUBS:
-	    			if (fileRelativePath.getNameCount() <= 2){
-	    				uploadImg(flowFile, tempPath, fileName);
-	    			}
-	    			break;
-	    		case INCLUDE_PATH_IMG_NAME:
-	    			fileName = flowFile.getFlowRelativePath().replace("/", "_").replaceAll("[\\p{Punct}&&[^.-]]", "_").replace(" ", "");
-	    			uploadImg(flowFile, tempPath, fileName);
-	    			break;
-	    		default:
-					uploadImg(flowFile, tempPath, fileName);
-					break;
-	    	}
+	    	fileName = fileName.replace(" ", "");	    	
+			uploadImg(flowFile, tempPath, fileName);
         }
     }
     
