@@ -50,8 +50,6 @@ public class ImagesCollection extends Data {
 
     private boolean locked;
     
-    private UploadOption uploadOption;
-    
     private String pattern;
 
     @JsonIgnore
@@ -116,10 +114,6 @@ public class ImagesCollection extends Data {
         return locked;
     }
 
-    public UploadOption getUploadOption() {
-		return uploadOption;
-	}
-
 	public String getPattern() {
 		return pattern;
 	}
@@ -156,11 +150,5 @@ public class ImagesCollection extends Data {
     @JsonProperty
     public long getMetadataFilesTotalSize() {
         return metadataFilesTotalSize;
-    }
-    
-    public enum UploadOption {
-    	REGULAR,
-    	IGNORE_SUBS,
-    	INCLUDE_PATH_IMG_NAME
     }
 }
