@@ -4,42 +4,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.*;
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.stereotype.Component;
 
 
 /**
  *
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
+@Component
 public class WorkflowConverter {
     private Workflow workflow;
-    private String workflowBinary;
     private Map<Job, List<String>> jobsDependencies;
     private Map<Job, Plugin> jobsPlugins;
-    private String imagesCollectionsFolder;
 
     private static final String dataVolumeName = "data-volume";
-
-    public WorkflowConverter(
-        Workflow workflow,
-        String workflowBinary,
-        Map<Job, List<String>> jobsDependencies,
-        Map<Job, Plugin> jobsPlugins,
-        String imagesCollectionsFolder
-    ) {
-        this.workflow = workflow;
-        this.workflowBinary = workflowBinary;
-        this.jobsDependencies = jobsDependencies;
-        this.jobsPlugins = jobsPlugins;
-        this.imagesCollectionsFolder = imagesCollectionsFolder;
-    }
-
+    
+    private static final Logger LOGGER = Logger.getLogger(WorkflowConverter.class.getName());
+    
+    @Autowired
+    private CoreConfig coreConfig;
+    
     private HashMap<String, String> generateMetadata() {
         HashMap<String, String> metadata = new HashMap<>();
         metadata.put("generateName", this.workflow.getName().toLowerCase());
@@ -49,8 +48,8 @@ public class WorkflowConverter {
 
     private List<ArgoVolume> generateSpecVolumes() {
         HashMap<String, String> hostPath = new HashMap<>();
-        hostPath.put("path", this.imagesCollectionsFolder);
-        hostPath.put("type", "Directory");
+        hostPath.put("path", "/data/WIPP-plugins"); // FIXME: add root data folder conf
+        //hostPath.put("type", "Directory");
 
         ArrayList<ArgoVolume> argoVolumeList = new ArrayList<>();
         ArgoVolume argoVolume = new ArgoVolume(dataVolumeName, hostPath);
@@ -76,7 +75,7 @@ public class WorkflowConverter {
 
         // Automatically add the output
         argoPluginContainerArgs.add("--output");
-        argoPluginContainerArgs.add("outputCollection"); // FIXME generate it automatically
+        argoPluginContainerArgs.add("{{inputs.parameters.output}}"); 
 
         container.setArgs(argoPluginContainerArgs);
 
@@ -84,7 +83,7 @@ public class WorkflowConverter {
         ArrayList<Map<String, String>> volumeMounts = new ArrayList<>();
 
         HashMap<String, String> dataVolume = new HashMap<>();
-        dataVolume.put("mountPath", "/data");
+        dataVolume.put("mountPath", "/data/WIPP-plugins"); // FIXME generate it automatically
         dataVolume.put("name", dataVolumeName);
 
         volumeMounts.add(dataVolume);
@@ -104,6 +103,7 @@ public class WorkflowConverter {
         for(String parameter: parameters) {
             argoTemplateArgs.add(new NameValueParam(parameter));
         }
+        argoTemplateArgs.add(new NameValueParam("output")); // FIXME temp fix
 
         argoTemplateInputs.put("parameters", argoTemplateArgs);
         argoTemplatePlugin.setInputs(argoTemplateInputs);
@@ -128,10 +128,23 @@ public class WorkflowConverter {
 
         Map<String, List<NameValueParam>> argoTemplateWorkflowParams = new HashMap<>();
         List<NameValueParam> argoWorkflowArgs = new ArrayList<>();
+        
+        // Create job temp output folder
+        File tempJobFolder = new File(coreConfig.getJobsTempFolder(),
+				job.getId());
+    	tempJobFolder.mkdirs();
+    	
+    	// Add output folder to parameters
+    	NameValueParam outputParam = new NameValueParam("output", tempJobFolder.getAbsolutePath());
+        argoWorkflowArgs.add(outputParam);
 
         // Browse the parameter to setup plugin parameters
         for(String key: job.getParameters().keySet()) {
-            NameValueParam workflowParams = new NameValueParam(key, job.getParameter(key));
+        	String value = job.getParameter(key);
+        	if(key.equals("input")) {
+        		value = coreConfig.getImagesCollectionsFolder() + File.separator + value;
+        	}
+            NameValueParam workflowParams = new NameValueParam(key, value);
 
             argoWorkflowArgs.add(workflowParams);
         }
@@ -141,6 +154,42 @@ public class WorkflowConverter {
 
         argoTemplateWorkflowTask.setDependencies(this.jobsDependencies.get(job));
         return argoTemplateWorkflowTask;
+    }
+    
+    private ArgoTemplateExitHandler generateTemplateExitHandler() {
+    	ArgoTemplateExitHandler argoTemplateExitHandler = new ArgoTemplateExitHandler();
+        argoTemplateExitHandler.setName("exit-handler");
+
+        argoTemplateExitHandler.setContainer(
+            this.generateTemplateExitHandlerContainer()
+        );
+
+        return argoTemplateExitHandler;
+    }
+    
+    private ArgoTemplateExitHandlerContainer generateTemplateExitHandlerContainer() {
+            
+		ArgoTemplateExitHandlerContainer container = new ArgoTemplateExitHandlerContainer();
+
+        container.setImage("byrnedo/alpine-curl:latest");
+        
+        String url = ControllerLinkBuilder.linkTo(
+                WorkflowExitController.class, workflow.getId())
+                .withRel("exit").getHref();
+        LOGGER.log(Level.INFO, "workflow url: " + url);
+        
+        List<String> args = new ArrayList<>();
+        args.add("-X");
+        args.add("POST");
+        args.add("-H");
+        args.add("Content-Type:application/json");
+        args.add("-d");
+        args.add("{{workflow.status}}");
+        args.add(url);
+        args.add("-v");
+        container.setArgs(args);
+
+        return container;
     }
 
     private List<ArgoAbstractTemplate> generateSpecTemplates() {
@@ -165,6 +214,9 @@ public class WorkflowConverter {
         }
 
         argoTemplates.add(new ArgoTemplateWorkflow(argoTemplateWorkflowTasks));
+        
+        // Add exit handler template
+        argoTemplates.add(this.generateTemplateExitHandler());
 
         return argoTemplates;
     }
@@ -178,7 +230,13 @@ public class WorkflowConverter {
         return argoWorkflowSpec;
     }
 
-    public void convert(String workflowFilePath) throws Exception {
+	public void convert(Workflow workflow, Map<Job, List<String>> jobsDependencies, Map<Job, Plugin> jobsPlugins,
+			String workflowFilePath) throws Exception {
+		
+		this.workflow = workflow;
+        this.jobsDependencies = jobsDependencies;
+        this.jobsPlugins = jobsPlugins;
+		
         YAMLFactory yamlFactory = new YAMLFactory();
         ObjectMapper mapper = new ObjectMapper(yamlFactory);
 
@@ -192,17 +250,24 @@ public class WorkflowConverter {
 
         // Launch separate submission of the argo workflow
         List<String> builderCommands = new ArrayList<>();
-        Collections.addAll(builderCommands, this.workflowBinary.split(" "));
+        Collections.addAll(builderCommands, coreConfig.getWorflowBinary().split(" "));
         builderCommands.add("submit");
         builderCommands.add(workflowFilePath);
 
         ProcessBuilder builder = new ProcessBuilder(builderCommands);
-        Process process = builder.start();
+        builder.inheritIO();
+        Process process;
+        try {
+            process = builder.start();
+            int exitCode = process.waitFor();
+            assert exitCode == 0;
 
-        int exitCode = process.waitFor();
-        assert exitCode == 0;
-
-        this.workflow.setStatus(WorkflowStatus.SUBMITTED);
+            this.workflow.setStatus(WorkflowStatus.SUBMITTED);
+        } catch (IOException ex) {
+        	this.workflow.setStatus(WorkflowStatus.ERROR);
+        	LOGGER.log(Level.WARNING, "Cannot start workflow ", ex);
+        	
+        }
     }
 
     public Workflow getWorkflow() {

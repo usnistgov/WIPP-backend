@@ -13,6 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
 /**
  * @author Mylene Simon <mylene.simon at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
 public enum WorkflowStatus {
@@ -20,8 +21,9 @@ public enum WorkflowStatus {
 	CREATED,
 	SUBMITTED,
     RUNNING,
-    DONE,
+    SUCCEEDED,
     FAILED,
+    ERROR,
     CANCELLED;
 	
 }
