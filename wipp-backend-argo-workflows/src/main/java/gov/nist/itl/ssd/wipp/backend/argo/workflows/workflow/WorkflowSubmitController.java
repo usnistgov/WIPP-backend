@@ -7,6 +7,8 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ import java.util.*;
 /**
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
+ * 
  */
 @Controller
 @RequestMapping(CoreConfig.BASE_URI + "/workflows/{workflowId}/submit")
@@ -37,6 +41,9 @@ public class WorkflowSubmitController {
 
     @Autowired
     private PluginRepository wippPluginRepository;
+    
+    @Autowired
+    private WorkflowConverter converter;
 
     @RequestMapping(
         value = "",
@@ -52,8 +59,10 @@ public class WorkflowSubmitController {
         );
 
         if(!wippWorkflow.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        	throw new ClientException("Received submission of unknown workflow");
         }
+        
+        Workflow workflow = wippWorkflow.get();
 
         // Build the list of jobs, dependencies and plugins
         List<Job> jobList = jobRepository.findByWippWorkflow(workflowId);
@@ -70,7 +79,7 @@ public class WorkflowSubmitController {
                     Optional<Job> optionalJobDependency = jobRepository.findById(dependencyId);
 
                     if(!optionalJobDependency.isPresent()) {
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        				throw new ClientException("Error while submitting workflow: unknown job dependency " + dependencyId);
                     }
 
                     Job jobDependency = optionalJobDependency.get();
@@ -83,7 +92,7 @@ public class WorkflowSubmitController {
             // Link plugin to the job
             Optional<Plugin> plugin = wippPluginRepository.findById(job.getWippExecutable());
             if(!plugin.isPresent()) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new ClientException("Error while submitting workflow: unknown plugin " + job.getWippExecutable());
             }
 
             jobsPlugins.put(job, plugin.get());
@@ -91,13 +100,6 @@ public class WorkflowSubmitController {
 
         // Start the conversion
         try {
-            WorkflowConverter converter = new WorkflowConverter(
-                wippWorkflow.get(),
-                config.getWorflowBinary(),
-                jobsDependencies,
-                jobsPlugins,
-                config.getImagesCollectionsFolder()
-            );
             // FIXME assign appropriate workflow name
             File workflowFolder = new File(config.getWorkflowsFolder());
             if(!workflowFolder.exists()) {
@@ -106,14 +108,14 @@ public class WorkflowSubmitController {
                 }
             }
 
-            converter.convert(config.getWorkflowsFolder()+"/test0001.yaml");
+            converter.convert(workflow, jobsDependencies, jobsPlugins, config.getWorkflowsFolder()+"/test0001.yaml");
 
             // Save the workflow and send the HTTP response
             Workflow submittedWorkflow = converter.getWorkflow();
             workflowRepository.save(submittedWorkflow);
             return new ResponseEntity<>(submittedWorkflow, HttpStatus.OK);
         } catch (Exception exc) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        	throw new ClientException("Error while submitting workflow " + exc.getMessage());
         }
 
     }

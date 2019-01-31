@@ -29,5 +29,10 @@
             <artifactId>wipp-backend-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>gov.nist.itl.ssd.wipp</groupId>
+            <artifactId>wipp-backend-images</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

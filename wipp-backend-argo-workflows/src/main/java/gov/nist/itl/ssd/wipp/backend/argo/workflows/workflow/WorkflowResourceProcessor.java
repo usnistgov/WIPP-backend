@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component
 public class WorkflowResourceProcessor
@@ -23,6 +24,11 @@ public class WorkflowResourceProcessor
             WorkflowSubmitController.class, workflow.getId())
             .withRel("submit");
         resource.add(submitLink);
+        
+        Link exitLink = ControllerLinkBuilder.linkTo(
+                WorkflowExitController.class, workflow.getId())
+                .withRel("exit");
+            resource.add(exitLink);
 
         return resource;
     }

@@ -1,11 +1,16 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.spec;
 
-import java.util.List;
 import java.util.Map;
 
+/**
+*
+* @author Philippe Dessauw <philippe.dessauw at nist.gov>
+* @author Mylene Simon <mylene.simon at nist.gov>
+* 
+*/
 public class ArgoWorkflow {
-    private static String apiVersion = "argoproj.io/v1alpha1";
-    private static String kind = "Workflow";
+    private final String apiVersion = "argoproj.io/v1alpha1";
+    private final String kind = "Workflow";
     private Map<String, String> metadata;
     private ArgoWorkflowSpec spec;
 
@@ -13,17 +18,10 @@ public class ArgoWorkflow {
         return apiVersion;
     }
 
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
-    }
-
     public String getKind() {
         return kind;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
 
     public Map<String, String> getMetadata() {
         return metadata;
