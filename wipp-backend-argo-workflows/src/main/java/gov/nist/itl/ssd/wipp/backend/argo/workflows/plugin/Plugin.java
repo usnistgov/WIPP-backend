@@ -15,6 +15,7 @@ public class Plugin extends Computation {
 
     private String title;
     private String description;
+    private String creator;
 
     private List<PluginIO> inputs;
     private List<PluginIO> outputs;
@@ -34,6 +35,14 @@ public class Plugin extends Computation {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getDescription() {
