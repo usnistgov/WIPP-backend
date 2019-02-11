@@ -100,15 +100,14 @@ public class WorkflowSubmitController {
 
         // Start the conversion
         try {
-            // FIXME assign appropriate workflow name
-            File workflowFolder = new File(config.getWorkflowsFolder());
+            File workflowFolder = new File(config.getWorkflowsFolder(), workflowId);
             if(!workflowFolder.exists()) {
                 if(!workflowFolder.mkdirs()) {
                     throw new IOException("Problem when creating the workflow folder");
                 }
             }
 
-            converter.convert(workflow, jobsDependencies, jobsPlugins, config.getWorkflowsFolder()+"/test0001.yaml");
+            converter.convert(workflow, jobsDependencies, jobsPlugins, workflowFolder + File.separator + "workflow-" + workflowId + ".yaml");
 
             // Save the workflow and send the HTTP response
             Workflow submittedWorkflow = converter.getWorkflow();
