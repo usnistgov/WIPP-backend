@@ -8,7 +8,7 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
-
+import gov.nist.itl.ssd.wipp.backend.images.imagescollection.images.ImageHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -38,6 +38,9 @@ public class WorkflowConverter {
     
     @Autowired
     private CoreConfig coreConfig;
+    
+    @Autowired
+    private ImageHandler imageRepository;
     
     private HashMap<String, String> generateMetadata() {
         HashMap<String, String> metadata = new HashMap<>();
@@ -142,7 +145,8 @@ public class WorkflowConverter {
         for(String key: job.getParameters().keySet()) {
         	String value = job.getParameter(key);
         	if(key.equals("input")) {
-        		value = coreConfig.getImagesCollectionsFolder() + File.separator + value;
+        		File inputImagesFolder = imageRepository.getFilesFolder(value);
+        		value = inputImagesFolder.getAbsolutePath();
         	}
             NameValueParam workflowParams = new NameValueParam(key, value);
 
