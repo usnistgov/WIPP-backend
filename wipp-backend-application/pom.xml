@@ -67,6 +67,7 @@
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
+				<storage.root>/data/WIPP-plugins</storage.root>
 				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
 				<storage.collections>/data/WIPP-plugins/images-upload</storage.collections>
 				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
@@ -82,6 +83,7 @@
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo --kubeconfig /tmp/kubeconfig</workflow.binary>
+				<storage.root>/data/WIPP-plugins</storage.root>
 				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
 				<storage.collections>/data/WIPP-plugins/imagesUpload</storage.collections>
 				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
