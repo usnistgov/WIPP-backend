@@ -24,6 +24,9 @@ public class CoreConfig {
     @Value("${spring.data.mongodb.database}")
     private String mongodbDatabase;
     
+    @Value("${storage.root}")
+    private String storageRootFolder;
+    
     @Value("${workflow.management.system:argo}")
     private String workflowManagementSystem;
     
@@ -56,6 +59,10 @@ public class CoreConfig {
 	
 	public String getMongodbDatabase() {
 		return mongodbDatabase;
+	}
+	
+	public String getStorageRootFolder() {
+		return storageRootFolder;
 	}
 	
 	public String getWorkflowManagementSystem() {

@@ -48,7 +48,7 @@ public class WorkflowConverter {
 
     private List<ArgoVolume> generateSpecVolumes() {
         HashMap<String, String> hostPath = new HashMap<>();
-        hostPath.put("path", "/data/WIPP-plugins"); // FIXME: add root data folder conf
+        hostPath.put("path", coreConfig.getStorageRootFolder());
         //hostPath.put("type", "Directory");
 
         ArrayList<ArgoVolume> argoVolumeList = new ArrayList<>();
@@ -83,7 +83,7 @@ public class WorkflowConverter {
         ArrayList<Map<String, String>> volumeMounts = new ArrayList<>();
 
         HashMap<String, String> dataVolume = new HashMap<>();
-        dataVolume.put("mountPath", "/data/WIPP-plugins"); // FIXME generate it automatically
+        dataVolume.put("mountPath", coreConfig.getStorageRootFolder());
         dataVolume.put("name", dataVolumeName);
 
         volumeMounts.add(dataVolume);
