@@ -1,9 +1,9 @@
 {
 	"name": "ThresholdingPlugin",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"title": "Thresholding plugin",
 	"description": "Thresholding methods from ImageJ",
-	"containerId": "wipp/wipp-thresh-plugin",
+	"containerId": "wipp/wipp-thresh-plugin:0.1.1",
 	
 	"inputs": [
 		{
