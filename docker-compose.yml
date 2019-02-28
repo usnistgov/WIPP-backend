@@ -22,4 +22,3 @@ services:
 networks:
   mongodb:
     driver: bridge
-
