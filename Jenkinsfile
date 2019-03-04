@@ -2,7 +2,7 @@
 pipeline {
 
     agent {
-        node { label 'internal-build.ncats'}
+        node { label 'aws && build && linux && ubuntu'}
     }
 
     stages {
