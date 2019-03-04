@@ -9,7 +9,7 @@ pipeline {
         stage('SCM checkout'){
             steps{
                 script {
-                    sh 'git clone https://github.com/usnistgov/WIPP-backend.git'
+                    sh 'git clone https://github.com/gayathrikurapati/WIPP-backend.git'
                 }
             }
         }
