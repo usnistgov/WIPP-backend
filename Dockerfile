@@ -21,8 +21,6 @@ COPY wipp-backend-core /usr/src/app
 COPY wipp-backend-images /usr/src/app
 COPY pom.xml /usr/src/app 
 
-CMD ['top']
+WORKDIR /usr/src/app/wipp-backend-application
 
-
-
-
+ENTRYPOINT ["mvn","spring-boot:run"]
