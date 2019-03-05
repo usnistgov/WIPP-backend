@@ -6,11 +6,17 @@ pipeline {
     }
 
     stages {
-        
-        stage('Build App') {
+        stage('Pre-requisites') {
             steps {
                 sh 'sudo apt-get update'
-		    sh 'sudo apt-get install maven -y'
+		sh 'sudo apt-get install maven -y'
+		sh 'sudo apt-get install docker.io'
+		    
+            }
+        }
+        stage('Build App') {
+            steps {
+                
 		    sh 'mvn package'
             }
         }
