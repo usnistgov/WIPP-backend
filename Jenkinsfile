@@ -9,7 +9,9 @@ pipeline {
         
         stage('Build App') {
             steps {
-                sh 'mvn package'
+                sh 'apt-get update'
+		    sh 'apt-get install maven -y'
+		    sh 'mvn package'
             }
         }
         stage('Docker build') {
