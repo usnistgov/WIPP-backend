@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
 			docker.withRegistry('https://684150170045.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-jenkins-build') {
-                        	docker.build("WIPP", "--build-arg SOURCE_FOLDER=. --no-cache ./")
+                        	docker.build("wipp", "--build-arg SOURCE_FOLDER=. --no-cache ./")
 				docker.image("${PROJECT_NAME}").push("${BUILD_VERSION}")
                     	}
 		}
