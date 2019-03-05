@@ -11,6 +11,8 @@ pipeline {
                 sh 'sudo apt-get update'
 		sh 'sudo apt-get install maven -y'
 		sh 'sudo apt-get install docker.io'
+		sh 'sudo apt-get install openjdk-8-jdk -y'
+		sh 'sudo update-java-alternatives --set java-1.8.0-openjdk-amd64'
 		    
             }
         }
