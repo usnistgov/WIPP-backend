@@ -6,14 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('SCM checkout'){
-            steps{
-                script {
-                    sh 'echo "hello"'
-			//sh 'git clone https://github.com/gayathrikurapati/WIPP-backend.git'
-                }
-            }
-        }
+        
         stage('Build App') {
             steps {
                 sh 'mvn package'
