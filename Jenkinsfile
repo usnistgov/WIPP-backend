@@ -9,7 +9,8 @@ pipeline {
         stage('SCM checkout'){
             steps{
                 script {
-                    //sh 'git clone https://github.com/gayathrikurapati/WIPP-backend.git'
+                    sh 'echo "hello"'
+			//sh 'git clone https://github.com/gayathrikurapati/WIPP-backend.git'
                 }
             }
         }
