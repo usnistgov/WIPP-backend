@@ -9,8 +9,8 @@ pipeline {
         
         stage('Build App') {
             steps {
-                sh 'apt-get update'
-		    sh 'apt-get install maven -y'
+                sh 'sudo apt-get update'
+		    sh 'sudo apt-get install maven -y'
 		    sh 'mvn package'
             }
         }
