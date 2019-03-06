@@ -14,12 +14,10 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
 
 RUN mkdir -p /usr/src/app
 
-COPY data /usr/src/app
-COPY wipp-backend-application /usr/src/app
-COPY wipp-backend-argo-workflows /usr/src/app
-COPY wipp-backend-core /usr/src/app
-COPY wipp-backend-images /usr/src/app
-COPY pom.xml /usr/src/app 
+COPY . /usr/src/app
+
+WORKDIR /usr/src/app
+RUN mvn clean install
 
 WORKDIR /usr/src/app/wipp-backend-application
 
