@@ -26,9 +26,9 @@ pipeline {
         stage('Docker build') {
             steps {
                 script {
-			docker.withRegistry('https://registry-1.docker.io/v2/', 'f16c74f9-0a60-4882-b6fd-bec3b0136b84') {
-                        docker.build("labshare/wipp-backend", "--build-arg SOURCE_FOLDER=. --no-cache ./")
-			docker.image("labshare/wipp-backend").push("${BUILD_ID}")
+			docker.withRegistry('https://684150170045.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-jenkins-build') {
+                        docker.build("${wipp-backend}", "--build-arg SOURCE_FOLDER=./${BUILD_VERSION} --no-cache ./")
+			docker.image("${wipp-backend}").push("${BUILD_VERSION}")
                     }
 		}
 	}
