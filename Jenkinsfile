@@ -28,7 +28,7 @@ pipeline {
                 script {
 			docker.withRegistry(“https://registry-1.docker.io/v2/“, “f16c74f9-0a60-4882-b6fd-bec3b0136b84”) {
                           // Build and push the images to the registry
-                          def image = docker.build(“labshare/wipp-backend:${env.BUILD_ID}“, “--no-cache --build-arg SOURCE_FOLDER=./${env.BUILD_VERSION}.”)
+                          def image = docker.build(“labshare/wipp-backend:${env.BUILD_VERSION}“, “--no-cache --build-arg SOURCE_FOLDER=./${env.BUILD_VERSION}.”)
                           image.push(“${env.BUILD_VERSION}“)
                     	}
 		}
