@@ -26,11 +26,10 @@ pipeline {
         stage('Docker build') {
             steps {
                 script {
-			docker.withRegistry(“https://registry-1.docker.io/v2/“, “f16c74f9-0a60-4882-b6fd-bec3b0136b84”) {
-                          // Build and push the images to the registry
-                          def image = docker.build(“labshare/wipp-backend:${env.BUILD_VERSION}“, “--no-cache --build-arg SOURCE_FOLDER=./${env.BUILD_VERSION}.”)
-                          image.push(“${env.BUILD_VERSION}“)
-                    	}
+			docker.withRegistry('https://684150170045.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-jenkins-build') {
+                        docker.build("labshare/wipp-backend", "--build-arg SOURCE_FOLDER=. --no-cache ./")
+			docker.image("labshare/wipp-bakend").push("${BUILD_VERSION}")
+                    }
 		}
 	}
 }
