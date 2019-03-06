@@ -17,6 +17,7 @@ RUN mkdir -p /usr/src/app
 COPY . /usr/src/app
 
 WORKDIR /usr/src/app
+
 RUN mvn clean install
 
 WORKDIR /usr/src/app/wipp-backend-application
