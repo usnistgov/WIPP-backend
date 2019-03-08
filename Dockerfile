@@ -18,8 +18,8 @@ COPY . /usr/src/app
 
 WORKDIR /usr/src/app
 
-RUN mvn clean install
+#RUN mvn clean install
 
-WORKDIR /usr/src/app/wipp-backend-application
+WORKDIR /usr/src/app/
 
 CMD mvn spring-boot:run
