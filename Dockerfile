@@ -22,4 +22,4 @@ RUN mvn clean install
 
 WORKDIR /usr/src/app/wipp-backend-application
 
-ENTRYPOINT ["mvn","spring-boot:run"]
+CMD mvn spring-boot:run
