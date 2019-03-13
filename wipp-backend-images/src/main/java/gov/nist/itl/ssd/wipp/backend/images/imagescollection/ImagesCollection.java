@@ -49,7 +49,7 @@ public class ImagesCollection extends Data {
     private String sourceJob;
 
     private boolean locked;
-    
+
     private String pattern;
 
     @JsonIgnore
@@ -83,8 +83,8 @@ public class ImagesCollection extends Data {
         this.creationDate = new Date();
     }
 
-    public ImagesCollection(Job job) {
-        this.name = job.getName();
+    public ImagesCollection(Job job, String outputName) {
+        this.name = job.getName()+"-"+outputName;
         this.sourceJob = job.getId();
         this.locked = true;
         this.creationDate = new Date();

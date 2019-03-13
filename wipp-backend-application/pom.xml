@@ -58,7 +58,7 @@
 	<profiles>
 
 		<profile>
-			<id>dev</id>
+			<id>devSamia</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -67,11 +67,11 @@
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
-				<storage.root>/data/WIPP-plugins</storage.root>
-				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
-				<storage.collections>/data/WIPP-plugins/images-upload</storage.collections>
-				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
-				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<storage.root>/Users/snb24/Documents/workflowData/WIPP-plugins</storage.root>
+				<storage.workflows>/Users/snb24/Documents/workflowData/WIPP-plugins/workflows</storage.workflows>
+				<storage.collections>/Users/snb24/Documents/workflowData/WIPP-plugins/images-upload</storage.collections>
+				<storage.collections.upload.tmp>/Users/snb24/Documents/workflowData/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.temp.jobs>/Users/snb24/Documents/workflowData/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
 		</profile>

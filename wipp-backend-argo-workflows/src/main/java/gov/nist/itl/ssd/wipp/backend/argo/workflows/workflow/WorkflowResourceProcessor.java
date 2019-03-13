@@ -24,7 +24,7 @@ public class WorkflowResourceProcessor
             WorkflowSubmitController.class, workflow.getId())
             .withRel("submit");
         resource.add(submitLink);
-        
+
         Link exitLink = ControllerLinkBuilder.linkTo(
                 WorkflowExitController.class, workflow.getId())
                 .withRel("exit");
