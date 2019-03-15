@@ -71,7 +71,6 @@ public class WorkflowSubmitController {
         Map<Job, Plugin> jobsPlugins = new HashMap<>();
 
         for(Job job: jobList) {
-            System.out.println(job.toString());
             // Link dependencies to job
             List<String> dependencies = new ArrayList<>();
 

@@ -84,7 +84,7 @@ public class ImagesCollection extends Data {
     }
 
     public ImagesCollection(Job job, String outputName) {
-        this.name = job.getName()+"-"+outputName;
+        this.name = job.getName() + "-" + outputName;
         this.sourceJob = job.getId();
         this.locked = true;
         this.creationDate = new Date();
