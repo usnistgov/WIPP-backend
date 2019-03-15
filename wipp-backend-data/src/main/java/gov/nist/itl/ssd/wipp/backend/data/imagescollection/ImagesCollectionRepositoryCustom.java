@@ -9,12 +9,16 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.model.data;
+package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
 /**
- * @author Mylene Simon <mylene.simon at nist.gov>
  *
+ * @author Antoine Vandecreme
  */
-public abstract class Data {
+public interface ImagesCollectionRepositoryCustom {
+
+    void updateImagesCaches(String imagesCollectionId);
+
+    void updateMetadataFilesCaches(String imagesCollectionId);
 
 }

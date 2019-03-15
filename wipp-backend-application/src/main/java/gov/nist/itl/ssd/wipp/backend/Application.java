@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -36,6 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoRepositoryFactoryBean;
 import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoTemplate;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 
 /**
@@ -81,11 +83,18 @@ public class Application implements WebMvcConfigurer {
             }
         }
     }
-    
+
     @Bean
     public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
             MongoConverter converter) throws UnknownHostException {
         return new CustomMongoTemplate(mongoDbFactory, converter);
+    }
+
+    @Bean
+    public ServiceLocatorFactoryBean serviceLocatorBean(){
+        ServiceLocatorFactoryBean bean = new ServiceLocatorFactoryBean();
+        bean.setServiceLocatorInterface(DataHandlerFactory.class);
+        return bean;
     }
 
 }

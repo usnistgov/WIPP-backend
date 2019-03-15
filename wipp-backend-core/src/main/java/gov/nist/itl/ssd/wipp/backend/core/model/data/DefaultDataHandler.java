@@ -11,10 +11,28 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.data;
 
+import org.springframework.stereotype.Component;
+
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+
 /**
+ * Default DataHandler for unsupported data types
+ *
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-public abstract class Data {
+@Component("defaultDataHandler")
+public class DefaultDataHandler implements DataHandler {
+
+    @Override
+    public void importData(Job job, String outputName) throws Exception {
+        throw new Exception("Unsupported data type, unable to import.");
+
+    }
+
+    @Override
+    public String exportDataAsParam(String value) {
+        return value;
+    }
 
 }

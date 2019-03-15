@@ -16,3 +16,5 @@ wipp-backend-application/bin
 wipp-backend-core/bin
 wipp-backend-images/bin
 wipp-backend-argo-workflows/bin
+wipp-backend-application/pom.xml
+

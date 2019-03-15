@@ -9,12 +9,20 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.model.data;
+package gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles;
+
+import org.springframework.data.repository.query.Param;
 
 /**
- * @author Mylene Simon <mylene.simon at nist.gov>
  *
+ * @author Antoine Vandecreme
  */
-public abstract class Data {
+public interface MetadataFileRepositoryCustom {
 
+    void deleteByImagesCollection(
+            @Param("imagesCollection") String imagesCollection);
+
+    void deleteByImagesCollectionAndFileName(
+            @Param("imagesCollection") String imagesCollection,
+            @Param("fileName") String fileName);
 }

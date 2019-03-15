@@ -67,11 +67,11 @@
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
-				<storage.root>/data/WIPP-plugins</storage.root>
-				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
-				<storage.collections>/data/WIPP-plugins/images-upload</storage.collections>
-				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
-				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<storage.root>${user.home}/WIPP-plugins</storage.root>
+				<storage.workflows>${user.home}/WIPP-plugins/workflows</storage.workflows>
+				<storage.collections>${user.home}/WIPP-plugins/images-upload</storage.collections>
+				<storage.collections.upload.tmp>${user.home}/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
 		</profile>
@@ -97,7 +97,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>gov.nist.itl.ssd.wipp</groupId>
-			<artifactId>wipp-backend-images</artifactId>
+			<artifactId>wipp-backend-data</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

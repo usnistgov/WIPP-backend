@@ -25,7 +25,7 @@ import java.util.*;
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
- * 
+ *
  */
 @Controller
 @RequestMapping(CoreConfig.BASE_URI + "/workflows/{workflowId}/submit")
@@ -41,7 +41,7 @@ public class WorkflowSubmitController {
 
     @Autowired
     private PluginRepository wippPluginRepository;
-    
+
     @Autowired
     private WorkflowConverter converter;
 
@@ -61,7 +61,7 @@ public class WorkflowSubmitController {
         if(!wippWorkflow.isPresent()) {
         	throw new ClientException("Received submission of unknown workflow");
         }
-        
+
         Workflow workflow = wippWorkflow.get();
 
         // Build the list of jobs, dependencies and plugins

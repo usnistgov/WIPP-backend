@@ -11,10 +11,14 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.data;
 
-/**
- * @author Mylene Simon <mylene.simon at nist.gov>
- *
- */
-public abstract class Data {
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 
+/**
+ * @author Samia Benjida <samia.benjida at nist.gov>
+ */
+public interface DataHandler {
+
+    public void importData(Job job, String outputName) throws Exception;
+
+    public String exportDataAsParam(String value);
 }
