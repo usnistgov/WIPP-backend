@@ -1,3 +1,14 @@
+/*
+ * This software was developed at the National Institute of Standards and
+ * Technology by employees of the Federal Government in the course of
+ * their official duties. Pursuant to title 17 Section 105 of the United
+ * States Code this software is not subject to copyright protection and is
+ * in the public domain. This software is an experimental system. NIST assumes
+ * no responsibility whatsoever for its use by other parties, and makes no
+ * guarantees, expressed or implied, about its quality, reliability, or
+ * any other characteristic. We would appreciate acknowledgement if the
+ * software is used.
+ */
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.workflow;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,11 +17,12 @@ import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginIO;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.*;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
-import gov.nist.itl.ssd.wipp.backend.images.imagescollection.ImagesCollectionDataHandler;
-import gov.nist.itl.ssd.wipp.backend.images.imagescollection.images.ImageHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Component;
@@ -21,10 +33,12 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
+ * Converts workflow configuration to Argo workflow spec file (YAML) and submits workflow
+ *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
+ * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @Component
 public class WorkflowConverter {
@@ -40,9 +54,7 @@ public class WorkflowConverter {
     private CoreConfig coreConfig;
 
     @Autowired
-    private ImageHandler imageRepository;
-    @Autowired
-    private ImagesCollectionDataHandler imagesCollectionDataHandler;
+    private DataHandlerService dataHandlerService;
 
 
     private HashMap<String, String> generateMetadata() {
@@ -66,7 +78,7 @@ public class WorkflowConverter {
 
     private ArgoTemplatePluginContainer generateTemplatePluginContainer(
             String containerId,
-            Set<String> parameters
+            List<String> parameters
     ) {
         ArgoTemplatePluginContainer container = new ArgoTemplatePluginContainer();
 
@@ -78,10 +90,6 @@ public class WorkflowConverter {
             argoPluginContainerArgs.add("--" + parameter);
             argoPluginContainerArgs.add("{{inputs.parameters." + parameter + "}}");
         }
-
-        // Automatically add the output
-        argoPluginContainerArgs.add("--output");
-        argoPluginContainerArgs.add("{{inputs.parameters.output}}");
 
         container.setArgs(argoPluginContainerArgs);
 
@@ -98,7 +106,7 @@ public class WorkflowConverter {
         return container;
     }
 
-    private ArgoTemplatePlugin generateTemplatePlugin(Plugin plugin, Set<String> parameters) {
+    private ArgoTemplatePlugin generateTemplatePlugin(Plugin plugin, List<String> parameters) {
         ArgoTemplatePlugin argoTemplatePlugin = new ArgoTemplatePlugin();
         argoTemplatePlugin.setName(plugin.getIdentifier());
 
@@ -106,10 +114,15 @@ public class WorkflowConverter {
         HashMap<String, List<NameValueParam>> argoTemplateInputs = new HashMap<>();
         List<NameValueParam> argoTemplateArgs = new ArrayList<>();
 
+        // Add the plugin's outputs to the list of parameters coming from the job's configuration
+        for(PluginIO output : plugin.getOutputs()) {
+            parameters.add(output.getName());
+        }
+
+        // Add all the parameters to the Argo plugin template
         for (String parameter : parameters) {
             argoTemplateArgs.add(new NameValueParam(parameter));
         }
-        argoTemplateArgs.add(new NameValueParam("output")); // FIXME temp fix
 
         argoTemplateInputs.put("parameters", argoTemplateArgs);
         argoTemplatePlugin.setInputs(argoTemplateInputs);
@@ -156,9 +169,10 @@ public class WorkflowConverter {
                 String paramValue = jobParams.get(input.getName());
                 String paramName = input.getName();
                 String paramType = input.getType();
-                if (paramType.equals("collection")) {
-                    paramValue = imagesCollectionDataHandler.exportDataAsParam(paramValue);
-                }
+
+                DataHandler dataHandler = dataHandlerService.getDataHandler(paramType);
+                paramValue = dataHandler.exportDataAsParam(paramValue);
+
                 NameValueParam workflowParams = new NameValueParam(paramName, paramValue);
                 argoWorkflowArgs.add(workflowParams);
             }
@@ -183,7 +197,6 @@ public class WorkflowConverter {
     }
 
     private ArgoTemplateExitHandlerContainer generateTemplateExitHandlerContainer() {
-
         ArgoTemplateExitHandlerContainer container = new ArgoTemplateExitHandlerContainer();
 
         container.setImage("byrnedo/alpine-curl:latest");
@@ -220,7 +233,8 @@ public class WorkflowConverter {
 
             // Add plugin template if it has not been included yet
             if (!includedPlugins.contains(plugin.getIdentifier())) {
-                argoTemplates.add(this.generateTemplatePlugin(plugin, job.getParameters().keySet()));
+                List<String> parameterNames = new ArrayList<String>(job.getParameters().keySet());
+                argoTemplates.add(this.generateTemplatePlugin(plugin, parameterNames));
                 includedPlugins.add(plugin.getIdentifier());  // Update included plugin list
             }
 

@@ -12,9 +12,13 @@
 package gov.nist.itl.ssd.wipp.backend.core.model.data;
 
 /**
+ * Factory for DataHandlers
+ *
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-public abstract class Data {
+public interface DataHandlerFactory {
+
+    DataHandler getDataHandler(String name);
 
 }
