@@ -63,6 +63,6 @@ public class ImagesCollectionDataHandler implements DataHandler {
     }
 
     private final File getJobOutputTempFolder(Job job, String outputName) {
-        return new File(config.getJobsTempFolder(), job.getId() + "/" +  outputName);
+        return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
     }
 }
