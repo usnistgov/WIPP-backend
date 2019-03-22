@@ -22,6 +22,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 *
 * @author Antoine Vandecreme
 */
+@RepositoryRestResource
 public interface StitchingVectorRepository  extends MongoRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
 
 	@Override

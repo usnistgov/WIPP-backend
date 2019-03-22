@@ -60,7 +60,7 @@ public class StitchingVectorRepositoryImpl
    public File getStatisticsFile(String stitchingVectorId) {
        return new File(
                new File(config.getStitchingFolder(), stitchingVectorId),
-               CoreConfig.STITCHING_VECTOR_STATISTICS_FILE_NAME);
+               StitchingVectorConfig.STITCHING_VECTOR_STATISTICS_FILE_NAME);
    }
 
 }

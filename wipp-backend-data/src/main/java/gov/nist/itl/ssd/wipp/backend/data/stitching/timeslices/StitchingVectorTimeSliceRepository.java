@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVector;
+import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorConfig;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
@@ -59,9 +60,9 @@ public class StitchingVectorTimeSliceRepository {
                 .mapToInt(sv -> sv.getSliceNumber()).max().orElse(0);
         int nbDigits = Integer.toString(maxTimeSlice).length();
         String fileName = String.format("%s%0" + nbDigits + "d%s",
-                CoreConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX,
+                StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX,
                 timeSlice,
-                CoreConfig.STITCHING_VECTOR_FILENAME_SUFFIX);
+                StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX);
         
         File stitchingFolder = new File(config.getStitchingFolder(), stitchingVector.getId());
         File gPFile = new File(stitchingFolder, fileName);
@@ -69,7 +70,7 @@ public class StitchingVectorTimeSliceRepository {
         if(gPFile.exists()){
         	return gPFile;
         }else{
-        	fileName = CoreConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX + timeSlice + CoreConfig.STITCHING_VECTOR_FILENAME_SUFFIX;
+        	fileName = StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX + timeSlice + StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX;
         	gPFile = new File(stitchingFolder, fileName);
         	return gPFile;
         }

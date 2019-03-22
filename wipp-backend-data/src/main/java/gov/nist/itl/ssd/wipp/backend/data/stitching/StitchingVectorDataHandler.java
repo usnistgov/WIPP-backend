@@ -14,19 +14,13 @@ package gov.nist.itl.ssd.wipp.backend.data.stitching;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
-import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSliceRepository;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
@@ -34,21 +28,11 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 @Component("stitchingVectorDataHandler")
 public class StitchingVectorDataHandler implements DataHandler{
 	
-
     @Autowired
     CoreConfig config;
-
-    @Autowired
-    private ImagesCollectionRepository imagesCollectionRepository;
-
-    @Autowired
-    private ImageHandler imageRepository;
     
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
-    
-    @Autowired
-    private StitchingVectorTimeSliceRepository stitchingVectorTimeSliceRepository;
 
     public StitchingVectorDataHandler() {
     }
@@ -78,5 +62,4 @@ public class StitchingVectorDataHandler implements DataHandler{
     private final File getJobTempFolder(Job job) {
         return new File(config.getJobsTempFolder(), job.getId());
     }
-
 }
