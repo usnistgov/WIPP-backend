@@ -45,7 +45,7 @@ public class StitchingVectorDataHandler implements DataHandler{
         try {        	
         	 File stitchingVectorFolder = new File(config.getStitchingFolder(), outputStitchingVector.getId());
         	 stitchingVectorFolder.mkdirs();
-        	 Files.move(getJobTempFolder(job).toPath(), stitchingVectorFolder.toPath());
+        	 Files.move(getJobOutputTempFolder(job, outputName).toPath(), stitchingVectorFolder.toPath());
         } catch (IOException ex) {
         	stitchingVectorRepository.delete(outputStitchingVector);
             throw ex;
@@ -59,7 +59,7 @@ public class StitchingVectorDataHandler implements DataHandler{
         return stitchingVectorPath;
     }
     
-    private final File getJobTempFolder(Job job) {
-        return new File(config.getJobsTempFolder(), job.getId());
+    private final File getJobOutputTempFolder(Job job, String outputName) {
+        return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
     }
 }
