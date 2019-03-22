@@ -14,15 +14,6 @@ import org.springframework.stereotype.Component;
 public class CoreConfig {
 
     public static final String BASE_URI = "/api";
-    
-    private static final String STITCHING_VECTOR_FILENAME_PREFIX = "img-";
-    public static final String STITCHING_VECTOR_FILENAME_SUFFIX = ".txt";
-    public static final String STITCHING_VECTOR_GLOBAL_POSITION_PREFIX
-            = STITCHING_VECTOR_FILENAME_PREFIX + "global-positions-";
-    public static final String STITCHING_VECTOR_STATISTICS_FILE_NAME
-            = STITCHING_VECTOR_FILENAME_PREFIX + "statistics"
-            + STITCHING_VECTOR_FILENAME_SUFFIX;
-
 
     @Value("${wipp.version}")
     private String wippVersion;
