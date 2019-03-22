@@ -68,8 +68,8 @@ public class StitchingVectorUploadController {
                 stitchingVector.getId());
         stitchingVectorFolder.mkdirs();
         file.transferTo(new File(stitchingVectorFolder,
-        		CoreConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX + "1"
-                + CoreConfig.STITCHING_VECTOR_FILENAME_SUFFIX));
+        		StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX + "1"
+                + StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX));
         return stitchingVector;
     }
 
