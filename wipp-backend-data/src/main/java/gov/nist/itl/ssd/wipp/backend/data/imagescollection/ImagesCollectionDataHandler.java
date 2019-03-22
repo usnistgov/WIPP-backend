@@ -48,7 +48,7 @@ public class ImagesCollectionDataHandler implements DataHandler {
             imageRepository.importFolder(outputImagesCollection.getId(),
                     // new File(getJobTempFolder(job), "images"));
                     // TODO: output conventions for plugins
-                    getJobTempFolder(job));
+                    getJobOutputTempFolder(job, outputName));
         } catch (IOException ex) {
             imagesCollectionRepository.delete(outputImagesCollection);
             throw ex;
@@ -62,7 +62,7 @@ public class ImagesCollectionDataHandler implements DataHandler {
         return imagesCollectionPath;
     }
 
-    private final File getJobTempFolder(Job job) {
-        return new File(config.getJobsTempFolder(), job.getId());
+    private final File getJobOutputTempFolder(Job job, String outputName) {
+        return new File(config.getJobsTempFolder(), job.getId() + "/" +  outputName);
     }
 }
