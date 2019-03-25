@@ -38,6 +38,9 @@ public class CoreConfig {
 
     @Value("${storage.collections}")
     private String imagesCollectionsFolder;
+    
+    @Value("${storage.stitching}")
+    private String stitchingFolder;
 
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
@@ -72,6 +75,10 @@ public class CoreConfig {
 	public String getWorkflowsFolder() {
 		return workflowsFolder;
 	}
+	
+    public String getStitchingFolder() {
+        return stitchingFolder;
+    }
 
 	public String getWorflowBinary() {
 	    return worflowBinary;
