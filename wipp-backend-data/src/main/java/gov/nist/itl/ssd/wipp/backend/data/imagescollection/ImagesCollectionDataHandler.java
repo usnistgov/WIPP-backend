@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
