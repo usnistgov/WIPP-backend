@@ -14,12 +14,15 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Samia Benjida <samia.benjida at nist.gov>
@@ -48,7 +51,8 @@ public class ImagesCollectionDataHandler implements DataHandler {
             imageRepository.importFolder(outputImagesCollection.getId(),
                     // new File(getJobTempFolder(job), "images"));
                     // TODO: output conventions for plugins
-                    getJobOutputTempFolder(job, outputName));
+                    getJobOutputTempFolder(job.getId(), outputName));
+
         } catch (IOException ex) {
             imagesCollectionRepository.delete(outputImagesCollection);
             throw ex;
@@ -57,12 +61,27 @@ public class ImagesCollectionDataHandler implements DataHandler {
 
     public String exportDataAsParam(String value) {
         String imagesCollectionId = value;
-        File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
-        String imagesCollectionPath = inputImagesFolder.getAbsolutePath();
+        String imagesCollectionPath;
+
+        // check if the input of the job is the output of another job and if so return the associated path
+        String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(imagesCollectionId);
+        if (m.find()) {
+            String jobId = m.group(1);
+            String outputName = m.group(2);
+            imagesCollectionPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
+        }
+        // else return the path of the regular images collection
+        else {
+            File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
+            imagesCollectionPath = inputImagesFolder.getAbsolutePath();
+        }
+
         return imagesCollectionPath;
     }
 
-    private final File getJobOutputTempFolder(Job job, String outputName) {
-        return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
+    private final File getJobOutputTempFolder(String jobId, String outputName) {
+        return new File(new File(config.getJobsTempFolder(), jobId), outputName);
     }
 }
