@@ -5,13 +5,7 @@ pipeline {
     }
 
     stages {
-        
-        stage('Build App') {
-            steps {
-                
-	    sh 'mvn clean package'
-            }
-        }
+            
         stage('Docker build') {
             steps {
                 script {
