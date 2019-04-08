@@ -9,7 +9,7 @@ pipeline {
         stage('Docker build') {
             steps {
                 script {
-	    docker.withRegistry('https://684150170045.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-jenkins-build') {
+	    docker.withRegistry("${ECRADDRESS}", 'ecr:us-east-1:aws-jenkins-build') {
                         docker.build("wipp_backend", "--build-arg SOURCE_FOLDER=. --no-cache ./")
 	    docker.image("wipp_backend").push("${BUILD_ID}")
                     }
