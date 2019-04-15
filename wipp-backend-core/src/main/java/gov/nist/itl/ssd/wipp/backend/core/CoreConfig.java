@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class CoreConfig {
 
     public static final String BASE_URI = "/api";
+    public static final int TILE_SIZE = 1024;
 
     @Value("${wipp.version}")
     private String wippVersion;
