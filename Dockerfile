@@ -9,4 +9,4 @@ WORKDIR /usr/src/app
 
 RUN mvn clean install
 
-CMD ["mvn", "spring-boot:run"]
+ENTRYPOINT ["mvn", "spring-boot:run"]
