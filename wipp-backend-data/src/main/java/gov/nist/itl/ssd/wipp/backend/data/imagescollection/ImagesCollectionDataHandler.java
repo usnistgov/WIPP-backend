@@ -14,7 +14,6 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
-import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -71,11 +70,13 @@ public class ImagesCollectionDataHandler implements DataHandler {
             String jobId = m.group(1);
             String outputName = m.group(2);
             imagesCollectionPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
+            imagesCollectionPath = changeContainerPath(imagesCollectionPath);
         }
         // else return the path of the regular images collection
         else {
             File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
+            imagesCollectionPath = changeContainerPath(imagesCollectionPath);
         }
 
         return imagesCollectionPath;
@@ -83,5 +84,12 @@ public class ImagesCollectionDataHandler implements DataHandler {
 
     private final File getJobOutputTempFolder(String jobId, String outputName) {
         return new File(new File(config.getJobsTempFolder(), jobId), outputName);
+    }
+
+    private final String changeContainerPath(String formerPath){
+        String newPathPrefix = "/data/inputs";
+        int cuttingIndex = formerPath.indexOf("/WIPP-plugins") + "/WIPP-plugins".length();
+        String newPath = newPathPrefix + formerPath.substring(cuttingIndex);
+        return newPath;
     }
 }

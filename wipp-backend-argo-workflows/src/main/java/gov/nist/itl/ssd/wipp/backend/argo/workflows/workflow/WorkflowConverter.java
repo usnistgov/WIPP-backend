@@ -97,7 +97,7 @@ public class WorkflowConverter {
         ArrayList<Map<String, String>> volumeMounts = new ArrayList<>();
 
         HashMap<String, String> dataVolume = new HashMap<>();
-        dataVolume.put("mountPath", coreConfig.getStorageRootFolder());
+        dataVolume.put("mountPath", "/data/inputs");
         dataVolume.put("name", dataVolumeName);
 
         volumeMounts.add(dataVolume);
@@ -148,7 +148,11 @@ public class WorkflowConverter {
         List<NameValueParam> argoWorkflowArgs = new ArrayList<>();
 
         // Create job temp output folder
-        File tempJobFolder = new File(coreConfig.getJobsTempFolder(),
+        String jobTempFolder = coreConfig.getJobsTempFolder();
+        String newPathPrefix = "/data/inputs";
+        int cuttingIndex = jobTempFolder.indexOf("/WIPP-plugins") + "/WIPP-plugins".length();
+        String newJobTempFolder = newPathPrefix + jobTempFolder.substring(cuttingIndex);
+        File tempJobFolder = new File(newJobTempFolder,
                 job.getId());
         tempJobFolder.mkdirs();
 

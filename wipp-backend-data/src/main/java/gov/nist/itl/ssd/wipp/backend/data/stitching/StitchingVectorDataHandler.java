@@ -27,10 +27,10 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
  */
 @Component("stitchingVectorDataHandler")
 public class StitchingVectorDataHandler implements DataHandler{
-	
+
     @Autowired
     CoreConfig config;
-    
+
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
 
@@ -42,7 +42,7 @@ public class StitchingVectorDataHandler implements DataHandler{
 		StitchingVector outputStitchingVector= new StitchingVector(job, outputName);
 		outputStitchingVector = stitchingVectorRepository.save(outputStitchingVector);
 
-        try {        	
+		try {
         	 File stitchingVectorFolder = new File(config.getStitchingFolder(), outputStitchingVector.getId());
         	 stitchingVectorFolder.mkdirs();
         	 Files.move(getJobOutputTempFolder(job, outputName).toPath(), stitchingVectorFolder.toPath());
@@ -56,10 +56,18 @@ public class StitchingVectorDataHandler implements DataHandler{
         String stitchingVectorId = value;
         File inputStitchingVectorFolder = new File(config.getStitchingFolder(), stitchingVectorId);
         String stitchingVectorPath = inputStitchingVectorFolder.getAbsolutePath();
+        stitchingVectorPath = changeContainerPath(stitchingVectorPath);
         return stitchingVectorPath;
     }
-    
+
     private final File getJobOutputTempFolder(Job job, String outputName) {
         return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
+    }
+
+      private final String changeContainerPath(String formerPath){
+        String newPathPrefix = "/data/inputs";
+        int cuttingIndex = formerPath.indexOf("/WIPP-plugins") + "/WIPP-plugins".length();
+        String newPath = newPathPrefix + formerPath.substring(cuttingIndex);
+        return newPath;
     }
 }
