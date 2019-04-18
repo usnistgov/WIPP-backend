@@ -70,26 +70,18 @@ public class ImagesCollectionDataHandler implements DataHandler {
             String jobId = m.group(1);
             String outputName = m.group(2);
             imagesCollectionPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
-            imagesCollectionPath = changeContainerPath(imagesCollectionPath);
         }
         // else return the path of the regular images collection
         else {
             File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
-            imagesCollectionPath = changeContainerPath(imagesCollectionPath);
         }
 
+        imagesCollectionPath = imagesCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerMountPath());
         return imagesCollectionPath;
     }
 
     private final File getJobOutputTempFolder(String jobId, String outputName) {
         return new File(new File(config.getJobsTempFolder(), jobId), outputName);
-    }
-
-    private final String changeContainerPath(String formerPath){
-        String newPathPrefix = "/data/inputs";
-        int cuttingIndex = formerPath.indexOf("/WIPP-plugins") + "/WIPP-plugins".length();
-        String newPath = newPathPrefix + formerPath.substring(cuttingIndex);
-        return newPath;
     }
 }

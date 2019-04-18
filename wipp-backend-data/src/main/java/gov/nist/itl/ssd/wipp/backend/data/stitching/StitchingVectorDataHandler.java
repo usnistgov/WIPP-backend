@@ -56,7 +56,7 @@ public class StitchingVectorDataHandler implements DataHandler{
         String stitchingVectorId = value;
         File inputStitchingVectorFolder = new File(config.getStitchingFolder(), stitchingVectorId);
         String stitchingVectorPath = inputStitchingVectorFolder.getAbsolutePath();
-        stitchingVectorPath = changeContainerPath(stitchingVectorPath);
+        stitchingVectorPath = stitchingVectorPath.replace(config.getStorageRootFolder(),config.getContainerMountPath());
         return stitchingVectorPath;
     }
 
@@ -64,10 +64,4 @@ public class StitchingVectorDataHandler implements DataHandler{
         return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
     }
 
-      private final String changeContainerPath(String formerPath){
-        String newPathPrefix = "/data/inputs";
-        int cuttingIndex = formerPath.indexOf("/WIPP-plugins") + "/WIPP-plugins".length();
-        String newPath = newPathPrefix + formerPath.substring(cuttingIndex);
-        return newPath;
-    }
 }
