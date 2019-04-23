@@ -13,7 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection.images;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
-import gov.nist.itl.ssd.wipp.backend.data.utils.tiledtiffs.SimpleTiledWriter;
+import gov.nist.itl.ssd.wipp.backend.data.utils.tiledtiffs.TiledOmeTiffConverter;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadController;
@@ -180,14 +180,12 @@ public class ImageUploadController extends FileUploadController {
 	}
 	
 	private static void convertToTiledOmeTiff(Path inputFile, Path outputFile) throws DependencyException, FormatException, IOException, ServiceException {
-		SimpleTiledWriter tiledReadWriter = new SimpleTiledWriter(inputFile.toString(), outputFile.toString(), CoreConfig.TILE_SIZE, CoreConfig.TILE_SIZE);
+		TiledOmeTiffConverter tiledOmeTiffConverter = new TiledOmeTiffConverter(inputFile.toString(), outputFile.toString(), CoreConfig.TILE_SIZE, CoreConfig.TILE_SIZE);
 		
-		// initialize the files
-	    tiledReadWriter.initialize();
+		tiledOmeTiffConverter.init();
 
 	    try {
-	      // read and write the image using tiles
-	      tiledReadWriter.readWriteTiles()  ;
+	    	tiledOmeTiffConverter.readWriteTiles()  ;
 	    }
 	    catch(Exception e) {
 	      System.err.println("Failed to read and write tiles.");
@@ -195,8 +193,7 @@ public class ImageUploadController extends FileUploadController {
 	      throw e;
 	    }
 	    finally {
-	      // close the files
-	      tiledReadWriter.cleanup();
+	    	tiledOmeTiffConverter.cleanup();
 	    }
 	}
 	

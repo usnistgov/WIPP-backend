@@ -41,60 +41,28 @@ import loci.formats.services.OMEXMLService;
 import loci.formats.codec.CompressionType;
 
 /**
- * Example class for reading a full image and use an OME-Tiff writer to 
- * automatically write out the image in a tiled format.
+ * Inspired from https://docs.openmicroscopy.org/bio-formats/5.9.1/developers/tiling.html
+ * This class reads a full image and use an OME-Tiff writer to automatically write out the image in a tiled format.
  *
- * @author David Gault dgault at dundee.ac.uk
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
-public class SimpleTiledWriter {
+public class TiledOmeTiffConverter {
 
-  /** The file format reader. */
   private ImageReader reader;
-
-  /** The file format writer. */
   private OMETiffWriter writer;
-
-  /** The file to be read. */
   private String inputFile;
-
-  /** The file to be written. */
   private String outputFile;
-
-  /** The tile width to be used. */
   private int tileSizeX;
-
-  /** The tile height to be used. */
   private int tileSizeY;
 
-  /**
-   * Construct a new SimpleTiledWriter to read the specified input file 
-   * and write the given output file using the tile sizes provided.
-   *
-   * @param inputFile the file to be read
-   * @param outputFile the file to be written
-   * @param tileSizeX the width of tile to attempt to use
-   * @param tileSizeY the height of tile to attempt to use
-   */
-  public SimpleTiledWriter(String inputFile, String outputFile, int tileSizeX, int tileSizeY) {
+  public TiledOmeTiffConverter(String inputFile, String outputFile, int tileSizeX, int tileSizeY) {
     this.inputFile = inputFile;
     this.outputFile = outputFile;
     this.tileSizeX = tileSizeX;
     this.tileSizeY = tileSizeY;
   }
 
-  /**
-   * Set up the file reader and writer, ensuring that the input file is
-   * associated with the reader and the output file is associated with the
-   * writer.
-   *
-   * @return true if the reader and writer were successfully set up, or false
-   *   if an error occurred
-   * @throws DependencyException thrown if failed to create an OMEXMLService
-   * @throws IOException thrown if unable to setup input or output stream for reader or writer
-   * @throws FormatException thrown if invalid ID set for reader or writer or invalid tile size set
-   * @throws ServiceException thrown if unable to create OME-XML meta data
-   */
-  public void initialize() throws DependencyException, FormatException, IOException, ServiceException {
+  public void init() throws DependencyException, FormatException, IOException, ServiceException {
     // construct the object that stores OME-XML metadata
     ServiceFactory factory = new ServiceFactory();
     OMEXMLService service = factory.getInstance(OMEXMLService.class);
@@ -106,12 +74,10 @@ public class SimpleTiledWriter {
     reader.setMetadataStore(omexml);
     reader.setId(inputFile);
     
-    
     // important to delete because OME uses RandomAccessFile
     Path outputPath = Paths.get(outputFile);
  	outputPath.toFile().delete();
 
-    /* initialize-tiling-writer-example-start */
     // set up the writer and associate it with the output file
     writer = new OMETiffWriter();
     writer.setMetadataRetrieve(omexml);
@@ -123,42 +89,20 @@ public class SimpleTiledWriter {
 
     writer.setId(outputFile);
     
-    // wipp stores compressed images
+    // WIPP stores compressed images
     writer.setCompression(CompressionType.LZW.getCompression());
-    /* initialize-tiling-writer-example-end */
   }
 
-  /**
-   * Set up the file reader and writer, ensuring that the input file is
-   * associated with the reader and the output file is associated with the
-   * writer. The input reader will read a full plane which will then be passed
-   * to the OME-Tiff Writer. The writer will then automatically write the
-   * image in a tiled format based on the tile size values provided.
-   * @throws FormatException thrown when setting invalid values in reader or writer 
-   * @throws DependencyException thrown if failed to create an OMEXMLService
-   * @throws ServiceException thrown if unable to create OME-XML meta data
-   * @throws IOException thrown if unable to setup input or output stream for reader or writer
-   */
+  // Read the input file as a plain image and write it into a tiled format
   public void readWriteTiles() throws FormatException, DependencyException, ServiceException, IOException {
-    /* tiling-writer-example-start */
     byte[] buf = new byte[FormatTools.getPlaneSize(reader)];
-
-    for (int series=0; series<reader.getSeriesCount(); series++) {
-      reader.setSeries(series);
-      writer.setSeries(series);
-
-      // convert each image in the current series
-      for (int image=0; image<reader.getImageCount(); image++) {
-        // Read tiles from the input file and write them to the output OME-Tiff
-        // The OME-Tiff Writer will automatically write the images in a tiled format
-        buf = reader.openBytes(image);
-        writer.saveBytes(image, buf);
-      }
-    }
-    /* tiling-writer-example-end */
+    
+    // WIPP handles 2D images only, the image series are set to 0 in our case 
+    buf = reader.openBytes(0);
+    writer.saveBytes(0, buf);
   }
 
-  /** Close the file reader and writer. */
+  // Close the file reader and writer.
   public void cleanup() {
     try {
       reader.close();
