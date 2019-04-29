@@ -130,7 +130,7 @@ public class ImageUploadController extends FileUploadController {
 		if(!isOmeTiff){
 			outputFileName = FilenameUtils.getBaseName(imgName) + ".ome.tif";
 		} else {
-			outputFileName = FilenameUtils.getBaseName(imgName) + ".tif";
+			outputFileName = imgName;
 		}
 		
 		Path outputPath = new File(uploadDir, outputFileName).toPath();
@@ -145,7 +145,6 @@ public class ImageUploadController extends FileUploadController {
 			LOG.log(Level.INFO,
 					"Starting extracting image {0} of collection {1}",
 					new Object[]{image.getFileName(), collectionId});
-			//convertToOmeTiff(tempPath, outputPath);
 			convertToTiledOmeTiff(tempPath, outputPath);
 			Files.delete(tempPath);
 			image.setFileName(outputFileName);
@@ -181,16 +180,12 @@ public class ImageUploadController extends FileUploadController {
 	
 	private static void convertToTiledOmeTiff(Path inputFile, Path outputFile) throws DependencyException, FormatException, IOException, ServiceException {
 		TiledOmeTiffConverter tiledOmeTiffConverter = new TiledOmeTiffConverter(inputFile.toString(), outputFile.toString(), CoreConfig.TILE_SIZE, CoreConfig.TILE_SIZE);
-		
-		tiledOmeTiffConverter.init();
-
-	    try {
-	    	tiledOmeTiffConverter.readWriteTiles()  ;
+		try {
+	    	tiledOmeTiffConverter.init();
+	    	tiledOmeTiffConverter.readWriteTiles();
 	    }
 	    catch(Exception e) {
-	      System.err.println("Failed to read and write tiles.");
-	      e.printStackTrace();
-	      throw e;
+	      throw new IOException("Cannot convert image to OME TIFF.", e);
 	    }
 	    finally {
 	    	tiledOmeTiffConverter.cleanup();
