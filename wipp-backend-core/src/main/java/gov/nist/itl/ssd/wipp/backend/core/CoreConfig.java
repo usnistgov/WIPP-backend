@@ -71,7 +71,9 @@ public class CoreConfig {
 		return storageRootFolder;
 	}
 
-    public String getContainerMountPath() { return containerMountPath; }
+    public String getContainerMountPath() { 
+	    return containerMountPath;
+    }
 
     public String getWorkflowManagementSystem() {
 		return workflowManagementSystem;
