@@ -148,8 +148,8 @@ public class WorkflowConverter {
         List<NameValueParam> argoWorkflowArgs = new ArrayList<>();
 
         // Create job temp output folder
-        String jobTempFolder = coreConfig.getJobsTempFolder();
-        File tempJobFolder = new File(jobTempFolder, job.getId());
+        File tempJobFolder = new File(coreConfig.getJobsTempFolder(),
+                job.getId());
         tempJobFolder.mkdirs();
 
         // Add output folder to parameters
