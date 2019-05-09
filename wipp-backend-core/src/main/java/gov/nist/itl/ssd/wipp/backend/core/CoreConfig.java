@@ -18,19 +18,22 @@ public class CoreConfig {
 
     @Value("${wipp.version}")
     private String wippVersion;
-    
+
     @Value("${spring.data.mongodb.host}")
     private String mongodbHost;
-    
+
     @Value("${spring.data.mongodb.database}")
     private String mongodbDatabase;
-    
+
     @Value("${storage.root}")
     private String storageRootFolder;
-    
+
+    @Value("/data/inputs")
+    private String containerMountPath;
+
     @Value("${workflow.management.system:argo}")
     private String workflowManagementSystem;
-    
+
     @Value("${storage.workflows}")
     private String workflowsFolder;
 
@@ -39,7 +42,7 @@ public class CoreConfig {
 
     @Value("${storage.collections}")
     private String imagesCollectionsFolder;
-    
+
     @Value("${storage.stitching}")
     private String stitchingFolder;
 
@@ -52,7 +55,7 @@ public class CoreConfig {
     @Value("${ome.converter.threads:2}")
     private int omeConverterThreads;
 
-    
+
 	public String getWippVersion() {
 		return wippVersion;
 	}
@@ -60,23 +63,27 @@ public class CoreConfig {
 	public String getMongodbHost() {
 		return mongodbHost;
 	}
-	
+
 	public String getMongodbDatabase() {
 		return mongodbDatabase;
 	}
-	
+
 	public String getStorageRootFolder() {
 		return storageRootFolder;
 	}
-	
-	public String getWorkflowManagementSystem() {
+
+    public String getContainerMountPath() { 
+	    return containerMountPath;
+    }
+
+    public String getWorkflowManagementSystem() {
 		return workflowManagementSystem;
 	}
 
 	public String getWorkflowsFolder() {
 		return workflowsFolder;
 	}
-	
+
     public String getStitchingFolder() {
         return stitchingFolder;
     }

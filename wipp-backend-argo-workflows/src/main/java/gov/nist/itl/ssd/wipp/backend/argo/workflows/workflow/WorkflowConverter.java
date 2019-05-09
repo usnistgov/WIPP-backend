@@ -97,7 +97,7 @@ public class WorkflowConverter {
         ArrayList<Map<String, String>> volumeMounts = new ArrayList<>();
 
         HashMap<String, String> dataVolume = new HashMap<>();
-        dataVolume.put("mountPath", coreConfig.getStorageRootFolder());
+        dataVolume.put("mountPath", coreConfig.getContainerMountPath());
         dataVolume.put("name", dataVolumeName);
 
         volumeMounts.add(dataVolume);
@@ -157,7 +157,8 @@ public class WorkflowConverter {
             // Create job temp output folder
             File outputFolder = new File(tempJobFolder, output.getName());
             outputFolder.mkdirs();
-            NameValueParam outputParam = new NameValueParam(output.getName(), outputFolder.getAbsolutePath());
+            NameValueParam outputParam = new NameValueParam(output.getName(),
+                    outputFolder.getAbsolutePath().replaceFirst(coreConfig.getStorageRootFolder(),coreConfig.getContainerMountPath()));
             argoWorkflowArgs.add(outputParam);
         }
 
