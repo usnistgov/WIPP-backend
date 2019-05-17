@@ -6,7 +6,7 @@ import java.util.Map;
 public class ArgoTemplatePluginContainer {
     private String image;
     private List<String> args;
-    private List<Map<String, String>> volumeMounts;
+    private List<Map<String, Object>> volumeMounts;
 
     public String getImage() {
         return image;
@@ -24,11 +24,11 @@ public class ArgoTemplatePluginContainer {
         this.args = args;
     }
 
-    public List<Map<String, String>> getVolumeMounts() {
+    public List<Map<String, Object>> getVolumeMounts() {
         return volumeMounts;
     }
 
-    public void setVolumeMounts(List<Map<String, String>> volumeMounts) {
+    public void setVolumeMounts(List<Map<String, Object>> volumeMounts) {
         this.volumeMounts = volumeMounts;
     }
 }

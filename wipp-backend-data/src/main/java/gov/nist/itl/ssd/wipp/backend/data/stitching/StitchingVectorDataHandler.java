@@ -56,7 +56,7 @@ public class StitchingVectorDataHandler implements DataHandler{
         String stitchingVectorId = value;
         File inputStitchingVectorFolder = new File(config.getStitchingFolder(), stitchingVectorId);
         String stitchingVectorPath = inputStitchingVectorFolder.getAbsolutePath();
-        stitchingVectorPath = stitchingVectorPath.replace(config.getStorageRootFolder(),config.getContainerMountPath());
+        stitchingVectorPath = stitchingVectorPath.replace(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return stitchingVectorPath;
     }
 

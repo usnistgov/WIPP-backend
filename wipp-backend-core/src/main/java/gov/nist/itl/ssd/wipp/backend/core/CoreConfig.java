@@ -29,7 +29,10 @@ public class CoreConfig {
     private String storageRootFolder;
 
     @Value("/data/inputs")
-    private String containerMountPath;
+    private String containerInputsMountPath;
+
+    @Value("/data/outputs")
+    private String containerOutputsMountPath;
 
     @Value("${workflow.management.system:argo}")
     private String workflowManagementSystem;
@@ -72,8 +75,12 @@ public class CoreConfig {
 		return storageRootFolder;
 	}
 
-    public String getContainerMountPath() { 
-	    return containerMountPath;
+    public String getContainerInputsMountPath() {
+	    return containerInputsMountPath;
+    }
+
+    public String getContainerOutputsMountPath() {
+	    return containerOutputsMountPath;
     }
 
     public String getWorkflowManagementSystem() {
