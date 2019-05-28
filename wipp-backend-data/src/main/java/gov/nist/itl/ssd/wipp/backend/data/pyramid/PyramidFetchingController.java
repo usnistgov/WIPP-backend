@@ -175,8 +175,8 @@ public class PyramidFetchingController {
 	            throw new ClientException("Error while retrieving pyramid configuration, images collection not found.");
 	        }
 
-//	        String sourceJob = tilesCollection.getSourceJob();
 	        // TODO: Add Intensity Scaling
+//	        String sourceJob = tilesCollection.getSourceJob();
 //	        if (sourceJob != null) {
 //	            IntensityScalingJob iScalingJob = null;
 //	            Optional<IntensityScalingJob> optionalIntensityScalingJob = intensityScalingJobRepository
@@ -188,6 +188,7 @@ public class PyramidFetchingController {
 //	        }
 	        
 	        File tilesFolder = tileRepository.getFilesFolder(tilesCollectionId);
+	        //TODO: retrieve the SV id
 	        //String stitchingVectorId = pyramidJob.getStitchingVector();
 	        String stitchingVectorId = "";
 	        StitchingVector stitchingVector = null;
@@ -199,6 +200,7 @@ public class PyramidFetchingController {
 	            throw new ClientException("Error while retrieving pyramid configuration, stitching vector not found.");
 	        }
 
+	        //TODO: handle the patterns
 //	        String inputTilesPattern = pyramidJob.getInputTilesPattern();
 //	        String stitchedTilesPattern = pyramidJob.getStitchedTilesPattern();
 	        String inputTilesPattern = "";

@@ -53,6 +53,12 @@ public class Pyramid {
         this.job = job.getId();
         this.creationDate = new Date();
     }
+    
+    public Pyramid(Job job, String outputName) {
+        this.name = job.getName() + "-" + outputName;
+    	this.job = job.getId();
+        this.creationDate = new Date();
+    }
 
     public String getId() {
         return id;
