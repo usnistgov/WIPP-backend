@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class CoreConfig {
 
     public static final String BASE_URI = "/api";
+    public static final String PYRAMIDS_BASE_URI = "/pyramids";
     public static final int TILE_SIZE = 1024;
 
     @Value("${wipp.version}")
@@ -45,6 +46,9 @@ public class CoreConfig {
 
     @Value("${storage.stitching}")
     private String stitchingFolder;
+    
+    @Value("${storage.pyramids}")
+    private String pyramidsFolder;
 
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
@@ -54,7 +58,9 @@ public class CoreConfig {
 
     @Value("${ome.converter.threads:2}")
     private int omeConverterThreads;
-
+    
+    @Value("${fetching.pixels.max}")
+    private int fetchingPixelsMax;
 
 	public String getWippVersion() {
 		return wippVersion;
@@ -87,6 +93,10 @@ public class CoreConfig {
     public String getStitchingFolder() {
         return stitchingFolder;
     }
+    
+    public String getPyramidsFolder() {
+        return pyramidsFolder;
+    }
 
 	public String getWorflowBinary() {
 	    return worflowBinary;
@@ -103,9 +113,14 @@ public class CoreConfig {
     public String getJobsTempFolder() {
         return jobsTempFolder;
     }
+    
+    public int getFetchingPixelsMax() {
+        return fetchingPixelsMax;
+    }
 
     public int getOmeConverterThreads() {
         return omeConverterThreads;
     }
-
+    
+    
 }
