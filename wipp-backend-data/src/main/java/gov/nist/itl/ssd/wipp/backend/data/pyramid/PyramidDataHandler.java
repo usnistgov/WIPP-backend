@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
@@ -39,18 +40,19 @@ public class PyramidDataHandler implements DataHandler{
     }
 
     @Override
-    public void importData(Job job, String outputName) throws IOException {
-		Pyramid outputPyramid= new Pyramid(job, outputName);
-		outputPyramid = pyramidRepository.save(outputPyramid);
-
-        try {        	
-        	 File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());
-        	 pyramidFolder.mkdirs();
-        	 Files.move(getJobOutputTempFolder(job, outputName).toPath(), pyramidFolder.toPath());
-        } catch (IOException ex) {
-        	pyramidRepository.delete(outputPyramid);
-            throw ex;
-        }
+    public void importData(Job job, String outputName) throws JobExecutionException {
+		Pyramid outputPyramid = new Pyramid(job, outputName);
+		pyramidRepository.save(outputPyramid);
+      	
+		File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());
+		pyramidFolder.mkdirs();
+		
+		File tempOutputDir = getJobOutputTempFolder(job, outputName);
+		boolean success = tempOutputDir.renameTo(pyramidFolder);
+		if (!success) {
+			pyramidRepository.delete(outputPyramid);
+			throw new JobExecutionException("Cannot move pyramid to final destination.");
+		}
     }
 
     public String exportDataAsParam(String value) {
