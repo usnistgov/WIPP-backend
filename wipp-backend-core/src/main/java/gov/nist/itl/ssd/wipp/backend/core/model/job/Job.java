@@ -60,10 +60,12 @@ public class Job {
     private List<String> dependencies;
 
     private Map<String, String> parameters;
-    
+
+    private List<Map<String, String>> outputs;
+
     @ManualRef(value = Workflow.class)
     private String wippWorkflow;
-    
+
     private String wippVersion;
 
     public String getId() {
@@ -169,5 +171,13 @@ public class Job {
 
     public void setDependencies(List<String> dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public List<Map<String, String>> getOutputs() {
+        return outputs;
+    }
+
+    public void setOutputs(List<Map<String, String>> outputs) {
+        this.outputs = outputs;
     }
 }
