@@ -11,10 +11,12 @@
  */
 package gov.nist.itl.ssd.wipp.backend;
 
+import java.io.File;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
 import org.springframework.boot.SpringApplication;
@@ -33,12 +35,15 @@ import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoRepositoryFactoryBean;
 import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoTemplate;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+
 
 /**
  *
@@ -52,6 +57,9 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 @EnableWebMvc
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class Application implements WebMvcConfigurer {
+	
+	@Autowired
+    private CoreConfig coreConfig;
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(
@@ -95,6 +103,22 @@ public class Application implements WebMvcConfigurer {
         ServiceLocatorFactoryBean bean = new ServiceLocatorFactoryBean();
         bean.setServiceLocatorInterface(DataHandlerFactory.class);
         return bean;
+    }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    	// Force creation of pyramids folder to avoid pyramids viewing being
+    	// unavailable at first launch 
+    	File pyramidsFolderFile = new File(coreConfig.getPyramidsFolder());
+    	if(! pyramidsFolderFile.exists()) {
+    		pyramidsFolderFile.mkdirs();
+    	}
+    	// Add pyramid resource handler
+    	registry.addResourceHandler(
+                CoreConfig.PYRAMIDS_BASE_URI + "/**").
+                addResourceLocations(
+                		pyramidsFolderFile
+                        .toURI().toString());
     }
 
 }
