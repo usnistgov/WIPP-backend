@@ -17,5 +17,4 @@ import org.springframework.data.repository.query.Param;
 public interface WorkflowRepository extends MongoRepository<Workflow, String> {
 
 	Page<Workflow> findByNameContainingIgnoreCase(@Param("name") String name, Pageable p);
-
 }
