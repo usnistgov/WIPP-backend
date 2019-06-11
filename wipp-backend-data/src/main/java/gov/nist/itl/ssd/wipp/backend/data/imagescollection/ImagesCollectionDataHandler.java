@@ -75,9 +75,9 @@ public class ImagesCollectionDataHandler implements DataHandler {
         else {
             File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
-        }
 
-        imagesCollectionPath = imagesCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerMountPath());
+        }
+        imagesCollectionPath = imagesCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return imagesCollectionPath;
     }
 

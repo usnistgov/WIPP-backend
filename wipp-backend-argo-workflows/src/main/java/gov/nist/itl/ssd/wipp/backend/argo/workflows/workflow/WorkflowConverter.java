@@ -22,7 +22,6 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Component;
@@ -46,7 +45,8 @@ public class WorkflowConverter {
     private Map<Job, List<String>> jobsDependencies;
     private Map<Job, Plugin> jobsPlugins;
 
-    private static final String dataVolumeName = "data-volume";
+    private static final String inputDataVolumeName = "data-volume-input";
+    private static final String outputDataVolumeName = "data-volume-output";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConverter.class.getName());
 
@@ -65,20 +65,28 @@ public class WorkflowConverter {
     }
 
     private List<ArgoVolume> generateSpecVolumes() {
-        HashMap<String, String> hostPath = new HashMap<>();
-        hostPath.put("path", coreConfig.getStorageRootFolder());
-        //hostPath.put("type", "Directory");
-
+        HashMap<String, String> inputHostPath = new HashMap<>();
+        inputHostPath.put("path", coreConfig.getStorageRootFolder());
         ArrayList<ArgoVolume> argoVolumeList = new ArrayList<>();
-        ArgoVolume argoVolume = new ArgoVolume(dataVolumeName, hostPath);
-        argoVolumeList.add(argoVolume);
+        ArgoVolume inputArgoVolume = new ArgoVolume(inputDataVolumeName, inputHostPath);
+        argoVolumeList.add(inputArgoVolume);
+
+        // add one volume for each job output
+        for (Job job : this.jobsDependencies.keySet()) {
+            HashMap<String, String> outputHostPath = new HashMap<>();
+            outputHostPath.put("path", new File(coreConfig.getJobsTempFolder(), job.getId()).getAbsolutePath());
+            //hostPath.put("type", "Directory");
+            ArgoVolume outputArgoVolume = new ArgoVolume(outputDataVolumeName + "-" + job.getId(), outputHostPath);
+            argoVolumeList.add(outputArgoVolume);
+        }
 
         return argoVolumeList;
     }
 
     private ArgoTemplatePluginContainer generateTemplatePluginContainer(
             String containerId,
-            List<String> parameters
+            List<String> parameters,
+            String jobId
     ) {
         ArgoTemplatePluginContainer container = new ArgoTemplatePluginContainer();
 
@@ -93,29 +101,37 @@ public class WorkflowConverter {
 
         container.setArgs(argoPluginContainerArgs);
 
-        // Setup the volume for the data
-        ArrayList<Map<String, String>> volumeMounts = new ArrayList<>();
 
-        HashMap<String, String> dataVolume = new HashMap<>();
-        dataVolume.put("mountPath", coreConfig.getContainerMountPath());
-        dataVolume.put("name", dataVolumeName);
+        ArrayList<Map<String, Object>> volumeMounts = new ArrayList<>();
 
-        volumeMounts.add(dataVolume);
+        // Setup the volume for the input data
+        HashMap<String, Object> inputsDataVolume = new HashMap<>();
+        inputsDataVolume.put("mountPath", coreConfig.getContainerInputsMountPath());
+        inputsDataVolume.put("name", inputDataVolumeName);
+        inputsDataVolume.put("readOnly", true);
+        volumeMounts.add(inputsDataVolume);
+
+        // Setup the volume for the output data
+        HashMap<String, Object> outputsDataVolume = new HashMap<>();
+        outputsDataVolume.put("mountPath", this.getOutputMountPath(jobId));
+        outputsDataVolume.put("name", outputDataVolumeName + "-" + jobId);
+        outputsDataVolume.put("readOnly", false);
+        volumeMounts.add(outputsDataVolume);
         container.setVolumeMounts(volumeMounts);
 
         return container;
     }
 
-    private ArgoTemplatePlugin generateTemplatePlugin(Plugin plugin, List<String> parameters) {
+    private ArgoTemplatePlugin generateTemplatePlugin(Plugin plugin, List<String> parameters, String jobId) {
         ArgoTemplatePlugin argoTemplatePlugin = new ArgoTemplatePlugin();
-        argoTemplatePlugin.setName(plugin.getIdentifier());
+        argoTemplatePlugin.setName(plugin.getIdentifier() + "-" + jobId);
 
         // Add the plugin parameters as required by the image
         HashMap<String, List<NameValueParam>> argoTemplateInputs = new HashMap<>();
         List<NameValueParam> argoTemplateArgs = new ArrayList<>();
 
         // Add the plugin's outputs to the list of parameters coming from the job's configuration
-        for(PluginIO output : plugin.getOutputs()) {
+        for (PluginIO output : plugin.getOutputs()) {
             parameters.add(output.getName());
         }
 
@@ -130,7 +146,8 @@ public class WorkflowConverter {
         argoTemplatePlugin.setContainer(
                 this.generateTemplatePluginContainer(
                         plugin.getContainerId(),
-                        parameters
+                        parameters,
+                        jobId
                 )
         );
         return argoTemplatePlugin;
@@ -142,7 +159,7 @@ public class WorkflowConverter {
     ) {
         ArgoTemplateWorkflowTask argoTemplateWorkflowTask = new ArgoTemplateWorkflowTask();
         argoTemplateWorkflowTask.setName(job.getName());
-        argoTemplateWorkflowTask.setTemplate(plugin.getIdentifier());
+        argoTemplateWorkflowTask.setTemplate(plugin.getIdentifier() + "-" + job.getId());
 
         Map<String, List<NameValueParam>> argoTemplateWorkflowParams = new HashMap<>();
         List<NameValueParam> argoWorkflowArgs = new ArrayList<>();
@@ -150,15 +167,15 @@ public class WorkflowConverter {
         // Create job temp output folder
         File tempJobFolder = new File(coreConfig.getJobsTempFolder(),
                 job.getId());
+
         tempJobFolder.mkdirs();
 
         // Add output folder to parameters
         for (PluginIO output : plugin.getOutputs()) {
-            // Create job temp output folder
-            File outputFolder = new File(tempJobFolder, output.getName());
-            outputFolder.mkdirs();
-            NameValueParam outputParam = new NameValueParam(output.getName(),
-                    outputFolder.getAbsolutePath().replaceFirst(coreConfig.getStorageRootFolder(),coreConfig.getContainerMountPath()));
+            // Create job output subfolders
+            File outputSubFolder = new File(tempJobFolder, output.getName());
+            outputSubFolder.mkdirs();
+            NameValueParam outputParam = new NameValueParam(output.getName(), this.getOutputMountPath(job.getId()) + "/" + output.getName());
             argoWorkflowArgs.add(outputParam);
         }
 
@@ -233,9 +250,9 @@ public class WorkflowConverter {
             Plugin plugin = this.jobsPlugins.get(job);
 
             // Add plugin template if it has not been included yet
-            if (!includedPlugins.contains(plugin.getIdentifier())) {
+            if (!includedPlugins.contains(plugin.getIdentifier() + "-" + job.getId())) {
                 List<String> parameterNames = new ArrayList<String>(job.getParameters().keySet());
-                argoTemplates.add(this.generateTemplatePlugin(plugin, parameterNames));
+                argoTemplates.add(this.generateTemplatePlugin(plugin, parameterNames, job.getId()));
                 includedPlugins.add(plugin.getIdentifier());  // Update included plugin list
             }
 
@@ -302,5 +319,9 @@ public class WorkflowConverter {
 
     public Workflow getWorkflow() {
         return this.workflow;
+    }
+
+    private String getOutputMountPath(String jobId){
+        return coreConfig.getContainerOutputsMountPath() + "/" + jobId;
     }
 }
