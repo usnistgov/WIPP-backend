@@ -47,4 +47,6 @@ public interface JobRepository<T extends Job> extends MongoRepository<T, String>
     Page<T> findByWippWorkflow(@Param("wippWorkflow") String workflow,
                                Pageable p);
 
+    List<T> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
+
 }
