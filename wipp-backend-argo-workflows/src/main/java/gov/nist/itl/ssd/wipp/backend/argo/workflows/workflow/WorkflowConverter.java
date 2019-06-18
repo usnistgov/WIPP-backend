@@ -45,8 +45,7 @@ public class WorkflowConverter {
     private Map<Job, List<String>> jobsDependencies;
     private Map<Job, Plugin> jobsPlugins;
 
-    private static final String inputDataVolumeName = "data-volume-input";
-    private static final String outputDataVolumeName = "data-volume-output";
+    private static final String wippDataVolumeName = "wipp-data-volume";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConverter.class.getName());
 
@@ -65,20 +64,10 @@ public class WorkflowConverter {
     }
 
     private List<ArgoVolume> generateSpecVolumes() {
-        HashMap<String, String> inputHostPath = new HashMap<>();
-        inputHostPath.put("path", coreConfig.getStorageRootFolder());
         ArrayList<ArgoVolume> argoVolumeList = new ArrayList<>();
-        ArgoVolume inputArgoVolume = new ArgoVolume(inputDataVolumeName, inputHostPath);
+        ArgoVolume inputArgoVolume = new ArgoVolume(wippDataVolumeName, 
+				coreConfig.getWippDataPVCName());
         argoVolumeList.add(inputArgoVolume);
-
-        // add one volume for each job output
-        for (Job job : this.jobsDependencies.keySet()) {
-            HashMap<String, String> outputHostPath = new HashMap<>();
-            outputHostPath.put("path", new File(coreConfig.getJobsTempFolder(), job.getId()).getAbsolutePath());
-            //hostPath.put("type", "Directory");
-            ArgoVolume outputArgoVolume = new ArgoVolume(outputDataVolumeName + "-" + job.getId(), outputHostPath);
-            argoVolumeList.add(outputArgoVolume);
-        }
 
         return argoVolumeList;
     }
@@ -104,19 +93,20 @@ public class WorkflowConverter {
 
         ArrayList<Map<String, Object>> volumeMounts = new ArrayList<>();
 
-        // Setup the volume for the input data
-        HashMap<String, Object> inputsDataVolume = new HashMap<>();
-        inputsDataVolume.put("mountPath", coreConfig.getContainerInputsMountPath());
-        inputsDataVolume.put("name", inputDataVolumeName);
-        inputsDataVolume.put("readOnly", true);
-        volumeMounts.add(inputsDataVolume);
+        // Setup the volume mounts for the input data
+        HashMap<String, Object> inputDataVolumeMount = new HashMap<>();
+        inputDataVolumeMount.put("mountPath", coreConfig.getContainerInputsMountPath());
+        inputDataVolumeMount.put("name", wippDataVolumeName);
+        inputDataVolumeMount.put("readOnly", true);
+        volumeMounts.add(inputDataVolumeMount);
 
-        // Setup the volume for the output data
-        HashMap<String, Object> outputsDataVolume = new HashMap<>();
-        outputsDataVolume.put("mountPath", this.getOutputMountPath(jobId));
-        outputsDataVolume.put("name", outputDataVolumeName + "-" + jobId);
-        outputsDataVolume.put("readOnly", false);
-        volumeMounts.add(outputsDataVolume);
+        // Setup the volume mounts for the output data
+        HashMap<String, Object> outputDataVolumeMount = new HashMap<>();
+        outputDataVolumeMount.put("mountPath", this.getOutputMountPath(jobId));
+        outputDataVolumeMount.put("name", wippDataVolumeName);
+        outputDataVolumeMount.put("subPath", getOutputMountSubPath(jobId));
+        outputDataVolumeMount.put("readOnly", false);
+        volumeMounts.add(outputDataVolumeMount);
         container.setVolumeMounts(volumeMounts);
 
         return container;
@@ -321,7 +311,23 @@ public class WorkflowConverter {
         return this.workflow;
     }
 
+    /**
+     * Get job work folder path in container
+     * @param jobId
+     * @return the path of the job work folder
+     */
     private String getOutputMountPath(String jobId){
         return coreConfig.getContainerOutputsMountPath() + "/" + jobId;
+    }
+    
+    /**
+     * Get data volume mount sub path for job work folder 
+     * (relative to root in data volume)
+     * @param jobId
+     * @return the sub path of the data volume to mount 
+     */
+    private String getOutputMountSubPath(String jobId){
+		return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
+				.replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
     }
 }

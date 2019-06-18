@@ -12,34 +12,24 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.spec;
 
 /**
- * Argo volume spec (with PersistentVolumeClaim)
- *
+ * Argo PersistentVolumeClaim spec
+ *  
  * @author Mylene Simon <mylene.simon at nist.gov>
+ *
  */
-public class ArgoVolume {
-    private String name;
-    private ArgoPersistentVolumeClaim persistentVolumeClaim;
-
-    public ArgoVolume(String name, String claimName) {
-        this.name = name;
-        this.setPersistentVolumeClaim(new ArgoPersistentVolumeClaim(claimName));
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ArgoPersistentVolumeClaim getPersistentVolumeClaim() {
-		return persistentVolumeClaim;
+public class ArgoPersistentVolumeClaim {
+	
+	private String claimName;
+	
+	public ArgoPersistentVolumeClaim(String claimName) {
+		this.claimName = claimName;
 	}
 
-	public void setPersistentVolumeClaim(ArgoPersistentVolumeClaim persistentVolumeClaim) {
-		this.persistentVolumeClaim = persistentVolumeClaim;
+	public String getClaimName() {
+		return claimName;
 	}
-    
-    
+
+	public void setClaimName(String claimName) {
+		this.claimName = claimName;
+	}
 }

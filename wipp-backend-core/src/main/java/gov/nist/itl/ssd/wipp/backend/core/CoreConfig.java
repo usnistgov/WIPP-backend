@@ -43,6 +43,9 @@ public class CoreConfig {
 
     @Value("${workflow.binary}")
     private String worflowBinary;
+    
+    @Value("${kube.wippdata.pvc}")
+    private String wippDataPVCName;
 
     @Value("${storage.collections}")
     private String imagesCollectionsFolder;
@@ -108,6 +111,10 @@ public class CoreConfig {
 	public String getWorflowBinary() {
 	    return worflowBinary;
     }
+
+	public String getWippDataPVCName() {
+		return wippDataPVCName;
+	}
 
 	public String getImagesCollectionsFolder() {
         return imagesCollectionsFolder;
