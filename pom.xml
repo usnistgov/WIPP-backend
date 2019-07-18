@@ -3,12 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gov.nist.itl.ssd</groupId>
     <artifactId>wipp-backend-parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-alpha</version>
     <packaging>pom</packaging>
     <modules>
         <module>wipp-backend-core</module>
-        <module>wipp-backend-images</module>
+        <module>wipp-backend-data</module>
         <module>wipp-backend-application</module>
+        <module>wipp-backend-argo-workflows</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,7 +41,7 @@
                     <tagMessage>"WIPP-backend v${project.version}"</tagMessage>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 </project>

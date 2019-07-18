@@ -14,14 +14,16 @@ package gov.nist.itl.ssd.wipp.backend.core.model.job;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 public enum JobStatus {
 
-    SUBMITTED,
-    QUEUED,
+	CREATED,
+	SUBMITTED,
     RUNNING,
-    DONE,
+    SUCCEEDED,
     FAILED,
+    ERROR,
     CANCELLED;
 
 }

@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-application</artifactId>
 	<name>wipp-backend-app</name>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.0-alpha</version>
 
 	<packaging>war</packaging>
 
@@ -18,8 +17,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.1.RELEASE</version>
-		<relativePath></relativePath>
+		<version>2.0.3.RELEASE</version>
+		<relativePath />
 	</parent>
 
 	<build>
@@ -66,10 +65,16 @@
 				<mongodb.host>localhost</mongodb.host>
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
-				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
-				<storage.collections>/data/WIPP-plugins/images-upload</storage.collections>
-				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
-				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<workflow.binary>argo</workflow.binary>
+				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
+				<storage.root>${user.home}/WIPP-plugins</storage.root>
+				<storage.workflows>${user.home}/WIPP-plugins/workflows</storage.workflows>
+				<storage.collections>${user.home}/WIPP-plugins/images-upload</storage.collections>
+				<storage.collections.upload.tmp>${user.home}/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.stitching>${user.home}/WIPP-plugins/stitching</storage.stitching>
+				<storage.pyramids>${user.home}/WIPP-plugins/pyramids</storage.pyramids>
+				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
 		</profile>
@@ -80,10 +85,16 @@
 				<mongodb.host>localhost</mongodb.host>
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
-				<storage.workflows>/data/WIPP-plugins/Workflows</storage.workflows>
+				<workflow.binary>argo --kubeconfig /tmp/kubeconfig</workflow.binary>
+				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
+				<storage.root>/data/WIPP-plugins</storage.root>
+				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
 				<storage.collections>/data/WIPP-plugins/imagesUpload</storage.collections>
 				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.stitching>/data/WIPP-plugins/stitching</storage.stitching>
+				<storage.pyramids>/data/WIPP-plugins/pyramids</storage.pyramids>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
 		</profile>
@@ -93,7 +104,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>gov.nist.itl.ssd.wipp</groupId>
-			<artifactId>wipp-backend-images</artifactId>
+			<artifactId>wipp-backend-data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.itl.ssd.wipp</groupId>
+			<artifactId>wipp-backend-argo-workflows</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

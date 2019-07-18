@@ -14,24 +14,47 @@ import org.springframework.stereotype.Component;
 public class CoreConfig {
 
     public static final String BASE_URI = "/api";
+    public static final String PYRAMIDS_BASE_URI = "/pyramids";
+    public static final int TILE_SIZE = 1024;
 
     @Value("${wipp.version}")
     private String wippVersion;
-    
+
     @Value("${spring.data.mongodb.host}")
     private String mongodbHost;
-    
+
     @Value("${spring.data.mongodb.database}")
     private String mongodbDatabase;
-    
+
+    @Value("${storage.root}")
+    private String storageRootFolder;
+
+    @Value("/data/inputs")
+    private String containerInputsMountPath;
+
+    @Value("/data/outputs")
+    private String containerOutputsMountPath;
+
     @Value("${workflow.management.system:argo}")
     private String workflowManagementSystem;
-    
+
     @Value("${storage.workflows}")
     private String workflowsFolder;
 
+    @Value("${workflow.binary}")
+    private String worflowBinary;
+    
+    @Value("${kube.wippdata.pvc}")
+    private String wippDataPVCName;
+
     @Value("${storage.collections}")
     private String imagesCollectionsFolder;
+
+    @Value("${storage.stitching}")
+    private String stitchingFolder;
+    
+    @Value("${storage.pyramids}")
+    private String pyramidsFolder;
 
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
@@ -41,8 +64,10 @@ public class CoreConfig {
 
     @Value("${ome.converter.threads:2}")
     private int omeConverterThreads;
-
     
+    @Value("${fetching.pixels.max}")
+    private int fetchingPixelsMax;
+
 	public String getWippVersion() {
 		return wippVersion;
 	}
@@ -50,17 +75,45 @@ public class CoreConfig {
 	public String getMongodbHost() {
 		return mongodbHost;
 	}
-	
+
 	public String getMongodbDatabase() {
 		return mongodbDatabase;
 	}
-	
-	public String getWorkflowManagementSystem() {
+
+	public String getStorageRootFolder() {
+		return storageRootFolder;
+	}
+
+    public String getContainerInputsMountPath() {
+	    return containerInputsMountPath;
+    }
+
+    public String getContainerOutputsMountPath() {
+	    return containerOutputsMountPath;
+    }
+
+    public String getWorkflowManagementSystem() {
 		return workflowManagementSystem;
 	}
 
 	public String getWorkflowsFolder() {
 		return workflowsFolder;
+	}
+
+    public String getStitchingFolder() {
+        return stitchingFolder;
+    }
+    
+    public String getPyramidsFolder() {
+        return pyramidsFolder;
+    }
+
+	public String getWorflowBinary() {
+	    return worflowBinary;
+    }
+
+	public String getWippDataPVCName() {
+		return wippDataPVCName;
 	}
 
 	public String getImagesCollectionsFolder() {
@@ -74,9 +127,14 @@ public class CoreConfig {
     public String getJobsTempFolder() {
         return jobsTempFolder;
     }
+    
+    public int getFetchingPixelsMax() {
+        return fetchingPixelsMax;
+    }
 
     public int getOmeConverterThreads() {
         return omeConverterThreads;
     }
-
+    
+    
 }
