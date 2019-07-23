@@ -29,6 +29,8 @@ public class Workflow {
 
 //    @Updatable
     protected WorkflowStatus status;
+    
+    private String generatedName;
 	
 //    protected List<String> jobs = new ArrayList<>();
     
@@ -118,6 +120,20 @@ public class Workflow {
 	 */
 	public void setStatus(WorkflowStatus status) {
 		this.status = status;
+	}
+	
+	/**
+	 * @return the generatedName
+	 */
+	public String getGeneratdeName() {
+		return generatedName;
+	}
+	
+	/**
+	 * @param set the generatedName 
+	 */
+	public void setGeneratedName(String name) {
+		this.generatedName = name;
 	}
 
 //	/**
