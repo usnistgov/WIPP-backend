@@ -125,7 +125,7 @@ public class Workflow {
 	/**
 	 * @return the generatedName
 	 */
-	public String getGeneratdeName() {
+	public String getGeneratedName() {
 		return generatedName;
 	}
 	
