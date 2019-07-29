@@ -86,11 +86,33 @@ public class TiledOmeTiffConverter {
 
 	// Read the input file as a plain image and write it into a tiled format
 	public void readWriteTiles() throws FormatException, DependencyException, ServiceException, IOException {
-		byte[] buf = new byte[FormatTools.getPlaneSize(reader)];
+		int bpp = FormatTools.getBytesPerPixel(reader.getPixelType());
+		int tilePlaneSize = tileSizeX * tileSizeY * reader.getRGBChannelCount() * bpp;
+		byte[] buf = new byte[tilePlaneSize];
 
 		// WIPP handles 2D images only, the image series are set to 0 in our case 
-		buf = reader.openBytes(0);
-		writer.saveBytes(0, buf);
+		int width = reader.getSizeX();
+		int height = reader.getSizeY();
+
+		// Determined the number of tiles to read and write
+		int nXTiles = width / tileSizeX;
+		int nYTiles = height / tileSizeY;
+		if (nXTiles * tileSizeX != width) nXTiles++;
+		if (nYTiles * tileSizeY != height) nYTiles++;
+
+		for (int y=0; y<nYTiles; y++) {
+			for (int x=0; x<nXTiles; x++) {
+				
+				int tileX = x * tileSizeX;
+				int tileY = y * tileSizeY;
+				
+				int effTileSizeX = (tileX + tileSizeX) < width ? tileSizeX : width - tileX;
+				int effTileSizeY = (tileY + tileSizeY) < height ? tileSizeY : height - tileY;
+
+				buf = reader.openBytes(0, tileX, tileY, effTileSizeX, effTileSizeY);
+				writer.saveBytes(0, buf, tileX, tileY, effTileSizeX, effTileSizeY);
+			}
+		}
 	}
 
 	// Close the file reader and writer.
