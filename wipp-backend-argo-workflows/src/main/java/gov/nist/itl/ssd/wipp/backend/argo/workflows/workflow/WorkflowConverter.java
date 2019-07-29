@@ -26,8 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,7 +62,7 @@ public class WorkflowConverter {
 
     private HashMap<String, String> generateMetadata() {
         HashMap<String, String> metadata = new HashMap<>();
-        metadata.put("generateName", this.workflow.getName().toLowerCase());
+        metadata.put("generateName", this.workflow.getName().toLowerCase() + "-");
 
         return metadata;
     }
@@ -289,16 +293,27 @@ public class WorkflowConverter {
         List<String> builderCommands = new ArrayList<>();
         Collections.addAll(builderCommands, coreConfig.getWorflowBinary().split(" "));
         builderCommands.add("submit");
+        builderCommands.add("--output");
+        builderCommands.add("name");
         builderCommands.add(workflowFilePath);
-
+        
         ProcessBuilder builder = new ProcessBuilder(builderCommands);
-        builder.inheritIO();
+        builder.redirectInput(Redirect.INHERIT).redirectError(Redirect.INHERIT);
         Process process;
         try {
             process = builder.start();
             int exitCode = process.waitFor();
+            
+        	InputStream is = process.getInputStream();
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            
+        	String line = reader.readLine();
+        	if(line != null){
+        		this.workflow.setGeneratedName(line);
+        	} 
+        	
             assert exitCode == 0;
-
+            
             this.workflow.setStatus(WorkflowStatus.SUBMITTED);
         } catch (IOException ex) {
             this.workflow.setStatus(WorkflowStatus.ERROR);
