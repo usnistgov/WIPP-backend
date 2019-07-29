@@ -89,7 +89,7 @@ public abstract class FlowjsController {
             File file = new File(tempDir, flowFile.getFlowFilename());
             try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
                 //Seek to position
-                raf.seek((flowChunkNumber - 1) * flowFile.getFlowChunkSize());
+                raf.seek((long) (flowChunkNumber - 1) * flowFile.getFlowChunkSize());
 
                 //Save to file
                 InputStream is = request.getInputStream();
