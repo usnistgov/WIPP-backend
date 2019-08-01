@@ -30,10 +30,11 @@ import loci.formats.services.OMEXMLService;
 import loci.formats.codec.CompressionType;
 
 /**
- * Inspired from https://docs.openmicroscopy.org/bio-formats/5.9.1/developers/tiling.html
+ * Inspired from https://docs.openmicroscopy.org/bio-formats/5.9.1/_downloads/OverlappedTiledWriter.java
  * This class reads a full image and use an OME-Tiff writer to automatically write out the image in a tiled format.
  *
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Nick Schaub <nick.schaub at nih.gov>
  */
 public class TiledOmeTiffConverter {
 
