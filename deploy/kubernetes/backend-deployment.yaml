@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wipp-backend-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: wipp-backend-role
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflows"]
+    verbs: ["delete", "deletecollection", "get", "list", "patch", "create", "update", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: wipp-backend-rb
+subjects:
+  - kind: ServiceAccount
+    name: wipp-backend-sa
+roleRef:
+  kind: Role
+  name: wipp-backend-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wipp-backend
+spec:
+  selector:
+    matchLabels:
+      app: wipp-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wipp-backend
+    spec:
+      serviceAccountName: wipp-backend-sa
+      containers:
+        - image: labshare/wipp-backend:BACKEND_VERSION_VALUE
+          name: wipp-backend
+          args: ["wipp-mongo", "27017"]
+          volumeMounts:
+            - mountPath: /data/WIPP-plugins
+              name: data
+              subPath: wipp
+          ports:
+            - containerPort: 8080
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: SHARED_PVC_NAME_VALUE
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: labshare-docker
