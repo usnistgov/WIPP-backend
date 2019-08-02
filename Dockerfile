@@ -6,6 +6,9 @@ EXPOSE 8080
 ARG BACKEND_NAME="wipp-backend-application"
 ARG EXEC_DIR="/opt/wipp"
 ARG DATA_DIR="/data/WIPP-plugins"
+ARG ARGO_VERSION="v2.3.0"
+
+COPY deploy/docker/VERSION /VERSION
 
 # Create exec and data folders
 RUN mkdir -p \
@@ -16,11 +19,16 @@ RUN mkdir -p \
 COPY ${BACKEND_NAME}/target/${BACKEND_NAME}-*-exec.war ${EXEC_DIR}/wipp-backend.war
 
 # Copy properties and entrypoint script
-COPY docker/application.properties /opt/wipp/config
-COPY docker/entrypoint.sh /usr/local/bin
+COPY deploy/docker/application.properties ${EXEC_DIR}/config
+COPY deploy/docker/entrypoint.sh /usr/local/bin
+
+# Install Argo CLI executable
+RUN wget https://github.com/argoproj/argo/releases/download/${ARGO_VERSION}/argo-linux-amd64 && \
+    chmod 777 argo-linux-amd64 && \
+    mv argo-linux-amd64 /usr/local/bin/argo
 
 # Set working directory
-WORKDIR "/opt/wipp"
+WORKDIR ${EXEC_DIR}
 
 # Entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
