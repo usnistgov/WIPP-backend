@@ -46,7 +46,7 @@ public class TensorflowModelDataHandler implements DataHandler {
 		boolean success = tempOutputDir.renameTo(trainedModelFolder);
 		if (!success) {
 			trainedModelRepository.delete(tm);
-			throw new JobExecutionException("Cannot move pyramid to final destination.");
+			throw new JobExecutionException("Cannot move tensorflow model to final destination.");
 		}		
 	}
 

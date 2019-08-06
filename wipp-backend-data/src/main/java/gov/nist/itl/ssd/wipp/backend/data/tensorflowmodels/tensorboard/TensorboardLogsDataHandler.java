@@ -36,7 +36,7 @@ public class TensorboardLogsDataHandler  implements DataHandler{
 		boolean success = tempOutputDir.renameTo(tensorboardLogsFolder);
 		if (!success) {
 			tensorboardLogsRepository.delete(tl);
-			throw new JobExecutionException("Cannot move pyramid to final destination.");
+			throw new JobExecutionException("Cannot move tensorboard logs to final destination.");
 		}		
 	}
 
