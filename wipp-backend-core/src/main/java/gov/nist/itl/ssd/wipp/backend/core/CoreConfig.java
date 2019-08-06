@@ -55,12 +55,6 @@ public class CoreConfig {
     
     @Value("${storage.pyramids}")
     private String pyramidsFolder;
-    
-    @Value("${storage.tensorflow}")
-    private String tensorflowModelsFolder;
-    
-    @Value("${storage.tensorboard}")
-    private String tensorboardLogsFolder;
 
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
@@ -113,14 +107,6 @@ public class CoreConfig {
     public String getPyramidsFolder() {
         return pyramidsFolder;
     }
-    
-    public String getTensorflowModelsFolder() {
-    	return tensorflowModelsFolder;
-    }
-    
-   	public String getTensorboardLogsFolder() {
-		return tensorboardLogsFolder;
-	}
 
 	public String getWorflowBinary() {
 	    return worflowBinary;

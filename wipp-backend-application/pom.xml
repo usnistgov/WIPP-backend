@@ -73,8 +73,6 @@
 				<storage.collections.upload.tmp>${user.home}/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
 				<storage.stitching>${user.home}/WIPP-plugins/stitching</storage.stitching>
 				<storage.pyramids>${user.home}/WIPP-plugins/pyramids</storage.pyramids>
-				<storage.tensorflow>${user.home}/WIPP-plugins/tensorflow-models</storage.tensorflow>
-				<storage.tensorboard>${user.home}/WIPP-plugins/tensorboard-logs</storage.tensorboard>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
