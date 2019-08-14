@@ -48,6 +48,7 @@ spec:
       containers:
         - image: labshare/wipp-backend:BACKEND_VERSION_VALUE
           name: wipp-backend
+          imagePullPolicy: Always
           args: ["wipp-mongo", "27017"]
           volumeMounts:
             - mountPath: /data/WIPP-plugins
