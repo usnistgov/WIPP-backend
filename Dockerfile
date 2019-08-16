@@ -24,7 +24,7 @@ COPY deploy/docker/entrypoint.sh /usr/local/bin
 
 # Install Argo CLI executable
 RUN wget https://github.com/argoproj/argo/releases/download/${ARGO_VERSION}/argo-linux-amd64 && \
-    chmod 777 argo-linux-amd64 && \
+    chmod +x argo-linux-amd64 && \
     mv argo-linux-amd64 /usr/local/bin/argo
 
 # Set working directory
