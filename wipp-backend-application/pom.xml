@@ -87,7 +87,7 @@
 				<mongodb.host>localhost</mongodb.host>
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
-				<workflow.binary>argo --kubeconfig /tmp/kubeconfig</workflow.binary>
+				<workflow.binary>argo</workflow.binary>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
 				<storage.root>/data/WIPP-plugins</storage.root>
 				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>
