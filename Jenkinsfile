@@ -27,6 +27,7 @@ pipeline {
         SHARED_PVC_NAME = "shared-pv-claim"
         STORAGE_CLASS_NAME = "rook-ceph-block"
         STORAGE_MONGO = "10Gi"
+        ELASTIC_APM_URL = "http://apm.ci.aws.labshare.org"
     }
     triggers {
         pollSCM('H/2 * * * *')
@@ -97,6 +98,7 @@ pipeline {
                         sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' mongo-deployment.yaml"
                         sh "sed -i 's/SHARED_PVC_NAME_VALUE/${SHARED_PVC_NAME}/g' backend-deployment.yaml"
                         sh "sed -i 's/BACKEND_VERSION_VALUE/${DOCKER_VERSION}/g' backend-deployment.yaml"
+                        sh "sed -i 's/ELASTIC_APM_URL_VALUE/${ELASTIC_APM_URL}/g' backend-deployment.yaml"
                         sh "sed -i 's/BACKEND_HOST_NAME_VALUE/${BACKEND_HOST_NAME}/g' services.yaml"
                         sh "sed -i 's/MONGO_HOST_NAME_VALUE/${MONGO_HOST_NAME}/g' services.yaml"
                     }

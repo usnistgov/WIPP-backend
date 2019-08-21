@@ -16,4 +16,19 @@ sed -i \
   -e 's/@shared_pvc@/'"${SHARED_PVC}"'/' \
   /opt/wipp/config/application.properties
 
-exec /usr/bin/java -jar /opt/wipp/wipp-backend.war
+java -jar /opt/wipp/wipp-backend.war &
+
+if [[ -n ${ELASTIC_APM_SERVER_URLS} && -n ${ELASTIC_APM_SERVICE_NAME} ]]; then
+  # Checks if the Spring Boot application has started
+  while ! { cat /opt/wipp/logs/spring.log | grep -q 'Started'; }; do
+    sleep 1
+  done
+
+  WIPP_PID=`pgrep -f wipp-backend`
+
+  # Attaches the Elastic APM Agent
+  java -jar apm-agent-attach.jar --pid ${WIPP_PID}
+fi
+
+# Keeps the Docker container running until the background process (WIPP-backend) closes
+wait
