@@ -11,13 +11,13 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices;
 
-import org.springframework.hateoas.ResourceSupport;
+import gov.nist.itl.ssd.wipp.backend.core.rest.CustomResourceSupport;
 
 /**
 *
 * @author Antoine Vandecreme
 */
-public class PyramidTimeSlice extends ResourceSupport{
+public class PyramidTimeSlice extends CustomResourceSupport{
 	
 	private final String name;
 

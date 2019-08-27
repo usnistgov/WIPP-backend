@@ -9,20 +9,27 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.data.annotation;
+package gov.nist.itl.ssd.wipp.backend.core.rest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
+
+import org.springframework.data.annotation.AccessType;
+import org.springframework.data.annotation.AccessType.Type;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 
 /**
+ * Workaround for https://jira.spring.io/browse/DATAREST-1363
+ * 
  * @author Mylene Simon <mylene.simon at nist.gov>
- * Annotation to specify inheritance aware Mongo Repositories
  *
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface InheritedAwareRepository {
+public abstract class CustomResourceSupport extends ResourceSupport {
 
+    @AccessType(Type.PROPERTY)
+    public void setLinks(List<Link> links) {
+        List<Link> actual = super.getLinks();
+        actual.clear();
+        actual.addAll(links);
+    }
 }

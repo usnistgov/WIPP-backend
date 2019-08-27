@@ -11,8 +11,8 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
@@ -52,22 +52,22 @@ public class ImagesCollection extends Data {
 
     private String pattern;
 
-    @JsonIgnore
+    @JsonProperty(access = Access.READ_ONLY)
     private int numberOfImages;
 
-    @JsonIgnore
+    @JsonProperty(access = Access.READ_ONLY)
     private long imagesTotalSize;
 
-    @JsonIgnore
+    @JsonProperty(access = Access.READ_ONLY)
     private int numberImportingImages;
 
-    @JsonIgnore
+    @JsonProperty(access = Access.READ_ONLY)
     private int numberOfImportErrors;
 
-    @JsonIgnore
+    @JsonProperty(access = Access.READ_ONLY)
     private int numberOfMetadataFiles;
 
-    @JsonIgnore
+    @JsonProperty(access = Access.READ_ONLY)
     private long metadataFilesTotalSize;
 
     public ImagesCollection() {
@@ -122,32 +122,26 @@ public class ImagesCollection extends Data {
         this.locked = locked;
     }
 
-    @JsonProperty
     public int getNumberOfImages() {
         return numberOfImages;
     }
 
-    @JsonProperty
     public long getImagesTotalSize() {
         return imagesTotalSize;
     }
 
-    @JsonProperty
     public int getNumberImportingImages() {
         return numberImportingImages;
     }
 
-    @JsonProperty
     public int getNumberOfImportErrors() {
         return numberOfImportErrors;
     }
 
-    @JsonProperty
     public int getNumberOfMetadataFiles() {
         return numberOfMetadataFiles;
     }
 
-    @JsonProperty
     public long getMetadataFilesTotalSize() {
         return metadataFilesTotalSize;
     }

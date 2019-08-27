@@ -12,7 +12,6 @@
 package gov.nist.itl.ssd.wipp.backend;
 
 import java.io.File;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,10 +26,6 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.MongoConverter;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -38,8 +33,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoRepositoryFactoryBean;
-import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoTemplate;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
@@ -51,7 +44,6 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
  */
 @Configuration
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
-@EnableMongoRepositories(repositoryFactoryBeanClass = CustomMongoRepositoryFactoryBean.class)
 @EnableAutoConfiguration
 @EnableEntityLinks
 @EnableWebMvc
@@ -90,12 +82,6 @@ public class Application implements WebMvcConfigurer {
                         "Can not expose ids for class " + beanClassName, ex);
             }
         }
-    }
-
-    @Bean
-    public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
-            MongoConverter converter) throws UnknownHostException {
-        return new CustomMongoTemplate(mongoDbFactory, converter);
     }
 
     @Bean
