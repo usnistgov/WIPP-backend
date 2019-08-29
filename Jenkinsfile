@@ -27,7 +27,7 @@ pipeline {
         SHARED_PVC_NAME = "shared-pv-claim"
         STORAGE_CLASS_NAME = "rook-ceph-block"
         STORAGE_MONGO = "10Gi"
-        ELASTIC_APM_URL = "http://apm.ci.aws.labshare.org"
+        ELASTIC_APM_URL = "https://apm.ci.aws.labshare.org"
     }
     triggers {
         pollSCM('H/2 * * * *')
