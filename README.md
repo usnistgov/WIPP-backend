@@ -42,6 +42,16 @@ docker build --no-cache . -t wipp_backend
 ```
 For a Docker deployment of WIPP on a Kubernetes cluster, scripts and configuration files are available in the [WIPP-deploy repo](https://github.com/usnistgov/WIPP-deploy/tree/develop/deployment).
 
+### Application Performance Monitoring (APM)
+The Elastic APM Java agent is integrated into the Docker image as an optional setting. The Elastic APM agent will push metrics to an APM server, which feeds into Elasticsearch and Kibana. Configuration of the Elastic APM Java Agent to connect to the APM server is controlled via environment variables. These variables are optional if Elastic APM is not needed.
+
+| Environment Variable   | Description |
+| ------------- | ------------- |
+| ELASTIC_APM_SERVICE_NAME  | Service name tag attached to all metrics sent. |
+| ELASTIC_APM_SERVER_URLS  | Url of Elastic APM server.  |
+| ELASTIC_APM_APPLICATION_PACKAGES | (Optional) Determines stack trace frame. Multiple packages can be set. |
+| ELASTIC_APM_SECRET_TOKEN  | (Optional) Secret token for Elastic APM server. | 
+
 ## WIPP Development flow
 We are following the [Gitflow branching model](https://nvie.com/posts/a-successful-git-branching-model/) for the WIPP development.  
 To accommodate the specificities of the Maven version management, we are using the [JGitFlow plugin](https://bitbucket.org/atlassian/jgit-flow/wiki/Home).
