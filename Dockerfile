@@ -7,7 +7,7 @@ ARG BACKEND_NAME="wipp-backend-application"
 ARG EXEC_DIR="/opt/wipp"
 ARG DATA_DIR="/data/WIPP-plugins"
 ARG ARGO_VERSION="v2.3.0"
-ARG APM_VERSION="1.8.0"
+ARG APM_VERSION="1.9.0"
 
 COPY deploy/docker/VERSION /VERSION
 
@@ -16,9 +16,8 @@ RUN mkdir -p \
   ${EXEC_DIR}/config \
   ${DATA_DIR}
 
-# Workaround for Elastic APM on Alpine, https://github.com/docker-library/openjdk/issues/76#issuecomment-276438146
-RUN apk add --no-cache tini
-RUN wget https://repo1.maven.org/maven2/co/elastic/apm/apm-agent-attach/${APM_VERSION}/apm-agent-attach-${APM_VERSION}.jar -O ${EXEC_DIR}/apm-agent-attach.jar
+# Download Elastic APM Java Agent
+RUN wget https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/${APM_VERSION}/elastic-apm-agent-${APM_VERSION}.jar -O ${EXEC_DIR}/elastic-apm-agent.jar
 
 # Install Argo CLI executable
 RUN wget https://github.com/argoproj/argo/releases/download/${ARGO_VERSION}/argo-linux-amd64 && \
@@ -36,4 +35,4 @@ COPY deploy/docker/entrypoint.sh /usr/local/bin
 WORKDIR ${EXEC_DIR}
 
 # Entrypoint
-ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
