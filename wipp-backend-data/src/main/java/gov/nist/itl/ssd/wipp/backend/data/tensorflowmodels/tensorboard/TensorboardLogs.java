@@ -27,28 +27,16 @@ public class TensorboardLogs {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
-   
-    @Indexed
-    @ManualRef(TensorflowModel.class)
-    private String tensorflowModel;
     
     @Indexed(unique = true, sparse = true)
     @ManualRef(Job.class)
     private String sourceJob;
+    
+    public TensorboardLogs(){	
+    }
 
 	public TensorboardLogs(String name){
 		this.name = name;
-		this.creationDate = new Date();
-	}
-
-	public TensorboardLogs(String name, String tensorflowModel) {
-		this.name = name;
-		this.tensorflowModel = tensorflowModel;
-	}
-
-	public TensorboardLogs(Job job){
-		this.name = job.getName();
-		this.sourceJob = job.getId();
 		this.creationDate = new Date();
 	}
 	
@@ -70,10 +58,6 @@ public class TensorboardLogs {
 		return creationDate;
 	}
 
-	public String getTensorflowModel() {
-		return tensorflowModel;
-	}
-	
 	public String getSourceJob() {
 		return sourceJob;
 	}

@@ -31,13 +31,12 @@ public class TensorflowModelDataHandler implements DataHandler {
     CoreConfig config;
     
     @Autowired
-    private TensorflowModelRepository trainedModelRepository;
+    private TensorflowModelRepository tensorflowModelRepository;
 
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
-		
 		TensorflowModel tm = new TensorflowModel(job, outputName);
-		trainedModelRepository.save(tm);
+		tensorflowModelRepository.save(tm);
 		
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
@@ -45,7 +44,7 @@ public class TensorflowModelDataHandler implements DataHandler {
 		File tempOutputDir = getJobOutputTempFolder(job, outputName);
 		boolean success = tempOutputDir.renameTo(trainedModelFolder);
 		if (!success) {
-			trainedModelRepository.delete(tm);
+			tensorflowModelRepository.delete(tm);
 			throw new JobExecutionException("Cannot move tensorflow model to final destination.");
 		}		
 	}

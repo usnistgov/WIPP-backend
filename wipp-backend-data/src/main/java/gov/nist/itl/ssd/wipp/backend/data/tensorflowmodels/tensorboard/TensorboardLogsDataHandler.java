@@ -26,10 +26,10 @@ public class TensorboardLogsDataHandler  implements DataHandler{
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		
-		TensorboardLogs tl = new TensorboardLogs(outputName);
+		TensorboardLogs tl = new TensorboardLogs(job, outputName);
 		tensorboardLogsRepository.save(tl);
 		
-		File tensorboardLogsFolder = new File(config.getTensorboardLogsFolder(), tl.getId());
+		File tensorboardLogsFolder = new File(config.getTensorboardLogsFolder(), tl.getName());
 		tensorboardLogsFolder.mkdirs();
 		
 		File tempOutputDir = getJobOutputTempFolder(job, outputName);

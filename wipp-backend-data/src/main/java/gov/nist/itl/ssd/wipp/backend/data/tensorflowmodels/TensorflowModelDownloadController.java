@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Controller
-@RequestMapping(CoreConfig.BASE_URI + "/trainedModels/{trainedModelId}/download")
+@RequestMapping(CoreConfig.BASE_URI + "/tensorflowModels/{tensorflowModelId}/download")
 public class TensorflowModelDownloadController {
 
 	@Autowired
