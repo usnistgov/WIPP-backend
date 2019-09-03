@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
@@ -28,7 +29,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
  */
 @IdExposed
 @Document
-public class TensorflowModel {
+public class TensorflowModel extends Data {
 	@Id
 	private String id;
 
@@ -76,5 +77,5 @@ public class TensorflowModel {
     public String getSourceJob() {
         return sourceJob;
     }
-
+    
 }
