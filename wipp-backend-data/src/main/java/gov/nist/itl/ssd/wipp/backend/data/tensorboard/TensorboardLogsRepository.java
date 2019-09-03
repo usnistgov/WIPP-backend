@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels.tensorboard;
+package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

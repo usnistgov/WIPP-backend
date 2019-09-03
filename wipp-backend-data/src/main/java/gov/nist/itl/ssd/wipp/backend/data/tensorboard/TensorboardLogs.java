@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels.tensorboard;
+package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import java.util.Date;
 
@@ -23,6 +23,7 @@ public class TensorboardLogs {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String name;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels.tensorboard;
+package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import java.io.File;
 
