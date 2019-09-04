@@ -113,6 +113,7 @@ pipeline {
                     withAWS(credentials:'aws-jenkins-eks') {
                         sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
                         sh '''
+                            kubectl apply -f storage-ceph.yaml
                             kubectl apply -f mongo-deployment.yaml
                             kubectl apply -f backend-deployment.yaml
                             kubectl apply -f services.yaml
