@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,14 +36,14 @@ import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTi
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("stitchingVectorDataHandler")
-public class StitchingVectorDataHandler implements DataHandler{
+public class StitchingVectorDataHandler extends BaseDataHandler implements DataHandler{
 
     @Autowired
     CoreConfig config;
 
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
-    
+
     private static final Logger LOG = Logger.getLogger(StitchingVectorDataHandler.class.getName());
 
     public StitchingVectorDataHandler() {
@@ -50,17 +51,17 @@ public class StitchingVectorDataHandler implements DataHandler{
 
     @Override
     public void importData(Job job, String outputName) throws IOException, JobExecutionException {
-    	
-		String stitchingVectorFilenamePattern = 
-				StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX
-				+ "([0-9]+)" 
-				+ StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX;
-		File jobTempOutputFolder = getJobOutputTempFolder(job.getId(), outputName);	
-    	
-		List<StitchingVectorTimeSlice> timeSlices = Stream
-				.of(jobTempOutputFolder.listFiles((d, name) -> name.matches(stitchingVectorFilenamePattern)))
-				.map(f -> createTimeSlice(f.getName()))
-				.collect(Collectors.toList());
+
+        String stitchingVectorFilenamePattern =
+                StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX
+                        + "([0-9]+)"
+                        + StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX;
+        File jobTempOutputFolder = getJobOutputTempFolder(job.getId(), outputName);
+
+        List<StitchingVectorTimeSlice> timeSlices = Stream
+                .of(jobTempOutputFolder.listFiles((d, name) -> name.matches(stitchingVectorFilenamePattern)))
+                .map(f -> createTimeSlice(f.getName()))
+                .collect(Collectors.toList());
 
         StitchingVector vector = new StitchingVector(job, timeSlices);
         // We save so that an Id is generated.
@@ -76,13 +77,15 @@ public class StitchingVectorDataHandler implements DataHandler{
                     "Cannot move stitching vector to final destination.");
         }
 
+        setOutputId(job, outputName, vector.getId());
+
     }
 
     public String exportDataAsParam(String value) {
         String stitchingVectorId = value;
         String stitchingVectorPath;
-        
-     // check if the input of the job is the output of another job and if so return the associated path
+
+        // check if the input of the job is the output of another job and if so return the associated path
         String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(stitchingVectorId);
@@ -99,20 +102,16 @@ public class StitchingVectorDataHandler implements DataHandler{
         }
         stitchingVectorPath = stitchingVectorPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return stitchingVectorPath;
-        
-    }
 
-    private final File getJobOutputTempFolder(String jobId, String outputName) {
-        return new File( new File(config.getJobsTempFolder(), jobId), outputName);
     }
 
     private StitchingVectorTimeSlice createTimeSlice(String filename) {
-		String errorMessage = "PASSED";
-		int timeSlice = Integer.valueOf(
-				StringUtils.substringBetween(filename, 
-						StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX,
-						StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX));
-		return new StitchingVectorTimeSlice(timeSlice, errorMessage);
+        String errorMessage = "PASSED";
+        int timeSlice = Integer.valueOf(
+                StringUtils.substringBetween(filename,
+                        StitchingVectorConfig.STITCHING_VECTOR_GLOBAL_POSITION_PREFIX,
+                        StitchingVectorConfig.STITCHING_VECTOR_FILENAME_SUFFIX));
+        return new StitchingVectorTimeSlice(timeSlice, errorMessage);
     }
 
 }
