@@ -26,6 +26,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Component("tensorflowModelDataHandler")
+
 public class TensorflowModelDataHandler extends BaseDataHandler implements DataHandler {
 
 	@Autowired
@@ -36,9 +37,9 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
-
 		TensorflowModel tm = new TensorflowModel(job, outputName);
 		trainedModelRepository.save(tm);
+
 
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
@@ -46,7 +47,7 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 		File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
 		boolean success = tempOutputDir.renameTo(trainedModelFolder);
 		if (!success) {
-			trainedModelRepository.delete(tm);
+			tensorflowModelRepository.delete(tm);
 			throw new JobExecutionException("Cannot move tensorflow model to final destination.");
 		}
 
