@@ -17,6 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @Component("collectionDataHandler")
-public class ImagesCollectionDataHandler implements DataHandler {
+public class ImagesCollectionDataHandler extends BaseDataHandler implements DataHandler {
 
     @Autowired
     CoreConfig config;
@@ -56,6 +57,7 @@ public class ImagesCollectionDataHandler implements DataHandler {
             imagesCollectionRepository.delete(outputImagesCollection);
             throw ex;
         }
+        setOutputId(job, outputName, outputImagesCollection.getId());
     }
 
     public String exportDataAsParam(String value) {
@@ -81,7 +83,4 @@ public class ImagesCollectionDataHandler implements DataHandler {
         return imagesCollectionPath;
     }
 
-    private final File getJobOutputTempFolder(String jobId, String outputName) {
-        return new File(new File(config.getJobsTempFolder(), jobId), outputName);
-    }
 }

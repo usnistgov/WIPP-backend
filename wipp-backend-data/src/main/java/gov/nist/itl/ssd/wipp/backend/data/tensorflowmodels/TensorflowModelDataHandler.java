@@ -13,6 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
 import java.io.File;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,29 +26,31 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Component("tensorflowModelDataHandler")
-public class TensorflowModelDataHandler implements DataHandler {
-	
-    @Autowired
-    CoreConfig config;
-    
-    @Autowired
-    private TensorflowModelRepository trainedModelRepository;
+public class TensorflowModelDataHandler extends BaseDataHandler implements DataHandler {
+
+	@Autowired
+	CoreConfig config;
+
+	@Autowired
+	private TensorflowModelRepository trainedModelRepository;
 
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
-		
+
 		TensorflowModel tm = new TensorflowModel(job, outputName);
 		trainedModelRepository.save(tm);
-		
+
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
-		
-		File tempOutputDir = getJobOutputTempFolder(job, outputName);
+
+		File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
 		boolean success = tempOutputDir.renameTo(trainedModelFolder);
 		if (!success) {
 			trainedModelRepository.delete(tm);
 			throw new JobExecutionException("Cannot move tensorflow model to final destination.");
-		}		
+		}
+
+		setOutputId(job, outputName, tm.getId());
 	}
 
 	@Override
@@ -57,9 +60,5 @@ public class TensorflowModelDataHandler implements DataHandler {
 		String trainedModelPath = inputTrainedModel.getAbsolutePath();
 		return trainedModelPath;
 	}
-	
-    private final File getJobOutputTempFolder(Job job, String outputName) {
-        return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
-    }
-	
+
 }
