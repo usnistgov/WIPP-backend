@@ -101,7 +101,7 @@ pipeline {
                         sh "sed -i 's/STORAGE_WIPP_VALUE/${STORAGE_WIPP}/g' storage-ceph.yaml"
                         sh "sed -i 's/CEPH_NAMESPACE_VALUE/${CEPH_NAMESPACE}/g' storage-ceph.yaml"
                         sh "sed -i 's/CEPH_SHARED_FS_NAME_VALUE/${CEPH_SHARED_FS_NAME}/g' storage-ceph.yaml"
-                        sh "sed -i 's/CEPH_SHARED_FS_WIPP_PATH_VALUE/${CEPH_SHARED_FS_WIPP_PATH}/g' storage-ceph.yaml"
+                        sh "sed -i 's|CEPH_SHARED_FS_WIPP_PATH_VALUE|${CEPH_SHARED_FS_WIPP_PATH}|g' storage-ceph.yaml"
                         sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' storage-ceph.yaml"
                         sh "sed -i 's/STORAGE_CLASS_NAME_VALUE/${STORAGE_CLASS_NAME}/g' storage-ceph.yaml"
                         sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' storage-ceph.yaml"
