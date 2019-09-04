@@ -27,7 +27,7 @@ pipeline {
         CEPH_NAMESPACE = "rook-ceph"
         CEPH_SHARED_FS_NAME = "myfs"
         CEPH_SHARED_FS_WIPP_PATH = "/wipp"
-        WIPP_PVC_NAME "wipp-pv-claim"
+        WIPP_PVC_NAME = "wipp-pv-claim"
         SHARED_PVC_NAME = "shared-pv-claim"
         STORAGE_CLASS_NAME = "rook-ceph-block"
         STORAGE_WIPP = "100Gi"
