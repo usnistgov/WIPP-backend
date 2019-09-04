@@ -52,12 +52,12 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
                     // new File(getJobTempFolder(job), "images"));
                     // TODO: output conventions for plugins
                     getJobOutputTempFolder(job.getId(), outputName));
+            setOutputId(job, outputName, outputImagesCollection.getId());
 
         } catch (IOException ex) {
             imagesCollectionRepository.delete(outputImagesCollection);
             throw ex;
         }
-        setOutputId(job, outputName, outputImagesCollection.getId());
     }
 
     public String exportDataAsParam(String value) {
