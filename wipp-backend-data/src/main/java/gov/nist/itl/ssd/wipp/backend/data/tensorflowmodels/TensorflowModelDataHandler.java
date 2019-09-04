@@ -33,12 +33,12 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 	CoreConfig config;
 
 	@Autowired
-	private TensorflowModelRepository trainedModelRepository;
+	private TensorflowModelRepository tensorflowModelRepository;
 
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		TensorflowModel tm = new TensorflowModel(job, outputName);
-		trainedModelRepository.save(tm);
+		tensorflowModelRepository.save(tm);
 
 
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
