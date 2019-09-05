@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels.tensorboard;
+package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +11,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
-@RepositoryRestResource
+@RepositoryRestResource(path="tensorboardLogs")
 public interface TensorboardLogsRepository extends MongoRepository<TensorboardLogs, String>{
 
 	@Override
@@ -21,6 +21,8 @@ public interface TensorboardLogsRepository extends MongoRepository<TensorboardLo
 	@Override
 	@RestResource(exported = false)
 	void delete(TensorboardLogs t);
+	
+	TensorboardLogs findOneBySourceJob(@Param("sourceJob") String sourceJob);
 
 	Page<TensorboardLogs> findByNameContainingIgnoreCase(
 			@Param("name") String name, Pageable p);

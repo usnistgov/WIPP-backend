@@ -24,9 +24,15 @@ pipeline {
             returnStdout: true
         )}"""
         DOCKER_VERSION = readFile(file: 'deploy/docker/VERSION')
+        CEPH_NAMESPACE = "rook-ceph"
+        CEPH_SHARED_FS_NAME = "myfs"
+        CEPH_SHARED_FS_WIPP_PATH = "/wipp"
+        WIPP_PVC_NAME = "wipp-pv-claim"
         SHARED_PVC_NAME = "shared-pv-claim"
         STORAGE_CLASS_NAME = "rook-ceph-block"
+        STORAGE_WIPP = "100Gi"
         STORAGE_MONGO = "10Gi"
+        ELASTIC_APM_URL = "https://apm.ci.aws.labshare.org"
     }
     triggers {
         pollSCM('H/2 * * * *')
@@ -92,17 +98,22 @@ pipeline {
             steps {
                 dir('deploy/kubernetes') {
                     script {
-                        sh "sed -i 's/SHARED_PVC_NAME_VALUE/${SHARED_PVC_NAME}/g' mongo-deployment.yaml"
-                        sh "sed -i 's/STORAGE_CLASS_NAME_VALUE/${STORAGE_CLASS_NAME}/g' mongo-deployment.yaml"
-                        sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' mongo-deployment.yaml"
-                        sh "sed -i 's/SHARED_PVC_NAME_VALUE/${SHARED_PVC_NAME}/g' backend-deployment.yaml"
+                        sh "sed -i 's/STORAGE_WIPP_VALUE/${STORAGE_WIPP}/g' storage-ceph.yaml"
+                        sh "sed -i 's/CEPH_NAMESPACE_VALUE/${CEPH_NAMESPACE}/g' storage-ceph.yaml"
+                        sh "sed -i 's/CEPH_SHARED_FS_NAME_VALUE/${CEPH_SHARED_FS_NAME}/g' storage-ceph.yaml"
+                        sh "sed -i 's|CEPH_SHARED_FS_WIPP_PATH_VALUE|${CEPH_SHARED_FS_WIPP_PATH}|g' storage-ceph.yaml"
+                        sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' storage-ceph.yaml"
+                        sh "sed -i 's/STORAGE_CLASS_NAME_VALUE/${STORAGE_CLASS_NAME}/g' storage-ceph.yaml"
+                        sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' storage-ceph.yaml"
                         sh "sed -i 's/BACKEND_VERSION_VALUE/${DOCKER_VERSION}/g' backend-deployment.yaml"
+                        sh "sed -i 's|ELASTIC_APM_URL_VALUE|${ELASTIC_APM_URL}|g' backend-deployment.yaml"
                         sh "sed -i 's/BACKEND_HOST_NAME_VALUE/${BACKEND_HOST_NAME}/g' services.yaml"
                         sh "sed -i 's/MONGO_HOST_NAME_VALUE/${MONGO_HOST_NAME}/g' services.yaml"
                     }
                     withAWS(credentials:'aws-jenkins-eks') {
                         sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
                         sh '''
+                            kubectl apply -f storage-ceph.yaml
                             kubectl apply -f mongo-deployment.yaml
                             kubectl apply -f backend-deployment.yaml
                             kubectl apply -f services.yaml

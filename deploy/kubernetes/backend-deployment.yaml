@@ -49,17 +49,23 @@ spec:
         - image: labshare/wipp-backend:BACKEND_VERSION_VALUE
           name: wipp-backend
           imagePullPolicy: Always
-          args: ["wipp-mongo", "27017", "SHARED_PVC_NAME_VALUE"]
+          args: ["wipp-mongo", "27017", "WIPP_PVC_NAME_VALUE"]
+          env:
+            - name: ELASTIC_APM_SERVER_URLS
+              value: ELASTIC_APM_URL_VALUE
+            - name: ELASTIC_APM_SERVICE_NAME
+              value: wipp-backend
+            - name: ELASTIC_APM_APPLICATION_PACKAGES
+              value: gov.nist.itl.ssd.wipp.backend
           volumeMounts:
             - mountPath: /data/WIPP-plugins
               name: data
-              subPath: wipp
           ports:
             - containerPort: 8080
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: SHARED_PVC_NAME_VALUE
+            claimName: WIPP_PVC_NAME_VALUE
       restartPolicy: Always
       imagePullSecrets:
         - name: labshare-docker
