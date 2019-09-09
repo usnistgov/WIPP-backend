@@ -57,26 +57,26 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 	}
 	
     public String exportDataAsParam(String value) {
-        String trainedModelId = value;
-        String trainedModelPath;
+        String tensorflowModelId = value;
+        String tensorflowModelPath;
 
         // check if the input of the job is the output of another job and if so return the associated path
         String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
         Pattern pattern = Pattern.compile(regex);
-        Matcher m = pattern.matcher(trainedModelId);
+        Matcher m = pattern.matcher(tensorflowModelId);
         if (m.find()) {
             String jobId = m.group(1);
             String outputName = m.group(2);
-            trainedModelPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
+            tensorflowModelPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
         }
-        // else return the path of the trained model
+        // else return the path of the tensorflow model
         else {
-            File stitchingVectorFolder = new File(config.getTensorflowModelsFolder(), trainedModelId);
-            trainedModelPath = stitchingVectorFolder.getAbsolutePath();
+            File tensorflowModelFolder = new File(config.getTensorflowModelsFolder(), tensorflowModelId);
+            tensorflowModelPath = tensorflowModelFolder.getAbsolutePath();
 
         }
-        trainedModelPath = trainedModelPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
-        return trainedModelPath;
+        tensorflowModelPath = tensorflowModelPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
+        return tensorflowModelPath;
 
     }
 
