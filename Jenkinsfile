@@ -106,6 +106,7 @@ pipeline {
                         sh "sed -i 's/STORAGE_CLASS_NAME_VALUE/${STORAGE_CLASS_NAME}/g' storage-ceph.yaml"
                         sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' storage-ceph.yaml"
                         sh "sed -i 's/BACKEND_VERSION_VALUE/${DOCKER_VERSION}/g' backend-deployment.yaml"
+                        sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' backend-deployment.yaml"
                         sh "sed -i 's|ELASTIC_APM_URL_VALUE|${ELASTIC_APM_URL}|g' backend-deployment.yaml"
                         sh "sed -i 's/BACKEND_HOST_NAME_VALUE/${BACKEND_HOST_NAME}/g' services.yaml"
                         sh "sed -i 's/MONGO_HOST_NAME_VALUE/${MONGO_HOST_NAME}/g' services.yaml"
