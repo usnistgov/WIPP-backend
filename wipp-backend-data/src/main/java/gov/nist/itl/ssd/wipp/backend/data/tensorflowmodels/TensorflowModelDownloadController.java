@@ -12,21 +12,13 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepository;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFile;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileRepository;
+import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -35,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Update.AddToSetBuilder;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Controller
+@Api(tags="TensorflowModel Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/tensorflowModels/{tensorflowModelId}/download")
 public class TensorflowModelDownloadController {
 

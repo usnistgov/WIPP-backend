@@ -25,7 +25,7 @@ public class Manifest {
 		return layersGroups;
 	}
 
-	public void setLayersGroup(List<LayersGroup> layersGroups) {
+	public void setLayersGroups(List<LayersGroup> layersGroups) {
 		this.layersGroups = layersGroups;
 	}
 }

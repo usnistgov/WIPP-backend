@@ -42,7 +42,7 @@ public class PluginIO {
         return options;
     }
 
-    public void setFormat(Map<String, Object> options) {
+    public void setOptions(Map<String, Object> options) {
         this.options = options;
     }
 

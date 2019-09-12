@@ -15,6 +15,7 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
+import io.swagger.annotations.Api;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Antoine Vandecreme
  */
 @Controller
+@Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/copy")
 public class ImagesCollectionCopyController {
 

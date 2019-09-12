@@ -4,9 +4,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
 
@@ -38,6 +39,7 @@ public abstract class Computation {
 		this.version = version;
 	}
 
+	@JsonIgnore
 	public String getIdentifier() {
 		String identifier = name + "-" + version;
 		return identifier.toLowerCase().replaceAll("[^a-z0-9\\-]", "-");
