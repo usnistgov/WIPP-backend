@@ -50,6 +50,7 @@ import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVector;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSliceRepository;
+import io.swagger.annotations.Api;
 
 
 /**
@@ -58,6 +59,7 @@ import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTi
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @Controller
+@Api(tags="Pyramid Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramids/{pyramidId}/fetching")
 public class PyramidFetchingController {
 

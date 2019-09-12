@@ -116,11 +116,6 @@ public class Job {
         this.error = error;
     }
 
-    public String getType() {
-        String type = this.getClass().getSimpleName();
-        return type.substring(0, 1).toLowerCase() + type.substring(1);
-    }
-
     public Map<String, String> getParameters() {
         return parameters;
     }
