@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class CoreConfig {
 
     public static final String BASE_URI = "/api";
-    public static final String PYRAMIDS_BASE_URI = "/pyramids";
+    public static final String PYRAMIDS_BASE_URI = "/pyramid-files";
     public static final int TILE_SIZE = 1024;
 
     @Value("${wipp.version}")
