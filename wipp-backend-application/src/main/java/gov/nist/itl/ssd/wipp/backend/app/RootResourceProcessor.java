@@ -12,10 +12,8 @@
 package gov.nist.itl.ssd.wipp.backend.app;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
-import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 
-//import gov.nist.itl.ssd.wipp.backend.core.job.Job;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +32,7 @@ import org.springframework.hateoas.ResourceProcessor;
 import org.springframework.stereotype.Component;
 
 /**
- * @author mhs1
+ * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
 @Component
@@ -82,11 +80,6 @@ public class RootResourceProcessor
                             ex);
                 }
             }
-
-            //TODO: manage exposed ids and entity links for jobs
-            // Manually add Job because it is not a bean
-            URI uri = entityLinks.linkFor(Job.class).toUri();
-            links.add(new Link(uri + "/{id}", "job"));
         }
         return links;
     }
