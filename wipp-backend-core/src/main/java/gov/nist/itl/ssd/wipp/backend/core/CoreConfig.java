@@ -61,6 +61,9 @@ public class CoreConfig {
     
     @Value("${storage.tensorboard}")
     private String tensorboardLogsFolder;
+    
+    @Value("${storage.csv.collections}")
+    private String csvCollectionsFolder;
 
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
@@ -120,6 +123,10 @@ public class CoreConfig {
     
    	public String getTensorboardLogsFolder() {
 		return tensorboardLogsFolder;
+	}
+   	
+	public String getCsvCollectionsFolder() {
+		return csvCollectionsFolder;
 	}
 
 	public String getWorflowBinary() {
