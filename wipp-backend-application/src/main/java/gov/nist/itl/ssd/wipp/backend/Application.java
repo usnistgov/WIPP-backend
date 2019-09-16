@@ -25,18 +25,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-
 
 /**
  *
@@ -46,14 +53,15 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
 @EnableAutoConfiguration
 @EnableEntityLinks
-@EnableWebMvc
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+@EnableSwagger2WebMvc
+@Import({ SpringDataRestConfiguration.class })
 public class Application implements WebMvcConfigurer {
 	
 	@Autowired
     private CoreConfig coreConfig;
-
-    public static void main(String[] args) {
+	
+	public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(
                 Application.class, args);
         initSpring(ctx);
@@ -105,6 +113,38 @@ public class Application implements WebMvcConfigurer {
                 addResourceLocations(
                 		pyramidsFolderFile
                         .toURI().toString());
+    }
+    
+    /**
+     * Configure Swagger API documentation
+     * @return API Documentation configuration
+     */
+    @Bean
+    public Docket wippApi() {
+      return new Docket(DocumentationType.SWAGGER_2)
+          .select() 
+          .apis(RequestHandlerSelectors.any())    
+          .paths(PathSelectors.any()) 
+          .paths(PathSelectors.regex("/error.*").negate())
+          .paths(PathSelectors.regex("/api/profile").negate())
+      	  // workaround to avoid duplicate entries for plugins
+          .paths(PathSelectors.regex("/api/plugins").negate())
+          .build() 
+          .apiInfo(apiEndPointsInfo())
+          .enableUrlTemplating(true);
+    }
+    
+    /**
+     * Configure Swagger API general information
+     * @return API information
+     */
+    private ApiInfo apiEndPointsInfo() {
+        return new ApiInfoBuilder().title("WIPP REST API Documentation")
+            .description("Web Image Processing Pipeline REST API")
+            .license("NIST Disclaimer")
+            .licenseUrl("https://www.nist.gov/disclaimer")
+            .version(coreConfig.getWippVersion())
+            .build();
     }
 
 }

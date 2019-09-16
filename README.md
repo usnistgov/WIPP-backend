@@ -32,7 +32,8 @@ mvn clean install
 cd wipp-backend-application
 mvn spring-boot:run
 ```
-The WIPP REST API will be launched with the `dev` profile and available at `http://localhost:8080/api`
+The WIPP REST API will be launched with the `dev` profile and available at `http://localhost:8080/api`.  
+Swagger API documentation will be available at `http://localhost:8080/swagger-ui.html` (Swagger UI) and `http://localhost:8080/v2/api-docs` (OpenAPI spec).
 
 ## Docker packaging
 The Maven `prod` profile should be used for Docker packaging, even for testing/development purposes:
