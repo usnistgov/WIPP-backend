@@ -9,10 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
-
-import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-import io.swagger.annotations.Api;
+package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,51 +30,52 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+
 /**
- *
- * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
- */
+*
+* @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+*/
 @Controller
-@Api(tags="TensorflowModel Entity")
-@RequestMapping(CoreConfig.BASE_URI + "/tensorflowModels/{tensorflowModelId}/download")
-public class TensorflowModelDownloadController {
+@RequestMapping(CoreConfig.BASE_URI + "/csvCollections/{csvCollectionId}/download")
+public class CsvCollectionDownloadController {
 
 	@Autowired
 	CoreConfig config;
 
 	@Autowired
-	TensorflowModelRepository tensorflowModelRepository;
+	CsvCollectionRepository csvCollectionRepository;
 
 	@RequestMapping(
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/zip")
 	public void get(
-			@PathVariable("tensorflowModelId") String tensorflowModelId,
+			@PathVariable("csvCollectionId") String csvCollectionId,
 			HttpServletResponse response) throws IOException {
 		
-        TensorflowModel tm = null;
-		Optional<TensorflowModel> optTm = tensorflowModelRepository.findById(tensorflowModelId);
+        CsvCollection csvCollection = null;
+		Optional<CsvCollection> optCsvCollection = csvCollectionRepository.findById(csvCollectionId);
 		
-		if (!optTm.isPresent()) {
+		if (!optCsvCollection.isPresent()) {
 			throw new ResourceNotFoundException(
-					"Tensorflow model " + tensorflowModelId + " not found.");
-		} else { // TrainedModel is present
-            tm = optTm.get();
+					"Csv Collection " + csvCollectionId + " not found.");
+		} else { // csv collection is present
+			csvCollection = optCsvCollection.get();
         }
 
-		// get tensorflow model folder
-		File tensorflowModelStorageFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
-		if (! tensorflowModelStorageFolder.exists()) {
+		// get csv collection folder
+		File csvCollectionStorageFolder = new File(config.getCsvCollectionsFolder(), csvCollection.getId());
+		if (! csvCollectionStorageFolder.exists()) {
 			throw new ResourceNotFoundException(
-					"Tensorflow model " + tensorflowModelId + " " + tm.getName() + " not found.");
+					"Csv Collection " + csvCollectionId + " " + csvCollection.getName() + " not found.");
 		}
 
 		response.setHeader("Content-disposition",
-				"attachment;filename=" + "TensorflowModel-" + tm.getName() + ".zip");
+				"attachment;filename=" + "CsvCollection-" + csvCollection.getName() + ".zip");
 
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
-		addToZip("", zos, tensorflowModelStorageFolder);
+		addToZip("", zos, csvCollectionStorageFolder);
 		zos.finish();
 	}
 
@@ -96,6 +94,4 @@ public class TensorflowModelDownloadController {
 			}
 		}
 	}
-
-
 }

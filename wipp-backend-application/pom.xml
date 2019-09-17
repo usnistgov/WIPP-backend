@@ -75,6 +75,7 @@
 				<storage.pyramids>${user.home}/WIPP-plugins/pyramids</storage.pyramids>
 				<storage.tensorflow>${user.home}/WIPP-plugins/tensorflow-models</storage.tensorflow>
 				<storage.tensorboard>${user.home}/WIPP-plugins/tensorboard-logs</storage.tensorboard>
+				<storage.csv.collections>${user.home}/WIPP-plugins/csv-collections</storage.csv.collections>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
@@ -97,6 +98,7 @@
 				<storage.pyramids>/data/WIPP-plugins/pyramids</storage.pyramids>
 				<storage.tensorflow>/data/WIPP-plugins/tensorflow-models</storage.tensorflow>
 				<storage.tensorboard>/data/WIPP-plugins/tensorboard-logs</storage.tensorboard>
+				<storage.csv.collections>/data/WIPP-plugins/csv-collections</storage.csv.collections>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
@@ -117,4 +119,5 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	
 </project>

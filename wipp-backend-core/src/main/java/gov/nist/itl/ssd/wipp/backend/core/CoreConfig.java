@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class CoreConfig {
 
     public static final String BASE_URI = "/api";
-    public static final String PYRAMIDS_BASE_URI = "/pyramids";
+    public static final String PYRAMIDS_BASE_URI = "/pyramid-files";
     public static final int TILE_SIZE = 1024;
 
     @Value("${wipp.version}")
@@ -61,6 +61,9 @@ public class CoreConfig {
     
     @Value("${storage.tensorboard}")
     private String tensorboardLogsFolder;
+    
+    @Value("${storage.csv.collections}")
+    private String csvCollectionsFolder;
 
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
@@ -120,6 +123,10 @@ public class CoreConfig {
     
    	public String getTensorboardLogsFolder() {
 		return tensorboardLogsFolder;
+	}
+   	
+	public String getCsvCollectionsFolder() {
+		return csvCollectionsFolder;
 	}
 
 	public String getWorflowBinary() {
