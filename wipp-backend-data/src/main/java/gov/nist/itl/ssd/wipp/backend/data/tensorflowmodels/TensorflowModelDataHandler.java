@@ -42,7 +42,6 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 		TensorflowModel tm = new TensorflowModel(job, outputName);
 		tensorflowModelRepository.save(tm);
 
-
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
 
