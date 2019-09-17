@@ -58,7 +58,6 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
             imagesCollectionRepository.delete(outputImagesCollection);
             throw ex;
         }
-        setOutputId(job, outputName, outputImagesCollection.getId());
     }
 
     public String exportDataAsParam(String value) {

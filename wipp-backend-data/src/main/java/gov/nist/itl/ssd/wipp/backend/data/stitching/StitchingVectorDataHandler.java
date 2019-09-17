@@ -63,7 +63,7 @@ public class StitchingVectorDataHandler extends BaseDataHandler implements DataH
                 .map(f -> createTimeSlice(f.getName()))
                 .collect(Collectors.toList());
 
-        StitchingVector vector = new StitchingVector(job, timeSlices);
+        StitchingVector vector = new StitchingVector(job, timeSlices, outputName);
         // We save so that an Id is generated.
         stitchingVectorRepository.save(vector);
 
