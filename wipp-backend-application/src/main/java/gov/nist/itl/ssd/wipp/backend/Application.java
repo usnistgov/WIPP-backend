@@ -30,6 +30,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -54,8 +55,9 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 @EnableAutoConfiguration
 @EnableEntityLinks
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-@EnableSwagger2WebMvc
-@Import({ SpringDataRestConfiguration.class })
+//@EnableSwagger2WebMvc
+//@Import({ SpringDataRestConfiguration.class })
+@EnableWebMvc
 public class Application implements WebMvcConfigurer {
 	
 	@Autowired
