@@ -21,23 +21,17 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
-import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Converts workflow configuration to Argo workflow spec file (YAML) and submits workflow
+ * Converts workflow configuration to Argo workflow spec file (YAML)
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
@@ -288,42 +282,7 @@ public class WorkflowConverter {
 
         File workflowFile = new File(workflowFilePath);
         mapper.writeValue(workflowFile, argoWorkflow);
-
-        // Launch separate submission of the argo workflow
-        List<String> builderCommands = new ArrayList<>();
-        Collections.addAll(builderCommands, coreConfig.getWorflowBinary().split(" "));
-        builderCommands.add("submit");
-        builderCommands.add("--output");
-        builderCommands.add("name");
-        builderCommands.add(workflowFilePath);
         
-        ProcessBuilder builder = new ProcessBuilder(builderCommands);
-        builder.redirectInput(Redirect.INHERIT).redirectError(Redirect.INHERIT);
-        Process process;
-        try {
-            process = builder.start();
-            int exitCode = process.waitFor();
-            
-        	InputStream is = process.getInputStream();
-        	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            
-        	String line = reader.readLine();
-        	if(line != null){
-        		this.workflow.setGeneratedName(line);
-        	} 
-        	
-            assert exitCode == 0;
-            
-            this.workflow.setStatus(WorkflowStatus.SUBMITTED);
-        } catch (IOException ex) {
-            this.workflow.setStatus(WorkflowStatus.ERROR);
-            LOGGER.log(Level.WARNING, "Cannot start workflow ", ex);
-
-        }
-    }
-
-    public Workflow getWorkflow() {
-        return this.workflow;
     }
 
     /**
