@@ -64,7 +64,13 @@ public class CoreConfig {
     
     @Value("${storage.csv.collections}")
     private String csvCollectionsFolder;
+    
+    @Value("${storage.notebooks}")
+    private String notebooksFolder;
 
+    @Value("${storage.notebooks.tmp}")
+    private String notebooksTmpFolder;
+    
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
 
@@ -127,6 +133,14 @@ public class CoreConfig {
    	
 	public String getCsvCollectionsFolder() {
 		return csvCollectionsFolder;
+	}
+
+	public String getNotebooksFolder() {
+		return notebooksFolder;
+	}
+
+	public String getNotebooksTmpFolder() {
+		return notebooksTmpFolder;
 	}
 
 	public String getWorflowBinary() {
