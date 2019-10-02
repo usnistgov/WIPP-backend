@@ -75,11 +75,12 @@ public class StitchingVector extends Data {
         this.creationDate = new Date();
         this.timeSlices = timeSlices;
     }
-    
-    StitchingVector(Job job, String outputName) {
+
+    StitchingVector(Job job, List<StitchingVectorTimeSlice> timeSlices, String outputName) {
     	this.name = job.getName() + "-" + outputName;
     	this.job = job.getId();
         this.creationDate = new Date();
+        this.timeSlices = timeSlices;
     }
 
     public String getId() {
