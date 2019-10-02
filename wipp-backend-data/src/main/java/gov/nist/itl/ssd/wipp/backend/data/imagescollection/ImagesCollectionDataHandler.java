@@ -55,16 +55,16 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
 
         String imagesCollectionId = outputImagesCollection.getId();
         try {
-            File metadataFile = new File(new File(getJobOutputTempFolder(job.getId(), outputName).getAbsolutePath()), "/metadata_files");
-            File imagesFile = new File(new File(getJobOutputTempFolder(job.getId(), outputName).getAbsolutePath()), "/images");
+            File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);
+            File metadataFolder = new File(jobOutputTempFolder, "/metadata_files");
+            File imagesFolder = new File(jobOutputTempFolder, "/images");
 
-            if (metadataFile.exists() || imagesFile.exists()) {
-                importFolder(imageRepository, imagesFile, imagesCollectionId);
-                importFolder(metadataRepository, metadataFile, imagesCollectionId);
+            if (metadataFolder.exists() || imagesFolder.exists()) {
+                importFolder(imageRepository, imagesFolder, imagesCollectionId);
+                importFolder(metadataRepository, metadataFolder, imagesCollectionId);
             }
             else {
-                File outputFile = new File(getJobOutputTempFolder(job.getId(), outputName).getAbsolutePath());
-                importFolder(imageRepository, outputFile, imagesCollectionId);
+                importFolder(imageRepository, jobOutputTempFolder, imagesCollectionId);
             }
             setOutputId(job, outputName, imagesCollectionId);
 
@@ -97,7 +97,7 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         return imagesCollectionPath;
     }
 
-    public void importFolder(FileHandler fileHandler, File file, String id) throws IOException {
+    private void importFolder(FileHandler fileHandler, File file, String id) throws IOException {
         fileHandler.importFolder(id, file);
     }
 }
