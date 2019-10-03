@@ -7,9 +7,6 @@ spec:
   storageClassName: rook-cephfs
   accessModes:
   - ReadWriteMany
-  selector:
-    matchLabels:
-      name: wipp-volume
   resources:
     requests:
       storage: STORAGE_WIPP_VALUE
