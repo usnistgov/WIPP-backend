@@ -56,8 +56,8 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         String imagesCollectionId = outputImagesCollection.getId();
         try {
             File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);
-            File metadataFolder = new File(jobOutputTempFolder, "/metadata_files");
-            File imagesFolder = new File(jobOutputTempFolder, "/images");
+            File metadataFolder = new File(jobOutputTempFolder, "metadata_files");
+            File imagesFolder = new File(jobOutputTempFolder, "images");
 
             if (metadataFolder.exists() || imagesFolder.exists()) {
                 importFolder(imageRepository, imagesFolder, imagesCollectionId);
