@@ -24,14 +24,10 @@ pipeline {
             returnStdout: true
         )}"""
         DOCKER_VERSION = readFile(file: 'deploy/docker/VERSION')
-        CEPH_NAMESPACE = "rook-ceph"
-        CEPH_SHARED_FS_NAME = "myfs"
-        CEPH_SHARED_FS_WIPP_PATH = "/wipp"
         WIPP_PVC_NAME = "wipp-pv-claim"
-        SHARED_PVC_NAME = "shared-pv-claim"
-        STORAGE_CLASS_NAME = "rook-ceph-block"
-        STORAGE_WIPP = "100Gi"
-        STORAGE_MONGO = "10Gi"
+        STORAGE_CLASS_NAME = "rook-cephfs"
+        STORAGE_WIPP = "50Gi"
+        STORAGE_MONGO = "5Gi"
         ELASTIC_APM_URL = "https://apm.ci.aws.labshare.org"
     }
     triggers {
@@ -99,9 +95,6 @@ pipeline {
                 dir('deploy/kubernetes') {
                     script {
                         sh "sed -i 's/STORAGE_WIPP_VALUE/${STORAGE_WIPP}/g' storage-ceph.yaml"
-                        sh "sed -i 's/CEPH_NAMESPACE_VALUE/${CEPH_NAMESPACE}/g' storage-ceph.yaml"
-                        sh "sed -i 's/CEPH_SHARED_FS_NAME_VALUE/${CEPH_SHARED_FS_NAME}/g' storage-ceph.yaml"
-                        sh "sed -i 's|CEPH_SHARED_FS_WIPP_PATH_VALUE|${CEPH_SHARED_FS_WIPP_PATH}|g' storage-ceph.yaml"
                         sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' storage-ceph.yaml"
                         sh "sed -i 's/STORAGE_CLASS_NAME_VALUE/${STORAGE_CLASS_NAME}/g' storage-ceph.yaml"
                         sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' storage-ceph.yaml"

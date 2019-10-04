@@ -1,37 +1,12 @@
-# PV for WIPP-backend
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  labels:
-    name: wipp-volume
-  name: wipp-pv
-spec:
-  accessModes:
-  - ReadWriteMany
-  capacity:
-    storage: STORAGE_WIPP_VALUE
-  flexVolume:
-    driver: ceph.rook.io/rook
-    fsType: ceph
-    options:
-      clusterNamespace: CEPH_NAMESPACE_VALUE
-      fsName: CEPH_SHARED_FS_NAME_VALUE
-      path: CEPH_SHARED_FS_WIPP_PATH_VALUE
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: rook-ceph-block
----
 # PVC for WIPP-backend
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: WIPP_PVC_NAME_VALUE
 spec:
-  storageClassName: rook-ceph-block
+  storageClassName: rook-cephfs
   accessModes:
   - ReadWriteMany
-  selector:
-    matchLabels:
-      name: wipp-volume
   resources:
     requests:
       storage: STORAGE_WIPP_VALUE
