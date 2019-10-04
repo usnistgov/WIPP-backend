@@ -60,8 +60,12 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
             File imagesFolder = new File(jobOutputTempFolder, "images");
 
             if (metadataFolder.exists() || imagesFolder.exists()) {
-                importFolder(imageRepository, imagesFolder, imagesCollectionId);
-                importFolder(metadataRepository, metadataFolder, imagesCollectionId);
+                if (imagesFolder.exists()) {
+                    importFolder(imageRepository, imagesFolder, imagesCollectionId);
+                }
+                if(metadataFolder.exists()) {
+                    importFolder(metadataRepository, metadataFolder, imagesCollectionId);
+                }
             }
             else {
                 importFolder(imageRepository, jobOutputTempFolder, imagesCollectionId);
