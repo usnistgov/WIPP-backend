@@ -14,7 +14,9 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
@@ -39,6 +41,9 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     @Autowired
     private ImageHandler imageRepository;
 
+    @Autowired
+    private MetadataFileHandler metadataRepository;
+
     public ImagesCollectionDataHandler() {
     }
 
@@ -47,12 +52,25 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         ImagesCollection outputImagesCollection = new ImagesCollection(job, outputName);
         outputImagesCollection = imagesCollectionRepository.save(
                 outputImagesCollection);
+
+        String imagesCollectionId = outputImagesCollection.getId();
         try {
-            imageRepository.importFolder(outputImagesCollection.getId(),
-                    // new File(getJobTempFolder(job), "images"));
-                    // TODO: output conventions for plugins
-                    getJobOutputTempFolder(job.getId(), outputName));
-            setOutputId(job, outputName, outputImagesCollection.getId());
+            File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);
+            File metadataFolder = new File(jobOutputTempFolder, "metadata_files");
+            File imagesFolder = new File(jobOutputTempFolder, "images");
+
+            if (metadataFolder.exists() || imagesFolder.exists()) {
+                if (imagesFolder.exists()) {
+                    importFolder(imageRepository, imagesFolder, imagesCollectionId);
+                }
+                if(metadataFolder.exists()) {
+                    importFolder(metadataRepository, metadataFolder, imagesCollectionId);
+                }
+            }
+            else {
+                importFolder(imageRepository, jobOutputTempFolder, imagesCollectionId);
+            }
+            setOutputId(job, outputName, imagesCollectionId);
 
         } catch (IOException ex) {
             imagesCollectionRepository.delete(outputImagesCollection);
@@ -83,4 +101,7 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         return imagesCollectionPath;
     }
 
+    private void importFolder(FileHandler fileHandler, File file, String id) throws IOException {
+        fileHandler.importFolder(id, file);
+    }
 }
