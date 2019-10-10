@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.jboss.logging.Logger;
-import org.jboss.logging.Logger.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
@@ -123,7 +123,7 @@ public class ImagesCollectionEventHandler {
     	try {
     		FileUtils.deleteDirectory(imagesCollectionFolder);
     	} catch (IOException e) {
-    		LOGGER.log(Level.WARN, "Was not able to delete the image collection folder " + imagesCollectionFolder);
+    		LOGGER.log(Level.WARNING, "Was not able to delete the image collection folder " + imagesCollectionFolder);
     	}	
     }
 
