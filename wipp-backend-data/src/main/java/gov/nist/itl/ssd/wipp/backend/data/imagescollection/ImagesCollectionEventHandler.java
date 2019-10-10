@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
@@ -39,6 +41,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RepositoryEventHandler(ImagesCollection.class)
 public class ImagesCollectionEventHandler {
+	
+	private static final Logger LOGGER = Logger.getLogger(ImagesCollectionEventHandler.class.getName());
 	
     @Autowired
     CoreConfig config;
@@ -113,14 +117,14 @@ public class ImagesCollectionEventHandler {
 
     @HandleAfterDelete
     public void handleAfterDelete(ImagesCollection imagesCollection) {
-        imageRepository.deleteAll(imagesCollection.getId(), false);
-        metadataFileRepository.deleteAll(imagesCollection.getId(), false);
+    	imageRepository.deleteAll(imagesCollection.getId(), false);
+    	metadataFileRepository.deleteAll(imagesCollection.getId(), false);
     	File imagesCollectionFolder = new File (config.getImagesCollectionsFolder(), imagesCollection.getId());
     	try {
-			FileUtils.deleteDirectory(imagesCollectionFolder);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	
+    		FileUtils.deleteDirectory(imagesCollectionFolder);
+    	} catch (IOException e) {
+    		LOGGER.log(Level.WARN, "Was not able to delete the image collection folder " + imagesCollectionFolder);
+    	}	
     }
 
 }
