@@ -40,6 +40,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -137,6 +138,19 @@ public class Application implements WebMvcConfigurer {
       	  // workaround to avoid duplicate entries for plugins
           .paths(PathSelectors.regex("/api/plugins").negate())
           .build() 
+          // manually create tags to manage custom descriptions
+          .tags(
+              new Tag("CsvCollection Entity", "REST API for CSV Collections"),
+              new Tag("ImagesCollection Entity", "REST API for Images Collections"),
+              new Tag("Job Entity", "REST API for Jobs"),
+              new Tag("Notebook Entity", "REST API for Notebooks"),
+              new Tag("Plugin Entity", "REST API for Plugins"),
+              new Tag("Pyramid Entity", "REST API for Pyramids"),
+              new Tag("StitchingVector Entity", "REST API for Stitching Vectors"),
+              new Tag("TensorboardLogs Entity", "REST API for Tensorboard Logs"),
+              new Tag("TensorflowModel Entity", "REST API for Tensorflow Models"),
+              new Tag("Visualization Entity", "REST API for Pyramid Visualizations"),
+              new Tag("Workflow Entity", "REST API for Workflows"))
           .apiInfo(apiEndPointsInfo())
           .enableUrlTemplating(true);
     }
