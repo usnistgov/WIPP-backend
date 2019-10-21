@@ -8,6 +8,7 @@ import java.util.List;
 /**
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @IdExposed
 public class Plugin extends Computation {
@@ -15,7 +16,11 @@ public class Plugin extends Computation {
 
     private String title;
     private String description;
-    private String creator;
+    private String author;
+    private String institution;
+    private String repository;
+    private String website;
+    private String citation;    
 
     private List<PluginIO> inputs;
     private List<PluginIO> outputs;
@@ -37,15 +42,47 @@ public class Plugin extends Computation {
         this.title = title;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setAuthor(String author) {
+        this.author = author;
     }
+    
+    public String getInstitution() {
+		return institution;
+	}
 
-    public String getDescription() {
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+
+	public String getRepository() {
+		return repository;
+	}
+
+	public void setRepository(String repository) {
+		this.repository = repository;
+	}
+
+	public String getWebsite() {
+		return website;
+	}
+
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+
+	public String getCitation() {
+		return citation;
+	}
+
+	public void setCitation(String citation) {
+		this.citation = citation;
+	}
+
+	public String getDescription() {
         return description;
     }
 
