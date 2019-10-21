@@ -55,9 +55,9 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 @EnableAutoConfiguration
 @EnableEntityLinks
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-//@EnableSwagger2WebMvc
-//@Import({ SpringDataRestConfiguration.class })
 @EnableWebMvc
+@EnableSwagger2WebMvc
+@Import({ SpringDataRestConfiguration.class })
 public class Application implements WebMvcConfigurer {
 	
 	@Autowired
@@ -115,6 +115,11 @@ public class Application implements WebMvcConfigurer {
                 addResourceLocations(
                 		pyramidsFolderFile
                         .toURI().toString());
+    	// Add Swagger UI resource handler
+    	registry.addResourceHandler("swagger-ui.html")
+    		.addResourceLocations("classpath:/META-INF/resources/");
+    	registry.addResourceHandler("/webjars/**")
+			.addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
     
     /**
