@@ -105,7 +105,7 @@ pipeline {
                             sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' backend-deployment.yaml"
                             sh "sed -i 's|ELASTIC_APM_URL_VALUE|${urls.ELASTIC_APM_URL}|g' backend-deployment.yaml"
                             sh "sed -i 's/BACKEND_HOST_NAME_VALUE/${urls.BACKEND_HOST_NAME}/g' services.yaml"
-                            sh "sed -i 's/MONGO_HOST_NAME_VALUE/${ursl.MONGO_HOST_NAME}/g' services.yaml"
+                            sh "sed -i 's/MONGO_HOST_NAME_VALUE/${urls.MONGO_HOST_NAME}/g' services.yaml"
                         }
                         withAWS(credentials:'aws-jenkins-eks') {
                             sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
