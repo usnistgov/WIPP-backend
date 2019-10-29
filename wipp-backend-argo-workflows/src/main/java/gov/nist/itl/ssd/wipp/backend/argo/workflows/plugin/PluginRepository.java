@@ -22,4 +22,6 @@ public interface PluginRepository extends MongoRepository<Plugin, String> {
     List<Plugin> findCompleteList();
     
 	Page<Plugin> findByNameContainingIgnoreCase(@Param("name") String name, Pageable p);
-}
+	
+	List<Plugin> findByOrderByNameAsc();
+ }
