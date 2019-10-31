@@ -9,7 +9,7 @@
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-core</artifactId>
 	<name>wipp-backend-core</name>
-	<version>3.0.0-beta-SNAPSHOT</version>
+	<version>3.0.0-beta</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
