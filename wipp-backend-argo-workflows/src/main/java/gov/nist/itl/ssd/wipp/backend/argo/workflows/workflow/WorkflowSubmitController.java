@@ -7,7 +7,9 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,6 +36,7 @@ import java.util.*;
  *
  */
 @Controller
+@Api(tags="Workflow Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/workflows/{workflowId}/submit")
 public class WorkflowSubmitController {
     @Autowired
@@ -44,6 +53,8 @@ public class WorkflowSubmitController {
 
     @Autowired
     private WorkflowConverter converter;
+    
+    private static final Logger LOGGER = Logger.getLogger(WorkflowSubmitController.class.getName());
 
     @RequestMapping(
         value = "",
@@ -107,15 +118,70 @@ public class WorkflowSubmitController {
                 }
             }
 
-            converter.convert(workflow, jobsDependencies, jobsPlugins, workflowFolder + File.separator + "workflow-" + workflowId + ".yaml");
+			String workflowFilePath = workflowFolder + File.separator + "workflow-" + workflowId + ".yaml";
+			converter.convert(workflow, jobsDependencies, jobsPlugins,workflowFilePath);
+			
+			// Launch submission of the workflow to Argo
+			workflow = executeSubmissionCommand(workflow, workflowFilePath);
+            workflow.setStatus(WorkflowStatus.SUBMITTED);
 
             // Save the workflow and send the HTTP response
-            Workflow submittedWorkflow = converter.getWorkflow();
-            workflowRepository.save(submittedWorkflow);
-            return new ResponseEntity<>(submittedWorkflow, HttpStatus.OK);
-        } catch (Exception exc) {
-        	throw new ClientException("Error while submitting workflow " + exc.getMessage());
+            workflowRepository.save(workflow);
+            return new ResponseEntity<>(workflow, HttpStatus.OK);
+            
+        } catch (Exception ex) {
+        	workflow.setStatus(WorkflowStatus.ERROR);
+        	workflow.setErrorMessage(ex.getMessage());
+        	workflowRepository.save(workflow);
+            LOGGER.log(Level.SEVERE, "Cannot start workflow: " + ex.getMessage());
+        	throw new ClientException("Error while submitting workflow: " + ex.getMessage());
         }
 
+    }
+    
+    /**
+     * Execute Argo workflow submission command
+     * @param workflow
+     * @param workflowFilePath
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws RuntimeException
+     */
+	private Workflow executeSubmissionCommand(Workflow workflow, String workflowFilePath)
+			throws IOException, InterruptedException, RuntimeException {
+        // Build Argo command
+    	List<String> builderCommands = new ArrayList<>();
+        Collections.addAll(builderCommands, config.getWorflowBinary().split(" "));
+        builderCommands.add("submit");
+        builderCommands.add("--output");
+        builderCommands.add("name");
+        builderCommands.add(workflowFilePath);
+        
+        ProcessBuilder builder = new ProcessBuilder(builderCommands);
+        builder.redirectInput(Redirect.INHERIT);
+        Process process;
+        
+        // Submit workflow to Argo
+        process = builder.start();
+        int exitCode = process.waitFor();
+    	
+        // if Argo exit code is zero, submission was successful, get generated name
+    	if (exitCode == 0) {
+    		InputStream is = process.getInputStream();
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        	String line = reader.readLine();
+        	if(line != null){
+        		workflow.setGeneratedName(line);
+        	} 
+        // else submission failed, get error message
+    	} else {
+    		InputStream es = process.getErrorStream();
+    		BufferedReader errorReader = new BufferedReader(new InputStreamReader(es));
+    		String errorMsg = errorReader.readLine();
+    		throw new RuntimeException(errorMsg);
+    	}
+    	
+    	return workflow;
     }
 }

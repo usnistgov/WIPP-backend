@@ -12,7 +12,6 @@
 package gov.nist.itl.ssd.wipp.backend;
 
 import java.io.File;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,11 +25,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.MongoConverter;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -38,12 +34,18 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoRepositoryFactoryBean;
-import gov.nist.itl.ssd.wipp.backend.core.data.utils.CustomMongoTemplate;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Tag;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-
 
 /**
  *
@@ -51,17 +53,18 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
  */
 @Configuration
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
-@EnableMongoRepositories(repositoryFactoryBeanClass = CustomMongoRepositoryFactoryBean.class)
 @EnableAutoConfiguration
 @EnableEntityLinks
-@EnableWebMvc
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+@EnableWebMvc
+@EnableSwagger2WebMvc
+@Import({ SpringDataRestConfiguration.class })
 public class Application implements WebMvcConfigurer {
 	
 	@Autowired
     private CoreConfig coreConfig;
-
-    public static void main(String[] args) {
+	
+	public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(
                 Application.class, args);
         initSpring(ctx);
@@ -93,12 +96,6 @@ public class Application implements WebMvcConfigurer {
     }
 
     @Bean
-    public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
-            MongoConverter converter) throws UnknownHostException {
-        return new CustomMongoTemplate(mongoDbFactory, converter);
-    }
-
-    @Bean
     public ServiceLocatorFactoryBean serviceLocatorBean(){
         ServiceLocatorFactoryBean bean = new ServiceLocatorFactoryBean();
         bean.setServiceLocatorInterface(DataHandlerFactory.class);
@@ -119,6 +116,56 @@ public class Application implements WebMvcConfigurer {
                 addResourceLocations(
                 		pyramidsFolderFile
                         .toURI().toString());
+    	// Add Swagger UI resource handler
+    	registry.addResourceHandler("swagger-ui.html")
+    		.addResourceLocations("classpath:/META-INF/resources/");
+    	registry.addResourceHandler("/webjars/**")
+			.addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+    
+    /**
+     * Configure Swagger API documentation
+     * @return API Documentation configuration
+     */
+    @Bean
+    public Docket wippApi() {
+      return new Docket(DocumentationType.SWAGGER_2)
+          .select() 
+          .apis(RequestHandlerSelectors.any())    
+          .paths(PathSelectors.any()) 
+          .paths(PathSelectors.regex("/error.*").negate())
+          .paths(PathSelectors.regex("/api/profile").negate())
+      	  // workaround to avoid duplicate entries for plugins
+          .paths(PathSelectors.regex("/api/plugins").negate())
+          .build() 
+          // manually create tags to manage custom descriptions
+          .tags(
+              new Tag("CsvCollection Entity", "REST API for CSV Collections"),
+              new Tag("ImagesCollection Entity", "REST API for Images Collections"),
+              new Tag("Job Entity", "REST API for Jobs"),
+              new Tag("Notebook Entity", "REST API for Notebooks"),
+              new Tag("Plugin Entity", "REST API for Plugins"),
+              new Tag("Pyramid Entity", "REST API for Pyramids"),
+              new Tag("StitchingVector Entity", "REST API for Stitching Vectors"),
+              new Tag("TensorboardLogs Entity", "REST API for Tensorboard Logs"),
+              new Tag("TensorflowModel Entity", "REST API for Tensorflow Models"),
+              new Tag("Visualization Entity", "REST API for Pyramid Visualizations"),
+              new Tag("Workflow Entity", "REST API for Workflows"))
+          .apiInfo(apiEndPointsInfo())
+          .enableUrlTemplating(true);
+    }
+    
+    /**
+     * Configure Swagger API general information
+     * @return API information
+     */
+    private ApiInfo apiEndPointsInfo() {
+        return new ApiInfoBuilder().title("WIPP REST API Documentation")
+            .description("Web Image Processing Pipeline REST API")
+            .license("NIST Disclaimer")
+            .licenseUrl("https://www.nist.gov/disclaimer")
+            .version(coreConfig.getWippVersion())
+            .build();
     }
 
 }

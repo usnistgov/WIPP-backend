@@ -9,7 +9,7 @@ To submit a change:
 * Clone the forked repository
 * In most cases, the changes should be made in a new branch branched of the *develop* branch (see the [Gitflow Workflow section](#gitflow-workflow) below)
 * Submit a Pull Request (PR) to merge your changes into the *develop* branch of this repository
-* One the repository maintainers will review the PR, usually within 48 hours
+* One of the repository maintainers will review the PR, usually within 48 hours
 
 ### Gitflow Workflow
 

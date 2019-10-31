@@ -21,7 +21,6 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import java.util.List;
 
 /**
- *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RepositoryRestResource
@@ -30,13 +29,15 @@ public interface JobRepository<T extends Job> extends MongoRepository<T, String>
     @RestResource(exported = false)
     void delete(T t);
 
+    long countByName(@Param("name") String name);
+
     @RestResource(exported = false)
     List<T> findByStatus(JobStatus status);
 
     Page<T> findByStatus(@Param("status") JobStatus status, Pageable p);
 
     Page<T> findByNameContainingIgnoreCase(
-        @Param("name") String name, Pageable p);
+            @Param("name") String name, Pageable p);
 
     Page<T> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
                                                     @Param("status") String status, Pageable p);

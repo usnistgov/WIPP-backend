@@ -29,19 +29,10 @@ public class Workflow {
 
 //    @Updatable
     protected WorkflowStatus status;
-	
-//    protected List<String> jobs = new ArrayList<>();
     
-//    protected Map<String, Set<String>> dependencies = new HashMap<String, Set<String>>();
+    private String generatedName;
 	
-//    protected List<WorkflowNotification> workflowNotifications = new ArrayList<>();
-	
-//	public abstract void addJob(Job job, List<String> arguments,
-//			List<WorkflowNotification> notifications);
-	
-//	public abstract void addDependency(String child, String parent);
-	
-//	public abstract void addWorkflowNotification(WorkflowNotification notification);
+    private String errorMessage;
 
     /**
 	 * @return the id
@@ -119,47 +110,34 @@ public class Workflow {
 	public void setStatus(WorkflowStatus status) {
 		this.status = status;
 	}
+	
+	/**
+	 * @return the generatedName
+	 */
+	public String getGeneratedName() {
+		return generatedName;
+	}
+	
+	/**
+	 * @param set the generatedName 
+	 */
+	public void setGeneratedName(String name) {
+		this.generatedName = name;
+	}
 
-//	/**
-//	 * @return the jobs
-//	 */
-//	public List<String> getJobs() {
-//		return jobs;
-//	}
-//
-//	/**
-//	 * @param jobs the jobs to set
-//	 */
-//	public void setJobs(List<String> jobs) {
-//		this.jobs = jobs;
-//	}
+	/**
+	 * @return the errorMessage
+	 */
+	public String getErrorMessage() {
+		return errorMessage;
+	}
 
-//	/**
-//	 * @return the dependencies
-//	 */
-//	public Map<String, Set<String>> getDependencies() {
-//		return dependencies;
-//	}
-//
-//	/**
-//	 * @param dependencies the dependencies to set
-//	 */
-//	public void setDependencies(Map<String, Set<String>> dependencies) {
-//		this.dependencies = dependencies;
-//	}
-//
-//	/**
-//	 * @return the workflow notifications
-//	 */
-//	public List<WorkflowNotification> getWorkflowNotifications() {
-//		return workflowNotifications;
-//	}
-//
-//	/**
-//	 * @param workflowNotifications the workflow notifications to set
-//	 */
-//	public void setWorkflowNotifications(List<WorkflowNotification> workflowNotifications) {
-//		this.workflowNotifications = workflowNotifications;
-//	}
+	/**
+	 * @param errorMessage the errorMessage to set
+	 */
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 
 }

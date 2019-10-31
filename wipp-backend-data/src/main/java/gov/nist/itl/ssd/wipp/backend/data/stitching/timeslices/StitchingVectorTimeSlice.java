@@ -11,13 +11,13 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices;
 
-import org.springframework.hateoas.ResourceSupport;
+import gov.nist.itl.ssd.wipp.backend.core.rest.CustomResourceSupport;
 
 /**
  *
  * @author Antoine Vandecreme
  */
-public class StitchingVectorTimeSlice extends ResourceSupport {
+public class StitchingVectorTimeSlice extends CustomResourceSupport {
 
     private final int sliceNumber;
 

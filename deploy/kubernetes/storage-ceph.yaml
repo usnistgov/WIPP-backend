@@ -1,0 +1,25 @@
+# PVC for WIPP-backend
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: WIPP_PVC_NAME_VALUE
+spec:
+  storageClassName: rook-cephfs
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: STORAGE_WIPP_VALUE
+---
+# PVC for MongoDB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pv-claim
+spec:
+  storageClassName: STORAGE_CLASS_NAME_VALUE
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGE_MONGO_VALUE

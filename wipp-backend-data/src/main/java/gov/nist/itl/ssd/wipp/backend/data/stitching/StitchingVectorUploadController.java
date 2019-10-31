@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
+import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 
@@ -32,6 +33,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RestController
+@Api(tags="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/upload")
 public class StitchingVectorUploadController {
 

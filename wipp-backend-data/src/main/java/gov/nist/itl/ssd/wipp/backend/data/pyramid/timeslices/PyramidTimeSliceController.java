@@ -15,6 +15,7 @@ package gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices;
 //import gov.nist.itl.ssd.wipp.wippcore.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
+import io.swagger.annotations.Api;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,6 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Antoine Vandecreme
  */
 @RestController
+@Api(tags="Pyramid Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramids/{pyramidId}/timeSlices")
 @ExposesResourceFor(PyramidTimeSlice.class)
 public class PyramidTimeSliceController {

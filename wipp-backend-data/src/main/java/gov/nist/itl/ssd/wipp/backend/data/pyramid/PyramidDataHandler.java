@@ -12,9 +12,8 @@
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,12 +26,12 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Component("pyramidDataHandler")
-public class PyramidDataHandler implements DataHandler{
+public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
 
-	
+
     @Autowired
     CoreConfig config;
-    
+
     @Autowired
     private PyramidRepository pyramidRepository;
 
@@ -41,18 +40,20 @@ public class PyramidDataHandler implements DataHandler{
 
     @Override
     public void importData(Job job, String outputName) throws JobExecutionException {
-		Pyramid outputPyramid = new Pyramid(job, outputName);
-		pyramidRepository.save(outputPyramid);
-      	
-		File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());
-		pyramidFolder.mkdirs();
-		
-		File tempOutputDir = getJobOutputTempFolder(job, outputName);
-		boolean success = tempOutputDir.renameTo(pyramidFolder);
-		if (!success) {
-			pyramidRepository.delete(outputPyramid);
-			throw new JobExecutionException("Cannot move pyramid to final destination.");
-		}
+        Pyramid outputPyramid = new Pyramid(job, outputName);
+        pyramidRepository.save(outputPyramid);
+
+        File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());
+        pyramidFolder.mkdirs();
+
+        File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
+        boolean success = tempOutputDir.renameTo(pyramidFolder);
+        if (!success) {
+            pyramidRepository.delete(outputPyramid);
+            throw new JobExecutionException("Cannot move pyramid to final destination.");
+        }
+
+        setOutputId(job, outputName, outputPyramid.getId());
     }
 
     public String exportDataAsParam(String value) {
@@ -61,8 +62,5 @@ public class PyramidDataHandler implements DataHandler{
         String pyramidPath = inputPyramidFolder.getAbsolutePath();
         return pyramidPath;
     }
-    
-    private final File getJobOutputTempFolder(Job job, String outputName) {
-        return new File( new File(config.getJobsTempFolder(), job.getId()), outputName);
-    }
+
 }

@@ -60,10 +60,12 @@ public class Job {
     private List<String> dependencies;
 
     private Map<String, String> parameters;
-    
+
+    private Map<String, String> outputParameters;
+
     @ManualRef(value = Workflow.class)
     private String wippWorkflow;
-    
+
     private String wippVersion;
 
     public String getId() {
@@ -112,11 +114,6 @@ public class Job {
 
     public void setError(String error) {
         this.error = error;
-    }
-
-    public String getType() {
-        String type = this.getClass().getSimpleName();
-        return type.substring(0, 1).toLowerCase() + type.substring(1);
     }
 
     public Map<String, String> getParameters() {
@@ -170,4 +167,13 @@ public class Job {
     public void setDependencies(List<String> dependencies) {
         this.dependencies = dependencies;
     }
+
+    public Map<String, String> getOutputParameters() {
+        return outputParameters;
+    }
+
+    public void setOutputParameters(Map<String, String> outputParameters) {
+        this.outputParameters = outputParameters;
+    }
+
 }

@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-data</artifactId>
-	<version>3.0.0-alpha</version>
+	<version>3.0.0-beta</version>
 	<name>wipp-backend-data</name>
 
 	<properties>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>ome</groupId>
 			<artifactId>formats-gpl</artifactId>
-			<version>6.0.1</version>
+			<version>6.2.0</version>
 			<scope>compile</scope>
 		</dependency>
 

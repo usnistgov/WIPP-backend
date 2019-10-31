@@ -9,20 +9,12 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.data.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package gov.nist.itl.ssd.wipp.backend.data.jupyternotebook;
 
 /**
- * @author Mylene Simon <mylene.simon at nist.gov>
- * Annotation to specify inheritance aware Mongo Repositories
- *
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface InheritedAwareRepository {
+public class NotebookConfig {
 
+	public static final String NOTEBOOK_FILENAME = "notebook.ipynb";
 }
