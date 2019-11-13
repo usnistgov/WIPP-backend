@@ -97,7 +97,7 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
 
         }
-        imagesCollectionPath = imagesCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
+        imagesCollectionPath = imagesCollectionPath.replace("\\","/").replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return imagesCollectionPath;
     }
 
