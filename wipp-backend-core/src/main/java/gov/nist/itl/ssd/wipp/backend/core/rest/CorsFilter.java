@@ -38,7 +38,7 @@ public class CorsFilter implements Filter {
 
         // For debugging purpose, we enable CORS when the request is coming
         // from localhost.
-        if (req.getRemoteAddr().equals(req.getLocalAddr())) {
+        //if (req.getRemoteAddr().equals(req.getLocalAddr())) {
             HttpServletResponse response = (HttpServletResponse) res;
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods",
@@ -46,7 +46,7 @@ public class CorsFilter implements Filter {
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers",
                     "x-requested-with, Content-Type");
-        }
+        //}
         chain.doFilter(req, res);
     }
 
