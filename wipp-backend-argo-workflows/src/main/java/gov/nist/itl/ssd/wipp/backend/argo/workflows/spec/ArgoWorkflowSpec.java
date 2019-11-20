@@ -13,6 +13,7 @@ public class ArgoWorkflowSpec {
     private final String onExit = "exit-handler";
     private List<ArgoAbstractTemplate> templates;
     private List<ArgoVolume> volumes;
+    private ArgoSecurityContext securityContext;
 
     public String getEntrypoint() {
         return entrypoint;
@@ -37,4 +38,12 @@ public class ArgoWorkflowSpec {
     public void setVolumes(List<ArgoVolume> volumes) {
         this.volumes = volumes;
     }
+
+	public ArgoSecurityContext getSecurityContext() {
+		return securityContext;
+	}
+
+	public void setSecurityContext(ArgoSecurityContext securityContext) {
+		this.securityContext = securityContext;
+	}
 }
