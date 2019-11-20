@@ -17,8 +17,8 @@ package gov.nist.itl.ssd.wipp.backend.argo.workflows.spec;
  */
 public class ArgoSecurityContext {
 
-	private final int runAsUser = 5100;
-	private final int runAsGroup = 5100;
+	private final int runAsUser = 1000;
+	private final int runAsGroup = 1000;
 	
 	public int getRunAsUser() {
 		return runAsUser;
