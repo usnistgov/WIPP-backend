@@ -122,6 +122,11 @@ public class ImagesCollection extends Data {
 
 	public String getNotes() { return notes; }
 
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
 	public void setLocked(boolean locked) {
         this.locked = locked;
     }
