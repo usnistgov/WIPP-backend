@@ -9,18 +9,24 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
+package gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags;
+
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepositoryCustom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
 
 /**
  *
  * @author Antoine Vandecreme
  */
-public interface ImagesCollectionRepositoryCustom {
+@RepositoryRestResource(exported = false)
+public interface TagRepository extends MongoRepository<Tag, String>{
 
-    void updateImagesCaches(String imagesCollectionId);
-
-    void updateMetadataFilesCaches(String imagesCollectionId);
-
-    void updateTagsCaches(String imagesCollectionId);
+    List<Tag> findByTagName(String tagName);
 
 }

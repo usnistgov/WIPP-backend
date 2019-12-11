@@ -21,9 +21,12 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 
 //import gov.nist.itl.ssd.fes.job.Job;
 import java.util.Date;
+import java.util.List;
 
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags.Tag;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -52,8 +55,17 @@ public class ImagesCollection extends Data {
 
     private String pattern;
 
+    @DBRef
+    private List<Tag> tags;
+
     @JsonProperty(access = Access.READ_ONLY)
     private int numberOfImages;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    private int numberOfTags;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    private long tagsTotalSize;
 
     @JsonProperty(access = Access.READ_ONLY)
     private long imagesTotalSize;
@@ -144,5 +156,12 @@ public class ImagesCollection extends Data {
 
     public long getMetadataFilesTotalSize() {
         return metadataFilesTotalSize;
+    }
+
+
+    public List<Tag> getTags() { return tags; }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

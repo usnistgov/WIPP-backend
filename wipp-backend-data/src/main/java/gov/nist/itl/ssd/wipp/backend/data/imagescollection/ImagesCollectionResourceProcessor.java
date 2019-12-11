@@ -56,6 +56,13 @@ public class ImagesCollectionResourceProcessor
         resource.add(assembler.appendPaginationParameterTemplates(
                 metadataFileLink));
 
+         Link tagsLink = entityLinks.linkForSingleResource(
+                ImagesCollection.class, imagesCollection.getId())
+                .slash("tags")
+                .withRel("tags");
+        resource.add(assembler.appendPaginationParameterTemplates(
+                tagsLink));
+
         Link downloadLink = linkTo(ImagesCollectionDownloadController.class,
                 imagesCollection.getId())
                 .withRel("download");

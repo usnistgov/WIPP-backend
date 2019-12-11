@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags.Tag;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -129,5 +130,41 @@ public class ImagesCollectionRepositoryImpl
                 .set("metadataFilesTotalSize", metadataFilesTotalSize),
                 ImagesCollection.class);
     }
+
+	@Override
+	public void updateTagsCaches(String imagesCollectionId) {
+		MongoCollection<Document> collection = mongoTemplate.getCollection(
+                mongoTemplate.getCollectionName(Tag.class));
+
+    	List<Document> pipeline = Arrays.asList(
+                new Document("$match",
+                        new Document("imagesCollection",
+                                imagesCollectionId)),
+                new Document("$group",
+                		new Document()
+	                		.append("_id", "aggregation")
+	                        .append("numberOfTags",
+	                                new Document("$sum", 1))
+	                        .append("tagsTotalSize",
+	                                new Document("$sum", "$fileSize"))
+                ));
+    	AggregateIterable<Document> output = collection.aggregate(pipeline);
+
+    	int numberOfTags = 0;
+        long tagsTotalSize = 0;
+        Iterator<Document> iterator = output.iterator();
+        if (iterator.hasNext()) {
+        	Document dbo = iterator.next();
+            numberOfTags = dbo.getInteger("numberOfTags");
+            tagsTotalSize = dbo.getLong("tagsTotalSize");
+        }
+        mongoTemplate.updateFirst(
+                Query.query(Criteria.where("id").is(imagesCollectionId)),
+                new Update()
+                .set("numberOfMetadataFiles", numberOfTags)
+                .set("metadataFilesTotalSize", tagsTotalSize),
+                ImagesCollection.class);
+    }
+
 
 }
