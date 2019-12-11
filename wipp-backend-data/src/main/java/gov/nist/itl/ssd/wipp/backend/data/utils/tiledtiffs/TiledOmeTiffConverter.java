@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
-import loci.common.xml.XMLTools;
 import loci.formats.FormatException;
 import loci.formats.ImageReader;
 import loci.formats.FormatTools;
