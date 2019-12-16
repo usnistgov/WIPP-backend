@@ -46,6 +46,7 @@ pipeline {
         }
         stage('Load config file') {
             steps {
+                // Config JSON file is stored in Jenkins and should contain sensitive environment values.
                 configFileProvider([configFile(fileId: 'env-ci', targetLocation: 'env-ci.json')]) {
                     script {
                         def urls = readJSON file: 'env-ci.json'
@@ -69,7 +70,6 @@ pipeline {
                 environment name: 'SKIP_BUILD', value: 'false'
             }
             steps {
-                // Config JSON file is stored in Jenkins and should contain sensitive environment values.
                 withCredentials([string(credentialsId: 'ARTIFACTORY_USER', variable: 'ARTIFACTORY_USER'),
                                 string(credentialsId: 'ARTIFACTORY_TOKEN', variable: 'ARTIFACTORY_TOKEN')]) {
                     script {
@@ -103,7 +103,6 @@ pipeline {
         stage('Deploy WIPP to Kubernetes') {
             steps {
                 dir('deploy/kubernetes') {
-                    // Config JSON file is stored in Jenkins and should contain sensitive environment values.
                     script {                        
                         sh "sed -i 's/STORAGE_WIPP_VALUE/${STORAGE_WIPP}/g' storage-ceph.yaml"
                         sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' storage-ceph.yaml"
