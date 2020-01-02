@@ -1,12 +1,3 @@
-package gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 /*
  * This software was developed at the National Institute of Standards and
  * Technology by employees of the Federal Government in the course of
@@ -19,17 +10,31 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * software is used.
  */
 
-@Document(collection = "tag")
+package gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+/**
+ *
+ * @author Samia Benjida <samia.benjida at nist.gov>
+ */
+
+@Document
 public class Tag {
 
     @Id
-    @JsonIgnore
     private String id;
 
+    @Indexed(unique = false, sparse = true)
     private String tagName;
 
-    public Tag(String name, String id) {
-        this.tagName = name;
+    public Tag() {
+    }
+
+    public Tag(String id, String tagName) {
+        this.tagName = tagName;
         this.id = id;
     }
 

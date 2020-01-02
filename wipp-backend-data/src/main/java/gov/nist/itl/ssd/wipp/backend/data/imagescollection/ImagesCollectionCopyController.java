@@ -73,7 +73,7 @@ public class ImagesCollectionCopyController {
                     "Images collection " + imagesCollectionId + " not found.");
         }
 
-        ImagesCollection copy = new ImagesCollection(name);
+        ImagesCollection copy = new ImagesCollection(name, null);
         copy = imagesCollectionRepository.save(copy);
 
         try {

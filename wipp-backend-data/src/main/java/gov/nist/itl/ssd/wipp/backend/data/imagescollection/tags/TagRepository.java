@@ -11,10 +11,6 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags;
 
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepositoryCustom;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -22,9 +18,10 @@ import java.util.List;
 
 /**
  *
- * @author Antoine Vandecreme
+ * @author Samia Benjida <samia.benjida at nist.gov>
  */
-@RepositoryRestResource(exported = false)
+
+@RepositoryRestResource
 public interface TagRepository extends MongoRepository<Tag, String>{
 
     List<Tag> findByTagName(String tagName);

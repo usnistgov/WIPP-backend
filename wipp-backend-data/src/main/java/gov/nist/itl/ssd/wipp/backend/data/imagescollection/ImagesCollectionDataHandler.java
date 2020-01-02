@@ -49,7 +49,7 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
 
     @Override
     public void importData(Job job, String outputName) throws IOException {
-        ImagesCollection outputImagesCollection = new ImagesCollection(job, outputName);
+        ImagesCollection outputImagesCollection = new ImagesCollection(job, outputName, null);
         outputImagesCollection = imagesCollectionRepository.save(
                 outputImagesCollection);
 
