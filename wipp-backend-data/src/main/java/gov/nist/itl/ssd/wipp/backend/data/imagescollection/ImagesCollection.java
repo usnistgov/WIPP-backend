@@ -19,9 +19,10 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 
-//import gov.nist.itl.ssd.fes.job.Job;
 import java.util.Date;
+import java.util.List;
 
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.tags.Tag;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -54,6 +55,8 @@ public class ImagesCollection extends Data {
 
     private String notes;
 
+    private List<Tag> tags;
+
     @JsonProperty(access = Access.READ_ONLY)
     private int numberOfImages;
 
@@ -75,21 +78,23 @@ public class ImagesCollection extends Data {
     public ImagesCollection() {
     }
 
-    public ImagesCollection(String name) {
-        this(name, false);
+    public ImagesCollection(String name, List<Tag> tags ) {
+        this(name, false, tags);
     }
 
-    public ImagesCollection(String name, boolean locked) {
+    public ImagesCollection(String name, boolean locked, List<Tag> tags) {
         this.name = name;
         this.locked = locked;
         this.creationDate = new Date();
+        this.tags = tags;
     }
 
-    public ImagesCollection(Job job, String outputName) {
+    public ImagesCollection(Job job, String outputName, List<Tag> tags) {
         this.name = job.getName() + "-" + outputName;
         this.sourceJob = job.getId();
         this.locked = true;
         this.creationDate = new Date();
+        this.tags = tags;
     }
 
     public String getId() {
@@ -153,5 +158,11 @@ public class ImagesCollection extends Data {
 
     public long getMetadataFilesTotalSize() {
         return metadataFilesTotalSize;
+    }
+
+    public List<Tag> getTags() { return tags; }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

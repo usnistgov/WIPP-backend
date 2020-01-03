@@ -28,6 +28,10 @@ public interface ImagesCollectionRepository
 
     Page<ImagesCollection> findByName(@Param("name") String name, Pageable p);
 
+    Page<ImagesCollection> findByTags_TagName(@Param("tagName") String tagName, Pageable p);
+
+    Page<ImagesCollection> findByTags_TagNameContainingIgnoreCase(@Param("tagName") String tag, Pageable p);
+
     Page<ImagesCollection> findByNameContainingIgnoreCase(
             @Param("name") String name, Pageable p);
 
