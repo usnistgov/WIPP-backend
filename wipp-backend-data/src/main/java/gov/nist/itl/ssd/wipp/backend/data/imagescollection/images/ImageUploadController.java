@@ -13,7 +13,6 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection.images;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
-import gov.nist.itl.ssd.wipp.backend.data.utils.tiledtiffs.TiledOmeTiffConverter;
 import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
@@ -21,24 +20,14 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadContr
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 
-import loci.common.services.DependencyException;
-import loci.common.services.ServiceException;
-import loci.formats.FormatException;
-
-
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,19 +51,7 @@ public class ImageUploadController extends FileUploadController {
 	private ImagesCollectionRepository imagesCollectionRepository;
 
 	@Autowired
-	private CoreConfig appConfig;
-
-	private ExecutorService omeConverterExecutor;
-
-	@PostConstruct
-	public void instantiateOmeConverter() {
-		omeConverterExecutor = Executors.newFixedThreadPool(
-				appConfig.getOmeConverterThreads());
-
-		// Resume any interrupted conversion
-		imageRepository.findByImporting(true)
-		.forEach(this::submitImageToExtractor);
-	}
+	ImageConversionService imageConversionService;
 
 	@Override
 	protected String getUploadSubFolder() {
@@ -115,58 +92,7 @@ public class ImageUploadController extends FileUploadController {
 				getPathSize(tempPath), true);
 		imageRepository.save(image);
 		imagesCollectionRepository.updateImagesCaches(collectionId);
-		submitImageToExtractor(image);
-	}
-
-	private void submitImageToExtractor(Image image) {
-		String collectionId = image.getImagesCollection();
-		File tempUploadDir = getTempUploadDir(collectionId);
-		File uploadDir = getUploadDir(collectionId);
-
-		String imgName = image.getFileName();
-		Path tempPath = new File(tempUploadDir, image.getOriginalFileName()).toPath();
-		String outputFileName;
-		boolean isOmeTiff = imgName.endsWith(".ome.tif");
-		
-		// handle ome tiff images file names
-		if(!isOmeTiff){
-			outputFileName = FilenameUtils.getBaseName(imgName) + ".ome.tif";
-		} else {
-			outputFileName = imgName;
-		}
-		
-		Path outputPath = new File(uploadDir, outputFileName).toPath();
-
-		omeConverterExecutor.submit(() -> doSubmit(
-				collectionId, image, outputFileName, tempPath, outputPath));
-	}
-
-	private void doSubmit(String collectionId, Image image, String outputFileName,
-			Path tempPath, Path outputPath) {
-		try {
-			LOG.log(Level.INFO,
-					"Starting extracting image {0} of collection {1}",
-					new Object[]{image.getFileName(), collectionId});
-			convertToTiledOmeTiff(tempPath, outputPath);
-			Files.delete(tempPath);
-			image.setFileName(outputFileName);
-			image.setFileSize(getPathSize(outputPath));
-			image.setImporting(false);
-			imageRepository.save(image);
-			imagesCollectionRepository.updateImagesCaches(collectionId);
-			LOG.log(Level.INFO,
-					"Done extracting image {0} of collection {1}",
-					new Object[]{image.getFileName(), collectionId});
-		} catch (Exception ex) {
-			LOG.log(Level.WARNING, "Error extracting image "
-					+ image.getFileName() + " of collection " + collectionId,
-					ex);
-			// Update image
-			image.setImporting(false);
-			image.setImportError("Can not extract image.");
-			imageRepository.save(image);
-			imagesCollectionRepository.updateImagesCaches(collectionId);
-		}
+		imageConversionService.submitImageToExtractor(image);
 	}
 
 	private static String fileNameFilter(String patternStr, String fileName){
@@ -178,20 +104,6 @@ public class ImageUploadController extends FileUploadController {
 			return fileName;
 		}
 		return null;
-	}
-	
-	private static void convertToTiledOmeTiff(Path inputFile, Path outputFile) throws DependencyException, FormatException, IOException, ServiceException {
-		TiledOmeTiffConverter tiledOmeTiffConverter = new TiledOmeTiffConverter(inputFile.toString(), outputFile.toString(), CoreConfig.TILE_SIZE, CoreConfig.TILE_SIZE);
-		try {
-	    	tiledOmeTiffConverter.init();
-	    	tiledOmeTiffConverter.readWriteTiles();
-	    }
-	    catch(Exception e) {
-	      throw new IOException("Cannot convert image to OME TIFF.", e);
-	    }
-	    finally {
-	    	tiledOmeTiffConverter.cleanup();
-	    }
 	}
 	
 }
