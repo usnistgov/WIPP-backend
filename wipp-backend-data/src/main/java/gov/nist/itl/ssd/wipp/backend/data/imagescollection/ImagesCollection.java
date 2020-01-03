@@ -53,6 +53,8 @@ public class ImagesCollection extends Data {
 
     private String pattern;
 
+    private String notes;
+
     private List<Tag> tags;
 
     @JsonProperty(access = Access.READ_ONLY)
@@ -122,6 +124,13 @@ public class ImagesCollection extends Data {
 	public String getPattern() {
 		return pattern;
 	}
+
+	public String getNotes() { return notes; }
+
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
 	public void setLocked(boolean locked) {
         this.locked = locked;
