@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: WIPP_PVC_NAME_VALUE
 spec:
-  storageClassName: rook-cephfs
+  storageClassName: STORAGE_CLASS_NAME_VALUE
   accessModes:
   - ReadWriteMany
   resources:
