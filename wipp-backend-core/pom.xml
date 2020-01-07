@@ -22,11 +22,11 @@
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</repository>
-	    <repository>
+	    <!-- <repository>
 			<id>JFrog</id>
 			<name>JFrog Snapshot Repository</name>
 			<url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
-		</repository>
+		</repository> -->
 	</repositories>
 
 	<pluginRepositories>
@@ -64,7 +64,7 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
 		
-		<dependency>
+		<!-- <dependency>
 		    <groupId>io.springfox</groupId>
 		    <artifactId>springfox-swagger2</artifactId>
 		    <version>3.0.0-SNAPSHOT</version>
@@ -78,7 +78,7 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 
 	</dependencies>
 </project>
