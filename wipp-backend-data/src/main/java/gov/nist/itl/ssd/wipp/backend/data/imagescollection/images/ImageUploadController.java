@@ -51,7 +51,7 @@ public class ImageUploadController extends FileUploadController {
 	private ImagesCollectionRepository imagesCollectionRepository;
 
 	@Autowired
-	ImageConversionService imageConversionService;
+	private ImageConversionService imageConversionService;
 
 	@Override
 	protected String getUploadSubFolder() {
