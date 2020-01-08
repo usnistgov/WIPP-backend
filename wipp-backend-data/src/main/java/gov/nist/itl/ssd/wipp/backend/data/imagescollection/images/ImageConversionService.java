@@ -30,6 +30,7 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
 import gov.nist.itl.ssd.wipp.backend.data.utils.tiledtiffs.TiledOmeTiffConverter;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadBase;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadController;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
@@ -41,7 +42,7 @@ import loci.formats.FormatException;
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Service
-public class ImageConversionService extends FileUploadController{
+public class ImageConversionService extends FileUploadBase{
 	
 	private static final Logger LOG = Logger.getLogger(ImageConversionService.class.getName());
 
@@ -69,12 +70,6 @@ public class ImageConversionService extends FileUploadController{
 	@Override
 	protected String getUploadSubFolder() {
 		return "images";
-	}
-
-	@Override
-	protected void onUploadFinished(FlowFile flowFile, Path tempPath) throws IOException {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void submitImageToExtractor(Image image) {
