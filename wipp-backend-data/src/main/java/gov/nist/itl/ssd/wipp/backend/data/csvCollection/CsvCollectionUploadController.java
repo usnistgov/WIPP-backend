@@ -39,6 +39,9 @@ public class CsvCollectionUploadController {
     @Autowired
     private CsvCollectionRepository csvCollectionRepository;
 
+    @Autowired
+    private CsvCollectionLogic csvCollectionLogic;
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     public CsvCollection upload(
             @RequestParam("files") MultipartFile[] files,
@@ -46,9 +49,9 @@ public class CsvCollectionUploadController {
             throws IOException {
         if (name == null || name.isEmpty()) {
             throw new ClientException(
-                    "A csv collection name must be specified.");
+                    "A CSV collection name must be specified.");
         }
-        assertCollectionNameUnique(name);
+        csvCollectionLogic.assertCollectionNameUnique(name);
         CsvCollection csvCollection = new CsvCollection(name);
         csvCollection = csvCollectionRepository.save(csvCollection);
         File csvCollectionFolder = new File(
@@ -59,13 +62,6 @@ public class CsvCollectionUploadController {
             file.transferTo(new File(csvCollectionFolder, file.getOriginalFilename()));
         }
         return csvCollection;
-    }
-
-    public void assertCollectionNameUnique(String name) {
-        if (csvCollectionRepository.countByName(name) != 0) {
-            throw new ClientException("A CSV collection named \""
-                    + name + "\" already exists.");
-        }
     }
 
 }
