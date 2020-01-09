@@ -34,4 +34,6 @@ public interface CsvCollectionRepository extends MongoRepository<CsvCollection, 
 
 	Page<CsvCollection> findByNameContainingIgnoreCase(
 			@Param("name") String name, Pageable p);
+
+	long countByName(@Param("name") String name);
 }

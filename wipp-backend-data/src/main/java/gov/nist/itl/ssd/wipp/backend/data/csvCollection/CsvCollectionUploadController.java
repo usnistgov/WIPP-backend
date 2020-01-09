@@ -48,6 +48,7 @@ public class CsvCollectionUploadController {
             throw new ClientException(
                     "A csv collection name must be specified.");
         }
+        assertCollectionNameUnique(name);
         CsvCollection csvCollection = new CsvCollection(name);
         csvCollection = csvCollectionRepository.save(csvCollection);
         File csvCollectionFolder = new File(
@@ -58,6 +59,13 @@ public class CsvCollectionUploadController {
             file.transferTo(new File(csvCollectionFolder, file.getOriginalFilename()));
         }
         return csvCollection;
+    }
+
+    public void assertCollectionNameUnique(String name) {
+        if (csvCollectionRepository.countByName(name) != 0) {
+            throw new ClientException("A CSV collection named \""
+                    + name + "\" already exists.");
+        }
     }
 
 }
