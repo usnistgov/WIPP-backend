@@ -13,7 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +29,7 @@ import java.io.IOException;
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @RestController
-@Api(tags="Csv collection Entity")
+//@Api(tags="Csv collection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/csvCollections/upload")
 public class CsvCollectionUploadController {
 
