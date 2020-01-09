@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageUploadController;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -35,6 +34,7 @@ import loci.formats.codec.CompressionType;
  *
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  * @author Nick Schaub <nick.schaub at nih.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 public class TiledOmeTiffConverter {
 
@@ -60,10 +60,14 @@ public class TiledOmeTiffConverter {
 		OMEXMLService service = factory.getInstance(OMEXMLService.class);
 		IMetadata omexml = service.createOMEXMLMetadata();
 
-		// set up the reader and associate it with the input file
+		// set up the reader 
 		reader = new ImageReader();
+		// force reader to not group in multi-file formats to treat each file individually
+	    reader.setGroupFiles(false);
+		// set metadata 
 		reader.setOriginalMetadataPopulated(true);
 		reader.setMetadataStore(omexml);
+		// set input file
 		reader.setId(inputFile);
 
 		// important to delete because OME uses RandomAccessFile
@@ -91,27 +95,33 @@ public class TiledOmeTiffConverter {
 		int tilePlaneSize = tileSizeX * tileSizeY * reader.getRGBChannelCount() * bpp;
 		byte[] buf = new byte[tilePlaneSize];
 
-		// WIPP handles 2D images only, the image series are set to 0 in our case 
-		int width = reader.getSizeX();
-		int height = reader.getSizeY();
-
-		// Determined the number of tiles to read and write
-		int nXTiles = width / tileSizeX;
-		int nYTiles = height / tileSizeY;
-		if (nXTiles * tileSizeX != width) nXTiles++;
-		if (nYTiles * tileSizeY != height) nYTiles++;
-
-		for (int y=0; y<nYTiles; y++) {
-			for (int x=0; x<nXTiles; x++) {
-				
-				int tileX = x * tileSizeX;
-				int tileY = y * tileSizeY;
-				
-				int effTileSizeX = (tileX + tileSizeX) < width ? tileSizeX : width - tileX;
-				int effTileSizeY = (tileY + tileSizeY) < height ? tileSizeY : height - tileY;
-
-				buf = reader.openBytes(0, tileX, tileY, effTileSizeX, effTileSizeY);
-				writer.saveBytes(0, buf, tileX, tileY, effTileSizeX, effTileSizeY);
+		// set the current series to 0
+		reader.setSeries(0);
+	    writer.setSeries(0);	
+	    
+	    // convert each image plane in the current series 
+		for (int image=0; image<reader.getImageCount(); image++) {
+			int width = reader.getSizeX();
+			int height = reader.getSizeY();
+	
+			// Determined the number of tiles to read and write
+			int nXTiles = width / tileSizeX;
+			int nYTiles = height / tileSizeY;
+			if (nXTiles * tileSizeX != width) nXTiles++;
+			if (nYTiles * tileSizeY != height) nYTiles++;
+	
+			for (int y=0; y<nYTiles; y++) {
+				for (int x=0; x<nXTiles; x++) {
+					
+					int tileX = x * tileSizeX;
+					int tileY = y * tileSizeY;
+					
+					int effTileSizeX = (tileX + tileSizeX) < width ? tileSizeX : width - tileX;
+					int effTileSizeY = (tileY + tileSizeY) < height ? tileSizeY : height - tileY;
+	
+					buf = reader.openBytes(image, tileX, tileY, effTileSizeX, effTileSizeY);
+					writer.saveBytes(image, buf, tileX, tileY, effTileSizeX, effTileSizeY);
+				}
 			}
 		}
 	}

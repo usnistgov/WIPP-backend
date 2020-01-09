@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
@@ -57,7 +57,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
  * @author Antoine Vandecreme
  */
 @RestController
-@Api(tags="StitchingVector Entity")
+//@Api(tags="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/{stitchingVectorId}/timeSlices")
 @ExposesResourceFor(StitchingVectorTimeSlice.class)
 public class StitchingVectorTimeSliceController {
