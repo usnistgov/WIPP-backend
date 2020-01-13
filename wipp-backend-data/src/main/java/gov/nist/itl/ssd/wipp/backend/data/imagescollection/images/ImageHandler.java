@@ -62,6 +62,20 @@ public class ImageHandler extends FileHandler {
         imageRepository.saveAll(images);
         imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
     }
+    
+    public void addAllInDbFromTemp(String imagesCollectionId) {
+    	System.out.println("\n\nAdd All In DB Temp\n\n");
+        File[] files = getTempFiles(imagesCollectionId);
+        if (files == null) {
+            return;
+        }
+
+        List<Image> images = Arrays.stream(files).map(f -> new Image(
+                imagesCollectionId, f.getName(), f.getName(), getFileSize(f), false))
+                .collect(Collectors.toList());
+        imageRepository.saveAll(images);
+        imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
+    }
 
     @Override
     protected void deleteAllInDb(String imagesCollectionId) {

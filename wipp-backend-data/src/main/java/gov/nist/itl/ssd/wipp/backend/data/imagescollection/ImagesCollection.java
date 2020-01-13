@@ -173,10 +173,6 @@ public class ImagesCollection extends Data {
 		return sourceCatalog;
 	}
 
-	public void setSourceCatalog(String sourceCatalog) {
-		this.sourceCatalog = sourceCatalog;
-	}
-
 	public ImagesCollectionImportMethod getImportMethod() {
 		return importMethod;
 	}
@@ -184,4 +180,6 @@ public class ImagesCollection extends Data {
 	public void setImportMethod(ImagesCollectionImportMethod importMethod) {
 		this.importMethod = importMethod;
 	}
+	
+    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG}
 }

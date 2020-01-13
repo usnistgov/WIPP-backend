@@ -134,6 +134,12 @@ public abstract class FileHandler {
                 new File(config.getImagesCollectionsFolder(), imagesCollectionId),
                 getSubFolder());
     }
+    
+    public File getTempFilesFolder(String imagesCollectionId) {
+        return new File(
+                new File(config.getCollectionsUploadTmpFolder(), imagesCollectionId),
+                getSubFolder());
+    }
 
     public File getFile(String imagesCollectionId, String fileName) {
         return new File(getFilesFolder(imagesCollectionId), fileName);
@@ -141,6 +147,10 @@ public abstract class FileHandler {
 
     protected File[] getFiles(String imagesCollectionId) {
         return getFilesFolder(imagesCollectionId).listFiles(File::isFile);
+    }
+    
+    protected File[] getTempFiles(String imagesCollectionId) {
+        return getTempFilesFolder(imagesCollectionId).listFiles(File::isFile);
     }
 
     protected static long getFileSize(File file) {

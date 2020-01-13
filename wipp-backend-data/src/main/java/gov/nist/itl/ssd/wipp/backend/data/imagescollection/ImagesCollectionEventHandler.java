@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection.ImagesCollectionImportMethod;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
 
@@ -64,6 +65,11 @@ public class ImagesCollectionEventHandler {
         imagesCollectionLogic.assertCollectionNameUnique(
                 imagesCollection.getName());
         imagesCollection.setCreationDate(new Date());
+        
+        // Default import method is UPLOADED
+        if(imagesCollection.getImportMethod() == null){
+        	imagesCollection.setImportMethod(ImagesCollectionImportMethod.UPLOADED);
+        }
     }
 
     @HandleBeforeSave
@@ -83,6 +89,18 @@ public class ImagesCollectionEventHandler {
             throw new ClientException("Can not change creation date.");
         }
 
+        if (!Objects.equals(
+                imagesCollection.getImportMethod(),
+                oldTc.getImportMethod())) {
+            throw new ClientException("Can not change import method.");
+        }
+        
+        if (!Objects.equals(
+                imagesCollection.getSourceCatalog(),
+                oldTc.getSourceCatalog())) {
+            throw new ClientException("Can not change source catalog.");
+        }
+        
         if (!Objects.equals(
                 imagesCollection.getSourceJob(),
                 oldTc.getSourceJob())) {
