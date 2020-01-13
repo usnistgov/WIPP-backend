@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
 import gov.nist.itl.ssd.wipp.backend.data.utils.tiledtiffs.TiledOmeTiffConverter;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadBase;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadController;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.formats.FormatException;
@@ -40,6 +38,7 @@ import loci.formats.FormatException;
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+* @author Mylene Simon <mylene.simon at nist.gov>
 */
 @Service
 public class ImageConversionService extends FileUploadBase{
@@ -76,6 +75,7 @@ public class ImageConversionService extends FileUploadBase{
 		String collectionId = image.getImagesCollection();
 		File tempUploadDir = getTempUploadDir(collectionId);
 		File uploadDir = getUploadDir(collectionId);
+		uploadDir.mkdirs();
 
 		String imgName = image.getFileName();
 		Path tempPath = new File(tempUploadDir, image.getOriginalFileName()).toPath();

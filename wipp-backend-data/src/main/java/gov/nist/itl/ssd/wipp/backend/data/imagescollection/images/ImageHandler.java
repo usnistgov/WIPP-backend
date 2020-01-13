@@ -34,6 +34,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileHandler;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component
 public class ImageHandler extends FileHandler {
@@ -70,7 +71,7 @@ public class ImageHandler extends FileHandler {
         }
 
         List<Image> images = Arrays.stream(files).map(f -> new Image(
-                imagesCollectionId, f.getName(), f.getName(), getFileSize(f), false))
+                imagesCollectionId, f.getName(), f.getName(), getFileSize(f), true))
                 .collect(Collectors.toList());
         imageRepository.saveAll(images);
         imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
