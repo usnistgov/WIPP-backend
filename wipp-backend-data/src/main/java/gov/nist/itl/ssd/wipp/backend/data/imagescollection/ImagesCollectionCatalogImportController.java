@@ -66,17 +66,17 @@ public class ImagesCollectionCatalogImportController {
 		
 		// Check if the images collection is not empty
 		if(imagesCollection.getNumberOfImages() != 0  || imagesCollection.getNumberOfMetadataFiles() != 0) {
-			throw new ClientException("Collection is not epmty.");
+			throw new ClientException("Collection is not empty.");
 		}
 
 		// Check if the import method is CATALOG
-		if(!imagesCollection.getImportMethod().equals(ImagesCollectionImportMethod.CATALOG)){
-			throw new ClientException("the import method is not CATALOG.");
+		if(imagesCollection.getImportMethod() == null || !imagesCollection.getImportMethod().equals(ImagesCollectionImportMethod.CATALOG)){
+			throw new ClientException("Import method is not CATALOG.");
 		}
 
 		// Check if sourceCatalog string is empty
-		if(imagesCollection.getSourceCatalog() == null || imagesCollection.getSourceCatalog().equals("")){
-			throw new ClientException("Source catalog must not be empty.");
+		if(imagesCollection.getSourceCatalog() == null || imagesCollection.getSourceCatalog().isEmpty()){
+			throw new ClientException("Source catalog cannot be empty.");
 		}
 
 		try {
@@ -95,9 +95,7 @@ public class ImagesCollectionCatalogImportController {
 			if(metadataFolder.exists()) {
 				importFolder(metadataHandler, metadataFolder, imagesCollectionId);
 			}
-			
-			imagesCollection.setLocked(true);
-			
+						
 		} catch (IOException ex) {
 			throw new ClientException("Error while importing data.");
 		}

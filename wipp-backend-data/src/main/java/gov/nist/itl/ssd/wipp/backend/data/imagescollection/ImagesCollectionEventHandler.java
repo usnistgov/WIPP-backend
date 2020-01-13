@@ -67,8 +67,14 @@ public class ImagesCollectionEventHandler {
         imagesCollection.setCreationDate(new Date());
         
         // Default import method is UPLOADED
-        if(imagesCollection.getImportMethod() == null){
+        if (imagesCollection.getImportMethod() == null) {
         	imagesCollection.setImportMethod(ImagesCollectionImportMethod.UPLOADED);
+        }
+        
+        // Collections from Catalog are locked by default
+        if (imagesCollection.getImportMethod() != null
+        	   && imagesCollection.getImportMethod().equals(ImagesCollectionImportMethod.CATALOG)) {
+        	imagesCollection.setLocked(true);
         }
     }
 

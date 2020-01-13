@@ -124,7 +124,11 @@ public class ImageConversionService extends FileUploadBase{
 	}
 	
 	public static void convertToTiledOmeTiff(Path inputFile, Path outputFile) throws DependencyException, FormatException, IOException, ServiceException {
-		TiledOmeTiffConverter tiledOmeTiffConverter = new TiledOmeTiffConverter(inputFile.toString(), outputFile.toString(), CoreConfig.TILE_SIZE, CoreConfig.TILE_SIZE);
+		TiledOmeTiffConverter tiledOmeTiffConverter = new TiledOmeTiffConverter(
+				inputFile.toString(),
+				outputFile.toString(), 
+				CoreConfig.TILE_SIZE, 
+				CoreConfig.TILE_SIZE);
 		try {
 	    	tiledOmeTiffConverter.init();
 	    	tiledOmeTiffConverter.readWriteTiles();
