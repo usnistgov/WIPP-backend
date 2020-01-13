@@ -95,6 +95,8 @@ public class ImagesCollectionCatalogImportController {
 				importFolder(metadataHandler, metadataFolder, imagesCollectionId);
 			}
 			
+			imagesCollection.setLocked(true);
+			
 		} catch (IOException ex) {
 			throw new ClientException("Error while importing data.");
 		}

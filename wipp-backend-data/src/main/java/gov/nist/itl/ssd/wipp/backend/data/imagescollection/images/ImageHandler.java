@@ -64,7 +64,6 @@ public class ImageHandler extends FileHandler {
     }
     
     public void addAllInDbFromTemp(String imagesCollectionId) {
-    	System.out.println("\n\nAdd All In DB Temp\n\n");
         File[] files = getTempFiles(imagesCollectionId);
         if (files == null) {
             return;
