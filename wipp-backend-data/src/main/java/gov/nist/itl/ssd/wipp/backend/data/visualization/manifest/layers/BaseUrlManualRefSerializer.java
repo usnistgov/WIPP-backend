@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,8 +33,14 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
 @Component
 public class BaseUrlManualRefSerializer extends JsonSerializer<String> {
 
+	private static EntityLinks entityLinks;
+	
+	public BaseUrlManualRefSerializer() {}
+	
 	@Autowired
-    private EntityLinks entityLinks;
+    public BaseUrlManualRefSerializer(EntityLinks entityLinks) {
+        BaseUrlManualRefSerializer.entityLinks = entityLinks;
+    }
 	
 	@Override
 	public void serialize(String value, JsonGenerator gen, SerializerProvider sp)

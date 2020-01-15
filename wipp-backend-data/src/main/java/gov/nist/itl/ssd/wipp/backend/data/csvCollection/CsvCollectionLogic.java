@@ -25,6 +25,12 @@ public class CsvCollectionLogic {
     @Autowired
     private CsvCollectionRepository csvCollectionRepository;
 
+    public void assertCollectionNameUnique(String name) {
+        if (csvCollectionRepository.countByName(name) != 0) {
+            throw new ClientException("A CSV collection named "
+                    + name + " already exists.");
+        }
+    }
     public void assertCollectionNotLocked(CsvCollection csvCollection) {
         if (csvCollection.isLocked()) {
             throw new ClientException("Collection locked.");
@@ -40,13 +46,6 @@ public class CsvCollectionLogic {
     public void assertCollectionHasNoImportError(CsvCollection csvCollection) {
         if (csvCollection.getNumberOfImportErrors() != 0) {
             throw new ClientException("Some CSV have not been imported correctly.");
-        }
-    }
-
-    public void assertCollectionNameUnique(String name) {
-        if (csvCollectionRepository.countByName(name) != 0) {
-            throw new ClientException("A CSV collection named \""
-                    + name + "\" already exists.");
         }
     }
 
