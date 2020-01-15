@@ -74,6 +74,9 @@ public class CoreConfig {
     @Value("${storage.collections.upload.tmp}")
     private String collectionsUploadTmpFolder;
 
+    @Value("${storage.csvCollections.upload.tmp}")
+    private String csvCollectionsUploadTmpFolder;
+
     @Value("${storage.temp.jobs}")
     private String jobsTempFolder;
 
@@ -157,6 +160,10 @@ public class CoreConfig {
 
 	public String getCollectionsUploadTmpFolder() {
         return collectionsUploadTmpFolder;
+    }
+
+    public String getCsvCollectionsUploadTmpFolder() {
+        return csvCollectionsUploadTmpFolder;
     }
 
     public String getJobsTempFolder() {
