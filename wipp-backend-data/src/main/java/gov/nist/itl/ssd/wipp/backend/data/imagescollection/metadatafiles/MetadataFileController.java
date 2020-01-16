@@ -16,7 +16,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RestController
-@Api(tags="ImagesCollection Entity")
+//@Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/metadataFiles")
 @ExposesResourceFor(MetadataFile.class)
 public class MetadataFileController {
@@ -114,6 +114,7 @@ public class MetadataFileController {
             @PathVariable("fileName") String fileName,
             HttpServletResponse response) throws IOException {
         File file = metadataFileHandler.getFile(imagesCollectionId, fileName);
+
         response.setContentLengthLong(file.length());
         try (InputStream fis = new FileInputStream(file)) {
             IOUtils.copyLarge(fis, response.getOutputStream());

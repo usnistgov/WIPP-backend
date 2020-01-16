@@ -22,11 +22,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadBase;
+
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
-public abstract class FlowjsController {
+public abstract class FlowjsController extends FileUploadBase{
 
     @Autowired
     private FlowFileStorage flowFileStorage;

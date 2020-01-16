@@ -12,7 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Api;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -20,7 +20,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Antoine Vandecreme
  */
 @RestController
-@Api(tags="StitchingVector Entity")
+//@Api(tags="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/{stitchingVectorId}/statistics")
 public class StitchingVectorStatisticsController {
 

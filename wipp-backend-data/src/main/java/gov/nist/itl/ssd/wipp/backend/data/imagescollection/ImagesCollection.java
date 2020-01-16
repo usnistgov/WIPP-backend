@@ -48,12 +48,18 @@ public class ImagesCollection extends Data {
     @Indexed(unique = true, sparse = true)
     @ManualRef(Job.class)
     private String sourceJob;
+    
+    private String sourceCatalog;
+    
+    private ImagesCollectionImportMethod importMethod;
 
     private boolean locked;
 
     private boolean publiclyAvailable;
 
     private String pattern;
+
+    private String notes;
 
     @JsonProperty(access = Access.READ_ONLY)
     private int numberOfImages;
@@ -76,13 +82,14 @@ public class ImagesCollection extends Data {
     }
 
     public ImagesCollection(String name) {
-        this(name, false);
+        this(name, false, ImagesCollectionImportMethod.UPLOADED);
     }
-
-    public ImagesCollection(String name, boolean locked) {
+    
+    public ImagesCollection(String name, boolean locked, ImagesCollectionImportMethod importMethod){
         this.name = name;
         this.locked = locked;
-        this.creationDate = new Date();
+        this.creationDate = new Date();	
+        this.importMethod = importMethod;
     }
 
     public ImagesCollection(Job job, String outputName) {
@@ -90,6 +97,15 @@ public class ImagesCollection extends Data {
         this.sourceJob = job.getId();
         this.locked = true;
         this.creationDate = new Date();
+        this.importMethod = ImagesCollectionImportMethod.JOB;
+    }
+    
+    public ImagesCollection(String name, String sourceCatalog){
+        this.name = name;
+        this.locked = true;
+        this.creationDate = new Date();	
+        this.sourceCatalog = sourceCatalog;
+        this.importMethod = ImagesCollectionImportMethod.CATALOG;
     }
 
     public String getId() {
@@ -149,6 +165,13 @@ public class ImagesCollection extends Data {
             return null;
         }
 	}
+
+	public String getNotes() { return notes; }
+
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
 	public void setLocked(boolean locked) {
         this.locked = locked;
@@ -220,4 +243,19 @@ public class ImagesCollection extends Data {
     }
 
     public void setPubliclyAvailable(boolean publiclyAvailable) { this.publiclyAvailable = publiclyAvailable; }
+
+	public String getSourceCatalog() {
+		return sourceCatalog;
+	}
+
+	public ImagesCollectionImportMethod getImportMethod() {
+		return importMethod;
+	}
+
+	public void setImportMethod(ImagesCollectionImportMethod importMethod) {
+		this.importMethod = importMethod;
+	}
+	
+    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG}
+
 }

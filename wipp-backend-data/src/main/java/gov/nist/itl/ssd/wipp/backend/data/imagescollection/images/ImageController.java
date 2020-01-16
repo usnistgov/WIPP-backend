@@ -17,7 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RestController
-@Api(tags="ImagesCollection Entity")
+//@Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/images")
 @ExposesResourceFor(Image.class)
 public class ImageController {
