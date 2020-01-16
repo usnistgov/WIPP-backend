@@ -13,6 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import java.util.Date;
 
+import gov.nist.itl.ssd.wipp.backend.data.SecurityService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,6 +35,10 @@ public class CsvCollection {
 	private String id;
 
 	private String name;
+
+	private String owner;
+
+	private boolean publiclyAvailable;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date creationDate;
@@ -64,19 +69,54 @@ public class CsvCollection {
 	}
 
 	public String getId() {
-		return id;
+		if(SecurityService.checkAuthorize(this)){
+			return id;
+		}
+		else {
+			return null;
+		}
 	}
 
 	public String getName() {
-		return name;
+		if(SecurityService.checkAuthorize(this)){
+			return name;
+		}
+		else {
+			return null;
+		}
 	}
 
 	public Date getCreationDate() {
-		return creationDate;
+		if(SecurityService.checkAuthorize(this)){
+			return creationDate;
+		}
+		else {
+			return null;
+		}
 	}
 
 	public String getSourceJob() {
-		return sourceJob;
+		if(SecurityService.checkAuthorize(this)){
+			return sourceJob;
+		}
+		else {
+			return null;
+		}
 	}
 
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isPubliclyAvailable() {
+		return publiclyAvailable;
+	}
+
+	public void setPubliclyAvailable(boolean publiclyAvailable) {
+		this.publiclyAvailable = publiclyAvailable;
+	}
 }

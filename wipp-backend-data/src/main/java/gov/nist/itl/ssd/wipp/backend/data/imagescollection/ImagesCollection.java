@@ -13,19 +13,18 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-
-//import gov.nist.itl.ssd.fes.job.Job;
-import java.util.Date;
-
+import gov.nist.itl.ssd.wipp.backend.data.SecurityService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.Date;
+
+//import gov.nist.itl.ssd.fes.job.Job;
 
 /**
  *
@@ -41,6 +40,8 @@ public class ImagesCollection extends Data {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -49,6 +50,8 @@ public class ImagesCollection extends Data {
     private String sourceJob;
 
     private boolean locked;
+
+    private boolean publiclyAvailable;
 
     private String pattern;
 
@@ -69,7 +72,6 @@ public class ImagesCollection extends Data {
 
     @JsonProperty(access = Access.READ_ONLY)
     private long metadataFilesTotalSize;
-
     public ImagesCollection() {
     }
 
@@ -91,15 +93,30 @@ public class ImagesCollection extends Data {
     }
 
     public String getId() {
-        return id;
+        if(SecurityService.checkAuthorize(this)){
+            return id;
+        }
+        else {
+            return null;
+        }
     }
 
     public String getName() {
-        return name;
+        if(SecurityService.checkAuthorize(this)){
+            return name;
+        }
+        else {
+            return null;
+        }
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        if(SecurityService.checkAuthorize(this)){
+            return creationDate;
+        }
+        else {
+            return null;
+        }
     }
 
     public void setCreationDate(Date creationDate) {
@@ -107,15 +124,30 @@ public class ImagesCollection extends Data {
     }
 
     public String getSourceJob() {
-        return sourceJob;
+        if(SecurityService.checkAuthorize(this)){
+            return sourceJob;
+        }
+        else {
+            return null;
+        }
     }
 
     public boolean isLocked() {
-        return locked;
+        if(SecurityService.checkAuthorize(this)){
+            return locked;
+        }
+        else {
+            return false;
+        }
     }
 
 	public String getPattern() {
-		return pattern;
+        if(SecurityService.checkAuthorize(this)){
+            return pattern;
+        }
+        else {
+            return null;
+        }
 	}
 
 	public void setLocked(boolean locked) {
@@ -123,26 +155,69 @@ public class ImagesCollection extends Data {
     }
 
     public int getNumberOfImages() {
-        return numberOfImages;
+        if(SecurityService.checkAuthorize(this)){
+            return numberOfImages;
+        }
+        else {
+            return 0;
+        }
     }
 
     public long getImagesTotalSize() {
-        return imagesTotalSize;
+        if(SecurityService.checkAuthorize(this)){
+            return imagesTotalSize;
+        }
+        else {
+            return 0;
+        }
     }
 
     public int getNumberImportingImages() {
-        return numberImportingImages;
+        if(SecurityService.checkAuthorize(this)){
+            return numberImportingImages;
+        }
+        else {
+            return 0;
+        }
     }
 
     public int getNumberOfImportErrors() {
-        return numberOfImportErrors;
+        if(SecurityService.checkAuthorize(this)){
+            return numberOfImportErrors;
+        }
+        else {
+            return 0;
+        }
     }
 
     public int getNumberOfMetadataFiles() {
-        return numberOfMetadataFiles;
+        if(SecurityService.checkAuthorize(this)){
+            return numberOfMetadataFiles;
+        }
+        else {
+            return 0;
+        }
     }
 
     public long getMetadataFilesTotalSize() {
-        return metadataFilesTotalSize;
+        if(SecurityService.checkAuthorize(this)){
+            return metadataFilesTotalSize;
+        }
+        else {
+            return 0;
+        }
     }
+
+    public String getOwner() {
+
+        return owner;
+    }
+
+    public void setOwner(String owner) { this.owner = owner; }
+
+    public boolean isPubliclyAvailable() {
+        return publiclyAvailable;
+    }
+
+    public void setPubliclyAvailable(boolean publiclyAvailable) { this.publiclyAvailable = publiclyAvailable; }
 }

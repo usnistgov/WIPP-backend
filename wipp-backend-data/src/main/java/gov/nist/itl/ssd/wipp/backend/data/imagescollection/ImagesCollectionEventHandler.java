@@ -27,11 +27,9 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.core.annotation.HandleAfterDelete;
-import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
-import org.springframework.data.rest.core.annotation.HandleBeforeDelete;
-import org.springframework.data.rest.core.annotation.HandleBeforeSave;
-import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +37,7 @@ import org.springframework.stereotype.Component;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @Component
-@RepositoryEventHandler(ImagesCollection.class)
+@RepositoryEventHandler
 public class ImagesCollectionEventHandler {
 	
 	private static final Logger LOGGER = Logger.getLogger(ImagesCollectionEventHandler.class.getName());
@@ -64,6 +62,7 @@ public class ImagesCollectionEventHandler {
         imagesCollectionLogic.assertCollectionNameUnique(
                 imagesCollection.getName());
         imagesCollection.setCreationDate(new Date());
+        imagesCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @HandleBeforeSave
@@ -72,6 +71,12 @@ public class ImagesCollectionEventHandler {
                 imagesCollection.getId());
     	if (!result.isPresent()) {
         	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
+        }
+        boolean var1 = !imagesCollection.isPubliclyAvailable();
+    	String var2 = imagesCollection.getOwner();
+        String var3 = SecurityContextHolder.getContext().getAuthentication().getName();
+    	if (var1 && !var2.equals(var3)){
+            throw new ClientException("You do not have the right to edit this collection.");
         }
 
         ImagesCollection oldTc = result.get();

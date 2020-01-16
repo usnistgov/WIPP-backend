@@ -81,7 +81,6 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     public String exportDataAsParam(String value) {
         String imagesCollectionId = value;
         String imagesCollectionPath;
-
         // check if the input of the job is the output of another job and if so return the associated path
         String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
         Pattern pattern = Pattern.compile(regex);

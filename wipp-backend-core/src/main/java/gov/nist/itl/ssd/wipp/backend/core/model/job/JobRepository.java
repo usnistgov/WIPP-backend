@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PostFilter;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RepositoryRestResource
+
 public interface JobRepository<T extends Job> extends MongoRepository<T, String> {
     @Override
     @RestResource(exported = false)
@@ -44,6 +46,7 @@ public interface JobRepository<T extends Job> extends MongoRepository<T, String>
 
     @RestResource(exported = false)
     List<T> findByWippWorkflow(String workflow);
+
 
     Page<T> findByWippWorkflow(@Param("wippWorkflow") String workflow,
                                Pageable p);

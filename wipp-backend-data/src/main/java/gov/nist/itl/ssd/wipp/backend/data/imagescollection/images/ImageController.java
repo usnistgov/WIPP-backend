@@ -45,6 +45,7 @@ import org.springframework.hateoas.UriTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,6 +77,7 @@ public class ImageController {
     @Autowired
     private PaginationParameterTemplatesHelper paginationParameterTemplatesHelper;
 
+    @PreAuthorize("@securityService.checkAuthorize(#imagesCollectionId)")
     @RequestMapping(value = "", method = RequestMethod.GET)
     public HttpEntity<PagedResources<Resource<Image>>> getFilesPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
@@ -89,7 +91,6 @@ public class ImageController {
                 resource -> processResource(imagesCollectionId, resource));
 
         processCollectionResource(imagesCollectionId, resources, assembler);
-
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
