@@ -36,8 +36,7 @@ public class CorsFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res,
             FilterChain chain) throws IOException, ServletException {
 
-        // For debugging purpose, we enable CORS when the request is coming
-        // from localhost.
+        // Enable CORS for all requests
         HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods",
