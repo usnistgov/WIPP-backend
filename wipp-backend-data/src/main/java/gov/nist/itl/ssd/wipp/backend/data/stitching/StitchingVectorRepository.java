@@ -36,4 +36,6 @@ public interface StitchingVectorRepository  extends MongoRepository<StitchingVec
 	Page<StitchingVector> findByNameContainingIgnoreCase(
 			@Param("name") String name, Pageable p);
 
+	long countByName(@Param("name") String name);
+
 }

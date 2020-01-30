@@ -43,6 +43,9 @@ public class StitchingVectorUploadController {
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
 
+    @Autowired
+    private StitchingVectorLogic stitchingVectorLogic;
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     public StitchingVector upload(
             @RequestParam("file") MultipartFile file,
@@ -59,6 +62,8 @@ public class StitchingVectorUploadController {
             throw new ClientException(
                     "A stitching vector name must be specified.");
         }
+
+        stitchingVectorLogic.assertStitchingVectorNameUnique(name);
 
         List<StitchingVectorTimeSlice> timeSlices = Arrays.asList(
                 new StitchingVectorTimeSlice(1, message));
