@@ -27,7 +27,7 @@ public class CsvCollectionLogic {
 
     public void assertCollectionNameUnique(String name) {
         if (csvCollectionRepository.countByName(name) != 0) {
-            throw new ClientException("A CSV collection named "
+            throw new ClientException("A CSV files collection named "
                     + name + " already exists.");
         }
     }
@@ -39,13 +39,13 @@ public class CsvCollectionLogic {
 
     public void assertCollectionNotImporting(CsvCollection csvCollection) {
         if (csvCollection.getNumberImportingCsv() != 0) {
-            throw new ClientException("CSV are still being imported.");
+            throw new ClientException("CSV files are still being imported.");
         }
     }
 
     public void assertCollectionHasNoImportError(CsvCollection csvCollection) {
         if (csvCollection.getNumberOfImportErrors() != 0) {
-            throw new ClientException("Some CSV have not been imported correctly.");
+            throw new ClientException("Some CSV files have not been imported correctly.");
         }
     }
 

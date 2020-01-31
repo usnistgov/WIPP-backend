@@ -19,6 +19,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @RepositoryRestResource
 public interface CsvCollectionRepository extends MongoRepository<CsvCollection, String>, CsvCollectionRepositoryCustom{

@@ -95,9 +95,9 @@ public class CsvUploadController  extends FlowjsController {
             throw new ClientException("Collection " + csvCollectionId
                     + " does not exist.");
         }
-//        if (oldTc.get().isLocked()) {
-//            throw new ClientException("Collection locked.");
-//        }
+        if (oldTc.get().isLocked()) {
+            throw new ClientException("Collection locked.");
+        }
     }
 
     @Override
@@ -111,6 +111,11 @@ public class CsvUploadController  extends FlowjsController {
     @Override
     protected File getUploadDir(FlowFile flowFile) {
         return getUploadDir(getCollectionId(flowFile));
+    }
+
+    @Override
+    protected String getUploadSubFolder() {
+        return null;
     }
 
     protected File getUploadDir(String csvCollectionId) {
@@ -168,16 +173,6 @@ public class CsvUploadController  extends FlowjsController {
     protected static String getCollectionId(FlowFile flowFile) {
         CsvCollectionFlowFile tff = (CsvCollectionFlowFile) flowFile;
         return tff.collection;
-    }
-
-    protected static long getPathSize(Path path) {
-        long size = 0;
-        try {
-            size = Files.size(path);
-        } catch (IOException O_o) {
-            // Safely ignore, the size will just be 0.
-        }
-        return size;
     }
 
     private static class CsvCollectionFileParameters implements Parameters {

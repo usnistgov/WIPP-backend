@@ -43,11 +43,11 @@ public class CsvCollectionResourceProcessor implements ResourceProcessor<Resourc
                 .withRel("download");
         resource.add(downloadLink);
 
-		Link imagesLink = entityLinks.linkForSingleResource(
+		Link csvFilesLink = entityLinks.linkForSingleResource(
 				CsvCollection.class, csvCollection.getId())
 				.slash("csv")
 				.withRel("csv");
-		resource.add(assembler.appendPaginationParameterTemplates(imagesLink));
+		resource.add(assembler.appendPaginationParameterTemplates(csvFilesLink));
         
 		return resource;
 	}
