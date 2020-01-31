@@ -76,6 +76,7 @@
 				<storage.tensorflow>${user.home}/WIPP-plugins/tensorflow-models</storage.tensorflow>
 				<storage.tensorboard>${user.home}/WIPP-plugins/tensorboard-logs</storage.tensorboard>
 				<storage.csv.collections>${user.home}/WIPP-plugins/csv-collections</storage.csv.collections>
+				<storage.csvCollections.upload.tmp>${user.home}/WIPP-plugins/temp/csvCollections</storage.csvCollections.upload.tmp>
 				<storage.notebooks>${user.home}/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>${user.home}/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
@@ -101,6 +102,7 @@
 				<storage.tensorflow>/data/WIPP-plugins/tensorflow-models</storage.tensorflow>
 				<storage.tensorboard>/data/WIPP-plugins/tensorboard-logs</storage.tensorboard>
 				<storage.csv.collections>/data/WIPP-plugins/csv-collections</storage.csv.collections>
+				<storage.csvCollections.upload.tmp>/data/WIPP-plugins/temp/csvCollections</storage.csvCollections.upload.tmp>
 				<storage.notebooks>/data/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>/data/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>

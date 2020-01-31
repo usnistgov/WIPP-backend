@@ -13,6 +13,9 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
+import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
@@ -25,6 +28,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CsvCollectionResourceProcessor implements ResourceProcessor<Resource<CsvCollection>>{
 
+	@Autowired
+	private PaginationParameterTemplatesHelper assembler;
+
+	@Autowired
+	private EntityLinks entityLinks;
+
 	@Override
 	public Resource<CsvCollection> process(Resource<CsvCollection> resource) {
 		CsvCollection csvCollection = resource.getContent();
@@ -33,6 +42,12 @@ public class CsvCollectionResourceProcessor implements ResourceProcessor<Resourc
         		csvCollection.getId())
                 .withRel("download");
         resource.add(downloadLink);
+
+		Link csvFilesLink = entityLinks.linkForSingleResource(
+				CsvCollection.class, csvCollection.getId())
+				.slash("csv")
+				.withRel("csv");
+		resource.add(assembler.appendPaginationParameterTemplates(csvFilesLink));
         
 		return resource;
 	}
