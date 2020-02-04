@@ -1,3 +1,4 @@
+DOCKER_VERSION=<docker image version>
 STORAGE_WIPP=<pvc storage size>
 WIPP_PVC_NAME=<shared pvc name>
 STORAGE_CLASS_NAME=<storage class name>
