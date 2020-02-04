@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-COLLECTION_PATH="/data/wipp/csv-collections/<id>"
-ZOOM_CONFIG_FILE=sample-zoom-config.json
-
 export $(egrep -v '^#' .env)
 
 # Backup file extension required to support Mac versions of sed
