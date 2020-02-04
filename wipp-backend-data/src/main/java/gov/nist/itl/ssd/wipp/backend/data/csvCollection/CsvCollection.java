@@ -44,6 +44,9 @@ public class CsvCollection {
 	private int numberImportingCsv;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private int numberOfCsvFiles;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private long csvTotalSize;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -108,6 +111,10 @@ public class CsvCollection {
 
 	public int getNumberImportingCsv() {
 		return numberImportingCsv;
+	}
+
+	public int getNumberOfCsvFiles() {
+		return numberOfCsvFiles;
 	}
 
 }
