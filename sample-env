@@ -1,0 +1,9 @@
+STORAGE_WIPP=<pvc storage size>
+WIPP_PVC_NAME=<shared pvc name>
+STORAGE_CLASS_NAME=<storage class name>
+STORAGE_MONGO=<pvc storage size>
+
+ELASTIC_APM_URL=<url to Elastic APM>
+
+BACKEND_HOST_NAME=<host name>
+MONGO_HOST_NAME=<host name>

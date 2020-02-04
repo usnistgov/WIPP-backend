@@ -24,9 +24,6 @@ pipeline {
         )}"""
         DOCKER_VERSION = readFile(file: 'deploy/docker/VERSION')
         WIPP_PVC_NAME = "wipp-pv-claim"
-        STORAGE_CLASS_NAME = "rook-cephfs"
-        STORAGE_WIPP = "50Gi"
-        STORAGE_MONGO = "5Gi"
     }
     triggers {
         pollSCM('H/2 * * * *')
@@ -44,21 +41,6 @@ pipeline {
                 }
             }
         }
-        stage('Load config file') {
-            steps {
-                // Config JSON file is stored in Jenkins and should contain sensitive environment values.
-                configFileProvider([configFile(fileId: 'env-ci', targetLocation: 'env-ci.json')]) {
-                    script {
-                        def urls = readJSON file: 'env-ci.json'
-
-                        env.ARTIFACTORY_URL = urls.ARTIFACTORY_URL
-                        env.ELASTIC_APM_URL = urls.ELASTIC_APM_URL
-                        env.BACKEND_HOST_NAME = urls.BACKEND_HOST_NAME
-                        env.MONGO_HOST_NAME = urls.MONGO_HOST_NAME
-                    }
-                }
-            }
-        }
         stage('Checkout source code') {
             steps {
                 cleanWs()
@@ -70,6 +52,11 @@ pipeline {
                 environment name: 'SKIP_BUILD', value: 'false'
             }
             steps {
+                configFileProvider([configFile(fileId: '2e7ca7c3-751d-46bf-a8ed-94faa706ba22', targetLocation: 'artifactory_url')]) {
+                    script {
+                        env.ARTIFACTORY_URL = readFile(file: 'artifactory_url')
+                    }
+                }
                 withCredentials([string(credentialsId: 'ARTIFACTORY_USER', variable: 'ARTIFACTORY_USER'),
                                 string(credentialsId: 'ARTIFACTORY_TOKEN', variable: 'ARTIFACTORY_TOKEN')]) {
                     script {
@@ -102,26 +89,10 @@ pipeline {
         }
         stage('Deploy WIPP to Kubernetes') {
             steps {
-                dir('deploy/kubernetes') {
-                    script {                        
-                        sh "sed -i 's/STORAGE_WIPP_VALUE/${STORAGE_WIPP}/g' storage-ceph.yaml"
-                        sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' storage-ceph.yaml"
-                        sh "sed -i 's/STORAGE_CLASS_NAME_VALUE/${STORAGE_CLASS_NAME}/g' storage-ceph.yaml"
-                        sh "sed -i 's/STORAGE_MONGO_VALUE/${STORAGE_MONGO}/g' storage-ceph.yaml"
-                        sh "sed -i 's/BACKEND_VERSION_VALUE/${DOCKER_VERSION}/g' backend-deployment.yaml"
-                        sh "sed -i 's/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g' backend-deployment.yaml"
-                        sh "sed -i 's|ELASTIC_APM_URL_VALUE|${ELASTIC_APM_URL}|g' backend-deployment.yaml"
-                        sh "sed -i 's/BACKEND_HOST_NAME_VALUE/${BACKEND_HOST_NAME}/g' services.yaml"
-                        sh "sed -i 's/MONGO_HOST_NAME_VALUE/${MONGO_HOST_NAME}/g' services.yaml"
-                    }
+                configFileProvider([configFile(fileId: 'env-ci', targetLocation: '.env')]) {
                     withAWS(credentials:'aws-jenkins-eks') {
                         sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
-                        sh '''
-                            kubectl apply -f storage-ceph.yaml
-                            kubectl apply -f mongo-deployment.yaml
-                            kubectl apply -f backend-deployment.yaml
-                            kubectl apply -f services.yaml
-                        '''
+                        sh "./deploy.sh"
                     }
                 }
             }
