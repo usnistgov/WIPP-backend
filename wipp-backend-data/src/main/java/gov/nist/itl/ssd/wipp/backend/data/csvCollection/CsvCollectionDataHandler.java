@@ -46,17 +46,13 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
     public void importData(Job job, String outputName) throws JobExecutionException, IOException {
         CsvCollection csvCollection = new CsvCollection(job, outputName);
         csvCollectionRepository.save(csvCollection);
-
-
-        File csvCollectionFolder = new File(config.getCsvCollectionsFolder(), csvCollection.getId());
-        csvCollectionFolder.mkdirs();
-
-        File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
-        importFolder(csvCollectionFolder, csvCollection.getId());
-        boolean success = tempOutputDir.renameTo(csvCollectionFolder);
-        if (!success) {
+        try {
+            File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);
+            csvHandler.importFolder(csvCollection.getId(), jobOutputTempFolder);
+            setOutputId(job, outputName, csvCollection.getId());
+        } catch (IOException ex) {
             csvCollectionRepository.delete(csvCollection);
-            throw new JobExecutionException("Cannot move csv collection to final destination.");
+            throw new JobExecutionException("Cannot move CSV collection to final destination.");
         }
         setOutputId(job, outputName, csvCollection.getId());
     }
@@ -82,10 +78,6 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
         }
         csvCollectionPath = csvCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return csvCollectionPath;
-    }
-
-    private void importFolder(File file, String id) throws IOException {
-        csvHandler.importFolder(id, file);
     }
 
 }
