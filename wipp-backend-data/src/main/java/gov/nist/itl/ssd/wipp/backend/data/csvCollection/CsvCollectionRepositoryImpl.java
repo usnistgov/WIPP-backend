@@ -47,25 +47,25 @@ public class CsvCollectionRepositoryImpl
 				new Document("$group",
 						new Document()
 								.append("_id", "aggregation")
-								.append("numberOfCsv",
+								.append("numberOfCsvFiles",
 										new Document("$sum", 1))
 								.append("csvTotalSize",
 										new Document("$sum", "$fileSize"))
 				));
 		AggregateIterable<Document> output = collection.aggregate(pipeline);
 
-		int numberOfCsv = 0;
+		int numberOfCsvFiles = 0;
 		long csvTotalSize = 0;
 		Iterator<Document> iterator = output.iterator();
 		if (iterator.hasNext()) {
 			Document dbo = iterator.next();
-			numberOfCsv = dbo.getInteger("numberOfCsv");
+			numberOfCsvFiles = dbo.getInteger("numberOfCsvFiles");
 			csvTotalSize = dbo.getLong("csvTotalSize");
 		}
 		mongoTemplate.updateFirst(
 				Query.query(Criteria.where("id").is(csvCollectionId)),
 				new Update()
-						.set("numberOfCsv", numberOfCsv)
+						.set("numberOfCsvFiles", numberOfCsvFiles)
 						.set("csvTotalSize", csvTotalSize),
 				CsvCollection.class);
 	}

@@ -23,18 +23,8 @@ import java.util.List;
 /**
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
-@RepositoryRestResource
-
-public interface CsvRepository extends MongoRepository<Csv, String> {
-
-    @Override
-    @RestResource(exported = false)
-    <S extends Csv> S save(S s);
-
-    @Override
-    @RestResource(exported = false)
-    void delete(Csv t);
-
+@RepositoryRestResource(exported = false)
+public interface CsvRepository extends MongoRepository<Csv, String>, CsvRepositoryCustom {
 
     List<Csv> findByCsvCollection(String csvCollection);
 
