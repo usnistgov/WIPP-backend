@@ -31,14 +31,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Controller
-//@Api(tags="CsvCollection Entity")
+@Api(tags="CsvCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/csvCollections/{csvCollectionId}/download")
 public class CsvCollectionDownloadController {
 

@@ -23,8 +23,7 @@ import java.util.List;
 /**
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
-@RepositoryRestResource
-
+@RepositoryRestResource(exported = false)
 public interface CsvRepository extends MongoRepository<Csv, String> {
 
     @Override
