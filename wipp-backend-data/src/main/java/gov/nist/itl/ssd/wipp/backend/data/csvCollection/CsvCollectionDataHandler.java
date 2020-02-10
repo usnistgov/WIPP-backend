@@ -12,9 +12,11 @@
 package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.csv.CsvHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,31 +33,30 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHandler{
 
 
-	@Autowired
-	CoreConfig config;
+    @Autowired
+    CoreConfig config;
 
-	@Autowired
-	private CsvCollectionRepository csvCollectionRepository;
+    @Autowired
+    private CsvCollectionRepository csvCollectionRepository;
 
-	@Override
-	public void importData(Job job, String outputName) throws JobExecutionException {
-		CsvCollection csvCollection = new CsvCollection(job, outputName);
-		csvCollectionRepository.save(csvCollection);
+    @Autowired
+    private CsvHandler csvHandler;
 
+    @Override
+    public void importData(Job job, String outputName) throws JobExecutionException, IOException {
+        CsvCollection csvCollection = new CsvCollection(job, outputName);
+        csvCollectionRepository.save(csvCollection);
+        try {
+            File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);
+            csvHandler.importFolder(csvCollection.getId(), jobOutputTempFolder);
+            setOutputId(job, outputName, csvCollection.getId());
+        } catch (IOException ex) {
+            csvCollectionRepository.delete(csvCollection);
+            throw new JobExecutionException("Cannot move CSV collection to final destination.");
+        }
+        setOutputId(job, outputName, csvCollection.getId());
+    }
 
-		File csvCollectionFolder = new File(config.getCsvCollectionsFolder(), csvCollection.getId());
-		csvCollectionFolder.mkdirs();
-
-		File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
-		boolean success = tempOutputDir.renameTo(csvCollectionFolder);
-		if (!success) {
-			csvCollectionRepository.delete(csvCollection);
-			throw new JobExecutionException("Cannot move csv collection to final destination.");
-		}
-
-		setOutputId(job, outputName, csvCollection.getId());
-	}
-	
     public String exportDataAsParam(String value) {
         String csvCollectionId = value;
         String csvCollectionPath;
@@ -77,7 +78,6 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
         }
         csvCollectionPath = csvCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return csvCollectionPath;
-
     }
 
 }

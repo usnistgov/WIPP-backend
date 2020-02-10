@@ -12,6 +12,11 @@
 package gov.nist.itl.ssd.wipp.backend.data.csvCollection.csv;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollectionRepository;
+
 import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 /**
  *
  * @author Samia Benjida <samia.benjida at nist.gov>
@@ -39,7 +46,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class CsvController {
 
     @Autowired
+    private EntityLinks entityLinks;
+
+    @Autowired
     private CsvRepository csvRepository;
+
+    @Autowired
+    private CsvCollectionRepository csvCollectionRepository;
+
+    @Autowired
+    private CsvHandler csvHandler;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public HttpEntity<PagedResources<Resource<Csv>>> getFilesPage(
@@ -48,9 +64,51 @@ public class CsvController {
             PagedResourcesAssembler<Csv> assembler) {
         Page<Csv> files = csvRepository.findByCsvCollection(
                 csvCollectionId, pageable);
-        PagedResources<Resource<Csv>> resources = assembler.toResource(files);
-
+        PagedResources<Resource<Csv>> resources
+                = assembler.toResource(files);
+        resources.forEach(
+                resource -> processResource(csvCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public void deleteAllFiles(
+            @PathVariable("csvCollectionId") String csvCollectionId) {
+        Optional<CsvCollection> tc =csvCollectionRepository.findById(
+                csvCollectionId);
+        if (!tc.isPresent()) {
+            throw new NotFoundException("Collection not found");
+        }
+        if (tc.get().isLocked()) {
+            throw new ClientException("Collection locked.");
+        }
+        csvHandler.deleteAll(csvCollectionId);
+    }
+
+    @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
+    public void deleteFile(
+            @PathVariable("csvCollectionId") String csvCollectionId,
+            @PathVariable("fileName") String fileName) {
+        Optional<CsvCollection> tc = csvCollectionRepository.findById(
+                csvCollectionId);
+        if (!tc.isPresent()) {
+            throw new NotFoundException("Collection not found");
+        }
+        if (tc.get().isLocked()) {
+            throw new ClientException("Collection locked.");
+        }
+        csvHandler.delete(csvCollectionId, fileName);
+    }
+
+    protected void processResource(String csvCollectionId,
+                                   Resource<Csv> resource) {
+        Csv file = resource.getContent();
+        Link link = entityLinks.linkForSingleResource(
+                CsvCollection.class, csvCollectionId)
+                .slash("csv")
+                .slash(file.getFileName())
+                .withSelfRel();
+        resource.add(link);
     }
 
 }
