@@ -32,8 +32,8 @@ import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -117,11 +117,24 @@ public class Application implements WebMvcConfigurer {
                 		pyramidsFolderFile
                         .toURI().toString());
     	// Add Swagger UI resource handler
-    	registry.addResourceHandler("swagger-ui.html")
-    		.addResourceLocations("classpath:/META-INF/resources/");
-    	registry.addResourceHandler("/webjars/**")
+    	registry.addResourceHandler(CoreConfig.BASE_URI + "/swagger-ui.html**")
+    		.addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
+    	registry.addResourceHandler(CoreConfig.BASE_URI + "/webjars/**")
 			.addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
+    
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		// Add redirects to move Swagger UI under /api/
+		registry.addRedirectViewController(CoreConfig.BASE_URI + "/v2/api-docs", 
+				"/v2/api-docs");
+		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources/configuration/ui",
+				"/swagger-resources/configuration/ui");
+		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources/configuration/security",
+				"/swagger-resources/configuration/security");
+		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources", 
+				"/swagger-resources");
+	}
     
     /**
      * Configure Swagger API documentation

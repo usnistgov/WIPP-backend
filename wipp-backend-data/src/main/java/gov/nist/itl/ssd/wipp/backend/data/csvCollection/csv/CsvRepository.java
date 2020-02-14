@@ -9,33 +9,30 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.stitching;
+package gov.nist.itl.ssd.wipp.backend.data.csvCollection.csv;
+
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import java.util.List;
+
 /**
-*
-* @author Antoine Vandecreme
-*/
-@RepositoryRestResource
-public interface StitchingVectorRepository  extends MongoRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
+ * @author Samia Benjida <samia.benjida at nist.gov>
+ */
+@RepositoryRestResource(exported = false)
+public interface CsvRepository extends MongoRepository<Csv, String>, CsvRepositoryCustom {
 
-	@Override
-	@RestResource(exported = false)
-	<S extends StitchingVector> S save(S s);
+    List<Csv> findByCsvCollection(String csvCollection);
 
-	@Override
-	@RestResource(exported = false)
-	void delete(StitchingVector t);
+    Page<Csv> findByCsvCollection(String csvCollection, Pageable p);
 
-	Page<StitchingVector> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
+    List<Csv> findByCsvCollectionAndFileNameRegex(String csvCollection, String fileName);
 
-	long countByName(@Param("name") String name);
+    Page<Csv> findByCsvCollectionAndFileNameRegex(String csvCollection, String fileName, Pageable p);
 
+    List<Csv> findByImporting(boolean importing);
 }

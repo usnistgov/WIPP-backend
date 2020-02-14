@@ -102,38 +102,14 @@ public abstract class FileUploadController extends FlowjsController {
         return getUploadDir(getCollectionId(flowFile));
     }
 
-    protected File getUploadDir(String imagesCollectionId) {
-        return new File(
-                new File(config.getImagesCollectionsFolder(), imagesCollectionId),
-                getUploadSubFolder());
-    }
-
     @Override
     protected File getTempUploadDir(FlowFile flowFile) {
         return getTempUploadDir(getCollectionId(flowFile));
     }
 
-    protected File getTempUploadDir(String imagesCollectionId) {
-        return new File(new File(
-                config.getCollectionsUploadTmpFolder(), imagesCollectionId),
-                getUploadSubFolder());
-    }
-
-    protected abstract String getUploadSubFolder();
-
     protected static String getCollectionId(FlowFile flowFile) {
         ImagesCollectionFlowFile tff = (ImagesCollectionFlowFile) flowFile;
         return tff.collection;
-    }
-
-    protected static long getPathSize(Path path) {
-        long size = 0;
-        try {
-            size = Files.size(path);
-        } catch (IOException O_o) {
-            // Safely ignore, the size will just be 0.
-        }
-        return size;
     }
 
     private static class ImagesCollectionFileParameters implements Parameters {

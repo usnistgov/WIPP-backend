@@ -11,16 +11,16 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
+import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
-import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
-import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
+import java.util.Date;
 
 /**
  *
@@ -35,6 +35,20 @@ public class CsvCollection {
 
 	private String name;
 
+	private boolean locked;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private int numberOfImportErrors;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private int numberImportingCsv;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private int numberOfCsvFiles;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private long csvTotalSize;
+
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date creationDate;
 
@@ -42,25 +56,27 @@ public class CsvCollection {
 	@ManualRef(Job.class)
 	private String sourceJob;
 
-
 	public CsvCollection() {
 	}
 
-	public CsvCollection(String name){
+	public CsvCollection(String name, boolean locked){
 		this.name = name;
 		this.creationDate = new Date();
+		this.locked = locked;
 	}
 
 	public CsvCollection(Job job){
 		this.name = job.getName();
 		this.sourceJob = job.getId();
 		this.creationDate = new Date();
+		this.locked = true;
 	}
 
 	public CsvCollection(Job job, String outputName) {
 		this.name = job.getName() + "-" + outputName;
 		this.sourceJob = job.getId();
 		this.creationDate = new Date();
+		this.locked = true;
 	}
 
 	public String getId() {
@@ -77,6 +93,28 @@ public class CsvCollection {
 
 	public String getSourceJob() {
 		return sourceJob;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {this.locked = locked;}
+
+	public int getNumberOfImportErrors() {
+		return numberOfImportErrors;
+	}
+
+	public int getNumberImportingCsv() {
+		return numberImportingCsv;
+	}
+
+	public int getNumberOfCsvFiles() {
+		return numberOfCsvFiles;
 	}
 
 }
