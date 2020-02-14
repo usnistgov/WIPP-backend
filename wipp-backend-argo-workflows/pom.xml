@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gov.nist.itl.ssd.wipp</groupId>
     <artifactId>wipp-backend-argo-workflows</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-beta2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
