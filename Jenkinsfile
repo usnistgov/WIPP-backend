@@ -87,12 +87,25 @@ pipeline {
                 }
             }
         }
-        stage('Deploy WIPP to Kubernetes') {
+        stage('Deploy WIPP to AWS CI') {
             steps {
                 configFileProvider([configFile(fileId: 'env-ci', targetLocation: '.env')]) {
                     withAWS(credentials:'aws-jenkins-eks') {
                         sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
                         sh "./deploy.sh"
+                    }
+                }
+            }
+        }
+        stage('Deploy WIPP to NCATS') {
+            agent {
+                node { label 'ls-api-ci.ncats' }
+            }
+            steps {
+                configFileProvider([configFile(fileId: 'env-single-node', targetLocation: '.env')]) {
+                    withKubeConfig([credentialsId: 'ncats_polus2']) {
+                        sh "kubectl get nodes"
+                        sh "printenv"
                     }
                 }
             }
