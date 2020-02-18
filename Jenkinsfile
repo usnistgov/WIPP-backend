@@ -104,8 +104,7 @@ pipeline {
             steps {
                 configFileProvider([configFile(fileId: 'env-single-node', targetLocation: '.env')]) {
                     withKubeConfig([credentialsId: 'ncats_polus2']) {
-                        sh "kubectl get nodes"
-                        sh "printenv"
+                        sh "./deploy.sh"
                     }
                 }
             }
