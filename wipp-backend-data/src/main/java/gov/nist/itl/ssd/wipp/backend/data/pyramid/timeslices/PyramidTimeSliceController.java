@@ -39,6 +39,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,6 +62,8 @@ public class PyramidTimeSliceController {
 	    private EntityLinks entityLinks;
 
 	    @RequestMapping(value = "", method = RequestMethod.GET)
+		// We make sure the user trying to call the getTimeSlicesPage method is authorized to access the pyramid
+		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId)")
 	    public HttpEntity<PagedResources<Resource<PyramidTimeSlice>>>
 	            getTimeSlicesPage(
 	                    @PathVariable("pyramidId") String pyramidId,
@@ -75,6 +78,8 @@ public class PyramidTimeSliceController {
 	        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
 	    }
 
+	// We make sure the user trying to call the getTimeSlice method is authorized to access the pyramid
+	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId)")
 	    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
 	    public HttpEntity<PyramidTimeSlice> getTimeSlice(
 	            @PathVariable("pyramidId") String pyramidId,

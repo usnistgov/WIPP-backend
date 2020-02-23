@@ -38,12 +38,16 @@ public class Pyramid {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
     @Indexed(unique = true, sparse = true)
     @ManualRef(Job.class)
     private String job;
+
+    private boolean publiclyAvailable;
 
     public Pyramid() {
     }
@@ -76,4 +80,19 @@ public class Pyramid {
         return job;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public boolean isPubliclyAvailable() {
+        return publiclyAvailable;
+    }
+
+    public void setPubliclyAvailable(boolean publiclyAvailable) {
+        this.publiclyAvailable = publiclyAvailable;
+    }
 }
