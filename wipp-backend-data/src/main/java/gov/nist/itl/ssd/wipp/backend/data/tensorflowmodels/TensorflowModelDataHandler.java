@@ -42,6 +42,11 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 		TensorflowModel tm = new TensorflowModel(job, outputName);
 		tensorflowModelRepository.save(tm);
 
+        tm.setOwner(job.getOwner());
+        // When a tensorflow model is created as a result of a Job, the model's owner will correspond to the Job's owner and the model's availability will be set to private by default
+        //TODO : set also the isPubliclyAvailable attribute here
+        //tm.setPubliclyAvailable(job.isPubliclyAvailable());
+        tm.setPubliclyAvailable(false);
 
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
