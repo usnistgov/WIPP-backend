@@ -13,7 +13,6 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import java.util.Date;
 
-import gov.nist.itl.ssd.wipp.backend.data.SecurityService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -38,14 +37,14 @@ public class CsvCollection {
 
 	private String owner;
 
-	private boolean publiclyAvailable;
-
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date creationDate;
 
 	@Indexed(unique = true, sparse = true)
 	@ManualRef(Job.class)
 	private String sourceJob;
+
+	private boolean publiclyAvailable;
 
 
 	public CsvCollection() {
@@ -69,39 +68,19 @@ public class CsvCollection {
 	}
 
 	public String getId() {
-		if(SecurityService.checkAuthorize(this)){
-			return id;
-		}
-		else {
-			return null;
-		}
+		return id;
 	}
 
 	public String getName() {
-		if(SecurityService.checkAuthorize(this)){
-			return name;
-		}
-		else {
-			return null;
-		}
+		return name;
 	}
 
 	public Date getCreationDate() {
-		if(SecurityService.checkAuthorize(this)){
-			return creationDate;
-		}
-		else {
-			return null;
-		}
+		return creationDate;
 	}
 
 	public String getSourceJob() {
-		if(SecurityService.checkAuthorize(this)){
-			return sourceJob;
-		}
-		else {
-			return null;
-		}
+		return sourceJob;
 	}
 
 	public String getOwner() {

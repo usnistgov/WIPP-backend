@@ -15,6 +15,8 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 //import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +44,8 @@ public class CsvCollectionUploadController {
     @Autowired
     private CsvCollectionLogic csvCollectionLogic;
 
+    // We make sure that the user is logged in before accessing the csv file uploader
+    @PreAuthorize("@securityServiceData.hasUserRole()")
     @RequestMapping(value = "", method = RequestMethod.POST)
     public CsvCollection upload(
             @RequestParam("files") MultipartFile[] files,
@@ -53,6 +57,7 @@ public class CsvCollectionUploadController {
         }
         csvCollectionLogic.assertCollectionNameUnique(name);
         CsvCollection csvCollection = new CsvCollection(name);
+        csvCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         csvCollection = csvCollectionRepository.save(csvCollection);
         File csvCollectionFolder = new File(
                 config.getCsvCollectionsFolder(),

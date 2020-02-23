@@ -40,6 +40,11 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		CsvCollection csvCollection = new CsvCollection(job, outputName);
+        // When a collection is created as a result of a Job, the collection's owner will correspond to the Job's owner and the collection's availability will be set to private by default
+        csvCollection.setOwner(job.getOwner());
+        //TODO : set also the isPubliclyAvailable attribute here
+        //csvCollection.setPubliclyAvailable(job.isPubliclyAvailable());
+        csvCollection.setPubliclyAvailable(false);
 		csvCollectionRepository.save(csvCollection);
 
 
