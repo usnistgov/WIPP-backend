@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +42,8 @@ public class StitchingVectorStatisticsController {
     private StitchingVectorRepository stitchingVectorRepository;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
+    // We make sure the user trying to access the stitching vector's statistics has the right to access it
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId)")
     public void getStatistics(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             HttpServletResponse response) throws IOException {
