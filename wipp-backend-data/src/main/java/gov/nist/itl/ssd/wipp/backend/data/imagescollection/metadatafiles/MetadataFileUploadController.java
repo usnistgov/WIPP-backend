@@ -13,7 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadController;
 
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Adapted by Mohamed Ouladi <mohamed.ouladi@nist.gov>
  */
 @RestController
-//@Api(tags="ImagesCollection Entity")
+@Api(tags="ImagesCollection Entity")
 // We make sure that the user is logged in before accessing the metadata file uploader
 @PreAuthorize("@securityServiceData.hasUserRole()")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/metadataFiles")

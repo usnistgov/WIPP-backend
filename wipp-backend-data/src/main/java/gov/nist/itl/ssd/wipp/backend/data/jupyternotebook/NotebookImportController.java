@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @RestController
-//@Api(tags="Notebook Entity")
+@Api(tags="Notebook Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/notebooks/import")
 public class NotebookImportController {
 

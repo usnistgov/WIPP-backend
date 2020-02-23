@@ -27,9 +27,10 @@ import java.util.Optional;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @RepositoryRestResource
-public interface CsvCollectionRepository extends PrincipalFilteredRepository<CsvCollection, String> {
+public interface CsvCollectionRepository extends PrincipalFilteredRepository<CsvCollection, String>, CsvCollectionRepositoryCustom {
 
 	@Override
 	// the findById method corresponds to a GET operation on a specific object. We can not use @PreAuthorize on the object's Id, as checkAuthorizeCsvCollectionId() in SecurityServiceData
@@ -40,14 +41,12 @@ public interface CsvCollectionRepository extends PrincipalFilteredRepository<Csv
 	Optional<CsvCollection> findById(@NonNull String csvCollectionId);
 
 	@Override
-	@RestResource(exported = false)
 	@NonNull
 	// When calling the save method, which corresponds to a PUT/PATCH operation, we make sure that the user is logged in and has the right to access the object before calling the save method
 	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s)")
 	<S extends CsvCollection> S save(@NonNull @Param("s") S s);
 
 	@Override
-	@RestResource(exported = false)
 	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#csvCollection)")
 	// When calling the delete method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
 	void delete(@NonNull @Param("csvCollection") CsvCollection csvCollection);

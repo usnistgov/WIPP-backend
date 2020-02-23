@@ -12,7 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Antoine Vandecreme
  */
 @RestController
-//@Api(tags="StitchingVector Entity")
+@Api(tags="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/{stitchingVectorId}/statistics")
 public class StitchingVectorStatisticsController {
 

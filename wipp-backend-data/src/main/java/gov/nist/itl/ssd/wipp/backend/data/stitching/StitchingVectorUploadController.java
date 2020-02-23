@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 
@@ -35,7 +35,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RestController
-//@Api(tags="StitchingVector Entity")
+@Api(tags="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/upload")
 public class StitchingVectorUploadController {
 
@@ -44,6 +44,9 @@ public class StitchingVectorUploadController {
 
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
+
+    @Autowired
+    private StitchingVectorLogic stitchingVectorLogic;
 
     // We make sure the user trying to create a stitching vector is logged in.
     @PreAuthorize("@securityServiceData.hasUserRole()")
@@ -63,6 +66,8 @@ public class StitchingVectorUploadController {
             throw new ClientException(
                     "A stitching vector name must be specified.");
         }
+
+        stitchingVectorLogic.assertStitchingVectorNameUnique(name);
 
         List<StitchingVectorTimeSlice> timeSlices = Arrays.asList(
                 new StitchingVectorTimeSlice(1, message));

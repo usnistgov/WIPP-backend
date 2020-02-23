@@ -54,4 +54,6 @@ public interface StitchingVectorRepository  extends PrincipalFilteredRepository<
 	void delete(@NonNull @Param("stitchingVector") StitchingVector stitchingVector);
 
 
+	long countByName(@Param("name") String name);
+
 }

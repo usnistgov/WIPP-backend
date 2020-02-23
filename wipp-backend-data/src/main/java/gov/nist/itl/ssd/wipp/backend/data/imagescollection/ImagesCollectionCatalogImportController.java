@@ -22,6 +22,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageConversio
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
+import io.swagger.annotations.Api;
 
 /**
  *
@@ -30,7 +31,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.Metadat
  */
 
 @RestController
-//@Api(tags="ImagesCollection Entity")
+@Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/catalogimport")
 public class ImagesCollectionCatalogImportController {
 	

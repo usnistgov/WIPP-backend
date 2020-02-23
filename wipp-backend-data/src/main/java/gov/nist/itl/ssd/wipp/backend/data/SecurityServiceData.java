@@ -4,6 +4,8 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollectionRepository;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.csv.Csv;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.csv.CsvRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
@@ -41,6 +43,8 @@ public class SecurityServiceData {
     private ImagesCollectionRepository imagesCollectionRepository;
     @Autowired
     private CsvCollectionRepository csvCollectionRepository;
+    @Autowired
+    private CsvRepository csvRepository;
     @Autowired
     private MetadataFileRepository metadataFileRepository;
     @Autowired
@@ -103,6 +107,18 @@ public class SecurityServiceData {
         return(true);
     }
 
+    public boolean checkAuthorizeCsvId(String csvId){
+        Optional<Csv> csv = csvRepository.findById(csvId);
+        if (csv.isPresent()){
+            return(checkAuthorize(csv.get()));
+        }
+        else {
+            throw new NotFoundException("Csv with id " + csvId + " not found");
+        }
+    }
+    public boolean checkAuthorize(Csv csv){
+        return(checkAuthorizeImagesCollectionId(csv.getCsvCollection()));
+    }
 
     public boolean checkAuthorizeCsvCollectionId(String csvCollectionId) {
         Optional<CsvCollection> csvCollection = csvCollectionRepository.findById(csvCollectionId);
