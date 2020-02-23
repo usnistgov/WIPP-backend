@@ -8,6 +8,10 @@ import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * This class is needed for Keycloak to work because of a bug in Keycloak : see https://stackoverflow.com/questions/57787768/issues-running-example-keycloak-spring-boot-app
+ */
+
 @Configuration
 public class MyKeycloakSpringBootConfigResolver extends KeycloakSpringBootConfigResolver {
 
