@@ -23,6 +23,8 @@ public class TensorboardLogs {
     @Id
     private String id;
 
+	private String owner;
+
     @Indexed(unique = true)
     private String name;
 
@@ -32,6 +34,8 @@ public class TensorboardLogs {
     @Indexed(unique = true, sparse = true)
     @ManualRef(Job.class)
     private String sourceJob;
+
+	private boolean publiclyAvailable;
     
     public TensorboardLogs(){	
     }
@@ -61,5 +65,21 @@ public class TensorboardLogs {
 
 	public String getSourceJob() {
 		return sourceJob;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isPubliclyAvailable() {
+		return publiclyAvailable;
+	}
+
+	public void setPubliclyAvailable(boolean publiclyAvailable) {
+		this.publiclyAvailable = publiclyAvailable;
 	}
 }

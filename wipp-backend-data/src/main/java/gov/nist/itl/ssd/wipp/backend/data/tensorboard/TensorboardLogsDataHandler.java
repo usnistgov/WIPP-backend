@@ -28,6 +28,11 @@ public class TensorboardLogsDataHandler extends BaseDataHandler implements DataH
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		
 		TensorboardLogs tl = new TensorboardLogs(job, outputName);
+		// When a tensorboard logs is created as a result of a Job, the tensorboard logs' owner will correspond to the Job's owner and the tensorboard logs' availability will be set to private by default
+		tl.setOwner(job.getOwner());
+		//TODO : set also the isPubliclyAvailable attribute here
+		//tl.setPubliclyAvailable(job.isPubliclyAvailable());
+		tl.setPubliclyAvailable(false);
 		tensorboardLogsRepository.save(tl);
 		
 		File tensorboardLogsFolder = new File(config.getTensorboardLogsFolder(), tl.getName());
