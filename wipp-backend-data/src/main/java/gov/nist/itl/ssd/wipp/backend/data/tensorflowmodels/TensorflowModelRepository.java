@@ -36,14 +36,14 @@ public interface TensorflowModelRepository extends PrincipalFilteredRepository<T
 	@Override
 	@RestResource(exported = false)
 	// When calling the delete method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#t)")
+	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#t, true)")
 	void delete(@NonNull @Param("t") TensorflowModel t);
 
 	@Override
 	// the findById method corresponds to a GET operation on a specific object. We can not use @PreAuthorize on the object's Id, as checkAuthorizeTensorflowModelId() in SecurityServiceData
 	// calls the findById method. Therefore, we use a @PostAuthorize on the object returned by the findById method. If the user is not allowed to GET the object, the object won't be
 	// returned and an ForbiddenException will be thrown
-	@PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get())")
+	@PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get(), false)")
 	@NonNull
 	Optional<TensorflowModel> findById(@NonNull String tensorflowModelId);
 
@@ -51,13 +51,13 @@ public interface TensorflowModelRepository extends PrincipalFilteredRepository<T
 	@NonNull
 	@RestResource(exported = false)
 	// When calling the save method, which corresponds to a PUT/PATCH operation, we make sure that the user is logged in and has the right to access the object before calling the save method
-	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s)")
+	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s, true)")
 	<S extends TensorflowModel> S save(@NonNull @Param("s") S s);
 
 	@Override
 	// When calling the deletebyId method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the method
 	// The checkAuthorizeTensorflowModelId() method inside securityServiceData will retrieve the object before checking that the user has the right to access it
-	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeTensorflowModelId(#s)")
+	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeTensorflowModelId(#s, true)")
 	void deleteById(@NonNull @Param("s") String s);
 
 

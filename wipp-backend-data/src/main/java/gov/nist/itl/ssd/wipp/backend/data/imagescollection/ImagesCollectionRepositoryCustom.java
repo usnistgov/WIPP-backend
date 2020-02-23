@@ -23,10 +23,10 @@ public interface ImagesCollectionRepositoryCustom {
      *
      * We check before updating images/metadata caches that the user is connected and has the right to access the collection
      */
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
     void updateImagesCaches(@Param("imagesCollectionId") String imagesCollectionId);
 
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
     void updateMetadataFilesCaches(@Param("imagesCollectionId") String imagesCollectionId);
 
 }

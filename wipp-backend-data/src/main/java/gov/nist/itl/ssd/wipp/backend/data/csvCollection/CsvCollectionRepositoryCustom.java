@@ -23,7 +23,7 @@ public interface CsvCollectionRepositoryCustom {
      *
      * We check before updating csv caches that the user is connected and has the right to access the collection
      */
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, true)")
     void updateCsvCaches(@Param("csvCollectionId") String csvCollectionId);
 
 }

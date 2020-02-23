@@ -54,7 +54,7 @@ public class TensorflowModelDownloadController {
 			method = RequestMethod.GET,
 			produces = "application/zip")
 	// We make sure the user trying to download the model has the right to access it
-	@PreAuthorize("@securityServiceData.checkAuthorizeTensorflowModelId(#tensorflowModelId)")
+	@PreAuthorize("@securityServiceData.checkAuthorizeTensorflowModelId(#tensorflowModelId, false)")
 	public void get(
 			@PathVariable("tensorflowModelId") String tensorflowModelId,
 			HttpServletResponse response) throws IOException {

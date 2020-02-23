@@ -54,7 +54,7 @@ public class ImagesCollectionCopyController {
     private ImagesCollectionLogic imagesCollectionLogic;
 
     // Before copying an image collection, we check that the user is logged in and has the right to access the collection
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
     @RequestMapping(
             value = "",
             method = RequestMethod.POST)

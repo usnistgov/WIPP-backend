@@ -74,7 +74,7 @@ public class StitchingVectorTimeSliceController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     // We make sure the user trying to call the getTimeSlicesPage method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public HttpEntity<PagedResources<Resource<StitchingVectorTimeSlice>>>
             getTimeSlicesPage(
                     @PathVariable("stitchingVectorId") String stitchingVectorId,
@@ -92,7 +92,7 @@ public class StitchingVectorTimeSliceController {
 
     @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
     // We make sure the user trying to call the getTimeSlice method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public HttpEntity<StitchingVectorTimeSlice> getTimeSlice(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId) {
@@ -110,7 +110,7 @@ public class StitchingVectorTimeSliceController {
             value = "/{timeSliceId}/globalPositions",
             method = RequestMethod.GET)
     // We make sure the user trying to call the getGlobalPositions method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public void getGlobalPositions(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId,

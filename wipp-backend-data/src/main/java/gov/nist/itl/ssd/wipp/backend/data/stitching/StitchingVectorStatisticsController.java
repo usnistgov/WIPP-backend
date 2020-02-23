@@ -43,7 +43,7 @@ public class StitchingVectorStatisticsController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     // We make sure the user trying to access the stitching vector's statistics has the right to access it
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public void getStatistics(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             HttpServletResponse response) throws IOException {

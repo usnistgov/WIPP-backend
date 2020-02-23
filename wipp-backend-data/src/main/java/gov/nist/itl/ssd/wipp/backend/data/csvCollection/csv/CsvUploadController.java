@@ -65,7 +65,7 @@ public class CsvUploadController  extends FlowjsController {
                     "flowTotalSize", "flowIdentifier", "flowFilename",
                     "flowRelativePath"})
     // We make sure that the user is logged in and has the right to access the csv collection before accessing the isChunckUploaded method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, false)")
     public void isChunckUploaded(
             @PathVariable("csvCollectionId") String csvCollectionId,
             HttpServletRequest request, HttpServletResponse response)
@@ -83,7 +83,7 @@ public class CsvUploadController  extends FlowjsController {
                     "flowTotalSize", "flowIdentifier", "flowFilename",
                     "flowRelativePath"})
     // We make sure that the user is logged in and has the right to access the csv collection before accessing the uploadChunck method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, true)")
     public void uploadChunck(
             @PathVariable("csvCollectionId") String csvCollectionId,
             HttpServletRequest request,

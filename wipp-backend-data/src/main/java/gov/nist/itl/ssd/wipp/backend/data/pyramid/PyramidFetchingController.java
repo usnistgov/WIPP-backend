@@ -93,7 +93,7 @@ public class PyramidFetchingController {
 	            method = RequestMethod.GET,
 	            produces = "application/zip")
 		// Before fetching a pyramid, we check that the user has the right to access the pyramid
-		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId)")
+		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	    public void fetch(@PathVariable("pyramidId") String pyramidId,
 	            @RequestParam("x") int x,
 	            @RequestParam("y") int y,

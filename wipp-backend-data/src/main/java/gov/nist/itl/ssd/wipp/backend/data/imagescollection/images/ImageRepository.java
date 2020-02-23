@@ -33,19 +33,19 @@ public interface ImageRepository extends PrincipalFilteredRepository<Image, Stri
         ImageRepositoryCustom {
 
     // We make sure the user has access to the image collection before calling the findByImagesCollection method
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, false)")
     List<Image> findByImagesCollection(@Param("imagesCollection") String imagesCollection);
 
     // We make sure the user has access to the image collection before calling the findByImagesCollection method
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, false)")
     Page<Image> findByImagesCollection(@Param("imagesCollection") String imagesCollection, Pageable p);
 
     // We make sure the user has access to the image collection before calling the findByImagesCollectionAndFileNameRegex method
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, false)")
     List<Image> findByImagesCollectionAndFileNameRegex(@Param("imagesCollection") String imagesCollection, @Param("filename") String fileName);
 
     // We make sure the user has access to the image collection before calling the findByImagesCollectionAndFileNameRegex method
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, false)")
     Page<Image> findByImagesCollectionAndFileNameRegex(@Param("imagesCollection") String imagesCollection, @Param("filename") String fileName, Pageable p);
 
     // TODO : add a @Query ?
@@ -55,34 +55,34 @@ public interface ImageRepository extends PrincipalFilteredRepository<Image, Stri
     // the findById method corresponds to a GET operation on a specific object. We can not use @PreAuthorize on the object's Id, as checkAuthorizeImageId() in SecurityServiceData
     // calls the findById method. Therefore, we use a @PostAuthorize on the object returned by the findById method. If the user is not allowed to GET the object, the object won't be
     // returned and an ForbiddenException will be thrown
-    @PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get())")
+    @PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get(), false)")
     @NonNull
     Optional<Image> findById(@NonNull String imageId);
 
     @Override
     @NonNull
     // When calling the save method, which corresponds to a PUT/PATCH operation, we make sure that the user is logged in and has the right to access the object before calling the save method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s, true)")
     <S extends Image> S save(@NonNull @Param("s") S s);
 
     @Override
     // When calling the delete method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#image)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#image, true)")
     void delete(@NonNull @Param("image") Image image);
 
     @Override
     // When calling the deletebyId method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the method
     // The checkAuthorizeImageId() method inside securityServiceData will retrieve the object before checking that the user has the right to access it
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImageId(#s)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImageId(#s, true)")
     void deleteById(@NonNull @Param("s") String s);
 
     @Override
     // We make sure the user has access to the image collection and is logged in before calling the deleteByImagesCollectionAndFileName method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, true)")
     void deleteByImagesCollectionAndFileName(@Param("imagesCollection") String imagesCollection, @Param("fileName") String fileName);
 
     @Override
     // We make sure the user has access to the image collection and is logged in before calling the deleteByImagesCollection method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, true)")
     void deleteByImagesCollection(@Param("imagesCollection") String imagesCollection);
 }

@@ -54,7 +54,7 @@ public abstract class FileUploadController extends FlowjsController {
                 "flowTotalSize", "flowIdentifier", "flowFilename",
                 "flowRelativePath"})
     // We make sure that the user is logged in and has the right to access the image collection before accessing the isChunckUploaded method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
     public void isChunckUploaded(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletRequest request, HttpServletResponse response)
@@ -72,7 +72,7 @@ public abstract class FileUploadController extends FlowjsController {
                 "flowTotalSize", "flowIdentifier", "flowFilename",
                 "flowRelativePath"})
     // We make sure that the user is logged in and has the right to access the image collection before accessing the uploadChunck method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
     public void uploadChunck(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletRequest request,

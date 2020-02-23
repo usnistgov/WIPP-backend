@@ -21,12 +21,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface CsvRepositoryCustom {
 
     // When calling the deleteByImagesCollection method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection, true)")
     void deleteByCsvCollection(
             @Param("csvCollection") String csvCollection);
 
     // When calling the deleteByImagesCollectionAndFileName method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection, true)")
     void deleteByCsvCollectionAndFileName(
             @Param("csvCollection") String csvCollection,
             @Param("fileName") String fileName);

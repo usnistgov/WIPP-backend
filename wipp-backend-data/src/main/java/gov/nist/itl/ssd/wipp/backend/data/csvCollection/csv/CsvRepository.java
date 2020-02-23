@@ -33,19 +33,19 @@ import java.util.Optional;
 public interface CsvRepository extends PrincipalFilteredRepository<Csv, String>, CsvRepositoryCustom {
 
     // We make sure the user has access to the csv collection before calling the findByCsvCollection method
-    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection, false)")
     List<Csv> findByCsvCollection(@Param("csvCollection") String csvCollection);
 
     // We make sure the user has access to the csv collection before calling the findByCsvCollection method
-    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection, false)")
     Page<Csv> findByCsvCollection(@Param("csvCollection") String csvCollection, Pageable p);
 
     // We make sure the user has access to the csv collection before calling the findByCsvCollectionAndFileNameRegex method
-    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection, false)")
     List<Csv> findByCsvCollectionAndFileNameRegex(@Param("csvCollection") String csvCollection, @Param("filename") String fileName);
 
     // We make sure the user has access to the csv collection before calling the findByCsvCollectionAndFileNameRegex method
-    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection)")
+    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollection, false)")
     Page<Csv> findByCsvCollectionAndFileNameRegex(@Param("csvCollection") String csvCollection, @Param("filename") String fileName, Pageable p);
 
     // TODO : add a @Query ?
@@ -55,24 +55,24 @@ public interface CsvRepository extends PrincipalFilteredRepository<Csv, String>,
     // the findById method corresponds to a GET operation on a specific object. We can not use @PreAuthorize on the object's Id, as checkAuthorizeCsvId() in SecurityServiceData
     // calls the findById method. Therefore, we use a @PostAuthorize on the object returned by the findById method. If the user is not allowed to GET the object, the object won't be
     // returned and an ForbiddenException will be thrown
-    @PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get())")
+    @PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get(), false)")
     @NonNull
     Optional<Csv> findById(@NonNull String imageId);
 
     @Override
     @NonNull
     // When calling the save method, which corresponds to a PUT/PATCH operation, we make sure that the user is logged in and has the right to access the object before calling the save method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s, true)")
     <S extends Csv> S save(@NonNull @Param("s") S s);
 
     @Override
     // When calling the delete method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#csv)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#csv, true)")
     void delete(@NonNull @Param("csv") Csv csv);
 
     @Override
     // When calling the deletebyId method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the method
     // The checkAuthorizeCsvId() method inside securityServiceData will retrieve the object before checking that the user has the right to access it
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvId(#s)")
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvId(#s, true)")
     void deleteById(@NonNull @Param("s") String s);
 }

@@ -63,7 +63,7 @@ public class PyramidTimeSliceController {
 
 	    @RequestMapping(value = "", method = RequestMethod.GET)
 		// We make sure the user trying to call the getTimeSlicesPage method is authorized to access the pyramid
-		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId)")
+		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	    public HttpEntity<PagedResources<Resource<PyramidTimeSlice>>>
 	            getTimeSlicesPage(
 	                    @PathVariable("pyramidId") String pyramidId,
@@ -79,7 +79,7 @@ public class PyramidTimeSliceController {
 	    }
 
 	// We make sure the user trying to call the getTimeSlice method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId)")
+	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
 	    public HttpEntity<PyramidTimeSlice> getTimeSlice(
 	            @PathVariable("pyramidId") String pyramidId,
