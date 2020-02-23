@@ -38,6 +38,8 @@ public class Job {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -176,4 +178,11 @@ public class Job {
         this.outputParameters = outputParameters;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }
