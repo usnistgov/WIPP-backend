@@ -30,7 +30,6 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -53,10 +52,6 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Configuration
-@EnableGlobalMethodSecurity(
-        prePostEnabled = true,
-        securedEnabled = true,
-        jsr250Enabled = true)
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
 @EnableAutoConfiguration
 @EnableEntityLinks
