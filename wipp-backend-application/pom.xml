@@ -110,9 +110,6 @@
 		</profile>
 		<profile>
 			<id>windev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<mongodb.host>localhost</mongodb.host>
 				<mongodb.database>wipp-plugins</mongodb.database>
