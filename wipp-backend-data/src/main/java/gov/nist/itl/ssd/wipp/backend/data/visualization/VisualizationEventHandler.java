@@ -14,6 +14,8 @@ package gov.nist.itl.ssd.wipp.backend.data.visualization;
 import java.util.Date;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,9 +26,14 @@ import org.springframework.stereotype.Component;
 @RepositoryEventHandler(Visualization.class)
 public class VisualizationEventHandler {
 
+    // We make sure the user trying to create a visualization is logged in.
+    @PreAuthorize("@securityServiceData.hasUserRole()")
     @HandleBeforeCreate
     public void handleBeforeCreate(Visualization visualization) {
         visualization.setCreationDate(new Date());
+        // We set the owner to the connected user
+        visualization.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    // TODO : if needed, add the handleBeforeSave method and make sure a public visualization can not be made private (cf. ImagesCollectionEventHandler class)
 }
