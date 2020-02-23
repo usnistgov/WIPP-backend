@@ -12,10 +12,18 @@
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles;
 
 import java.util.List;
+import java.util.Optional;
+
+import com.mongodb.lang.NonNull;
+import gov.nist.itl.ssd.wipp.backend.data.PrincipalFilteredRepository;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -23,11 +31,51 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(exported = false)
 public interface MetadataFileRepository
-        extends MongoRepository<MetadataFile, String>,
+        extends PrincipalFilteredRepository<MetadataFile, String>,
         MetadataFileRepositoryCustom {
 
-    List<MetadataFile> findByImagesCollection(String imagesCollection);
+    // We make sure the user has access to the image collection before calling the findByImagesCollection method
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    List<MetadataFile> findByImagesCollection(@Param("imagesCollection") String imagesCollection);
 
+    // We make sure the user has access to the image collection before calling the findByImagesCollection method
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
     Page<MetadataFile> findByImagesCollection(
-            String imagesCollection, Pageable p);
+            @Param("imagesCollection") String imagesCollection, Pageable p);
+
+    @Override
+    @NonNull
+    // the findById method corresponds to a GET operation on a specific object. We can not use @PreAuthorize on the object's Id, as checkAuthorizeMetadataFileId() in SecurityServiceData
+    // calls the findById method. Therefore, we use a @PostAuthorize on the object returned by the findById method. If the user is not allowed to GET the object, the object won't be
+    // returned and an ForbiddenException will be thrown
+    @PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get())")
+    Optional<MetadataFile> findById(@NonNull String s);
+
+    @Override
+    @NonNull
+    // When calling the save method, which corresponds to a PUT/PATCH operation, we make sure that the user is logged in and has the right to access the object before calling the save method
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s)")
+    <S extends MetadataFile> S save(@NonNull @Param("s") S s);
+
+    @Override
+    // We make sure the user has access to the image collection and is logged in before calling the deleteByImagesCollection method
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    void deleteByImagesCollection(@Param("imagesCollection") String imagesCollection);
+
+    @Override
+    // We make sure the user has access to the image collection and is logged in before calling the deleteByImagesCollectionAndFileName method
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection)")
+    void deleteByImagesCollectionAndFileName(@Param("imagesCollection") String imagesCollection, @Param("fileName") String fileName);
+
+    @Override
+    // When calling the deletebyId method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the method
+    // The checkAuthorizeMetadataFileId() method inside securityServiceCore will retrieve the object before checking that the user has the right to access it
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeMetadataFileId(#s)")
+    void deleteById(@NonNull @Param("s") String s);
+
+    @Override
+    // When calling the delete method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#metadataFile)")
+    void delete(@NonNull @Param("metadataFile") MetadataFile metadataFile);
+
 }

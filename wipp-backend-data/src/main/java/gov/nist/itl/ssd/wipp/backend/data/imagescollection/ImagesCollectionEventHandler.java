@@ -20,9 +20,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.Metadat
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,12 +56,15 @@ public class ImagesCollectionEventHandler {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
+    // We make sure the user trying to create a collection is logged in.
+    @PreAuthorize("@securityServiceData.hasUserRole()")
     @HandleBeforeCreate
     public void handleBeforeCreate(ImagesCollection imagesCollection) {
         imagesCollectionLogic.assertCollectionNameUnique(
                 imagesCollection.getName());
         imagesCollection.setCreationDate(new Date());
 
+        // We set the owner to the connected user
         imagesCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
 
         
@@ -81,20 +82,18 @@ public class ImagesCollectionEventHandler {
 
     @HandleBeforeSave
     public void handleBeforeSave(ImagesCollection imagesCollection) {
-    	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
+        Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
     	if (!result.isPresent()) {
         	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
         }
-        boolean var1 = !imagesCollection.isPubliclyAvailable();
-    	String var2 = imagesCollection.getOwner();
-        String var3 = SecurityContextHolder.getContext().getAuthentication().getName();
-    	if (var1 && !var2.equals(var3)){
-            throw new ClientException("You do not have the right to edit this collection.");
-        }
 
         ImagesCollection oldTc = result.get();
 
+    	// A public collection can not become private
+    	if (oldTc.isPubliclyAvailable() && !imagesCollection.isPubliclyAvailable()){
+            throw new ClientException("Can not set change a public collection to private.");
+        }
 
         if (!Objects.equals(
                 imagesCollection.getCreationDate(),

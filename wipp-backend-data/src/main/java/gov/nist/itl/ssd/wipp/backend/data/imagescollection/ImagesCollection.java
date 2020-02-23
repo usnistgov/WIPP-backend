@@ -17,7 +17,6 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-import gov.nist.itl.ssd.wipp.backend.data.SecurityService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -109,30 +108,15 @@ public class ImagesCollection extends Data {
     }
 
     public String getId() {
-        if(SecurityService.checkAuthorize(this)){
-            return id;
-        }
-        else {
-            return null;
-        }
+        return id;
     }
 
     public String getName() {
-        if(SecurityService.checkAuthorize(this)){
-            return name;
-        }
-        else {
-            return null;
-        }
+        return name;
     }
 
     public Date getCreationDate() {
-        if(SecurityService.checkAuthorize(this)){
-            return creationDate;
-        }
-        else {
-            return null;
-        }
+        return creationDate;
     }
 
     public void setCreationDate(Date creationDate) {
@@ -140,33 +124,21 @@ public class ImagesCollection extends Data {
     }
 
     public String getSourceJob() {
-        if(SecurityService.checkAuthorize(this)){
-            return sourceJob;
-        }
-        else {
-            return null;
-        }
+        return sourceJob;
     }
 
     public boolean isLocked() {
-        if(SecurityService.checkAuthorize(this)){
-            return locked;
-        }
-        else {
-            return false;
-        }
+        return locked;
     }
 
 	public String getPattern() {
-        if(SecurityService.checkAuthorize(this)){
-            return pattern;
-        }
-        else {
-            return null;
-        }
+        return pattern;
+
 	}
 
-	public String getNotes() { return notes; }
+	public String getNotes() {
+        return notes;
+    }
 
 
     public void setNotes(String notes) {
@@ -178,61 +150,30 @@ public class ImagesCollection extends Data {
     }
 
     public int getNumberOfImages() {
-        if(SecurityService.checkAuthorize(this)){
-            return numberOfImages;
-        }
-        else {
-            return 0;
-        }
+        return numberOfImages;
     }
 
     public long getImagesTotalSize() {
-        if(SecurityService.checkAuthorize(this)){
-            return imagesTotalSize;
-        }
-        else {
-            return 0;
-        }
+        return imagesTotalSize;
     }
 
     public int getNumberImportingImages() {
-        if(SecurityService.checkAuthorize(this)){
-            return numberImportingImages;
-        }
-        else {
-            return 0;
-        }
+        return numberImportingImages;
     }
 
     public int getNumberOfImportErrors() {
-        if(SecurityService.checkAuthorize(this)){
-            return numberOfImportErrors;
-        }
-        else {
-            return 0;
-        }
+        return numberOfImportErrors;
     }
 
     public int getNumberOfMetadataFiles() {
-        if(SecurityService.checkAuthorize(this)){
-            return numberOfMetadataFiles;
-        }
-        else {
-            return 0;
-        }
+        return numberOfMetadataFiles;
     }
 
     public long getMetadataFilesTotalSize() {
-        if(SecurityService.checkAuthorize(this)){
-            return metadataFilesTotalSize;
-        }
-        else {
-            return 0;
-        }
+        return metadataFilesTotalSize;
     }
 
     public String getOwner() {
-
         return owner;
     }
 
@@ -245,11 +186,13 @@ public class ImagesCollection extends Data {
     public void setPubliclyAvailable(boolean publiclyAvailable) { this.publiclyAvailable = publiclyAvailable; }
 
 	public String getSourceCatalog() {
-		return sourceCatalog;
+        return sourceCatalog;
+
 	}
 
 	public ImagesCollectionImportMethod getImportMethod() {
-		return importMethod;
+        return importMethod;
+        
 	}
 
 	public void setImportMethod(ImagesCollectionImportMethod importMethod) {

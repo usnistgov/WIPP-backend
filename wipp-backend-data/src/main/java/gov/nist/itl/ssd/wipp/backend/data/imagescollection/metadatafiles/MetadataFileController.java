@@ -41,6 +41,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,6 +70,8 @@ public class MetadataFileController {
     private EntityLinks entityLinks;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
+    // We make sure the user trying to call the getFilesPage method is authorized to access the image collection
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
     public HttpEntity<PagedResources<Resource<MetadataFile>>> getFilesPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PageableDefault Pageable pageable,
@@ -82,6 +85,8 @@ public class MetadataFileController {
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
+    // We make sure the user trying to call the deleteAllFiles method is logged in and authorized to access the image collection
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void deleteAllFiles(
             @PathVariable("imagesCollectionId") String imagesCollectionId) {
@@ -96,6 +101,8 @@ public class MetadataFileController {
         metadataFileHandler.deleteAll(imagesCollectionId);
     }
 
+    // We make sure the user trying to call the headFile method is authorized to access the image collection
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.HEAD)
     public void headFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
@@ -108,6 +115,8 @@ public class MetadataFileController {
         response.setContentLengthLong(file.length());
     }
 
+    // We make sure the user trying to call the getFile method is authorized to access the image collection
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.GET)
     public void getFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
@@ -124,6 +133,8 @@ public class MetadataFileController {
         }
     }
 
+    // We make sure the user trying to call the deleteFile method is logged in and authorized to access the image collection
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
     public void deleteFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,

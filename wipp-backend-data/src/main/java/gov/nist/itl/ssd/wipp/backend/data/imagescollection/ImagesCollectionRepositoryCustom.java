@@ -11,14 +11,22 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 /**
  *
  * @author Antoine Vandecreme
  */
 public interface ImagesCollectionRepositoryCustom {
+    /**
+     *
+     * We check before updating images/metadata caches that the user is connected and has the right to access the collection
+     */
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    void updateImagesCaches(@Param("imagesCollectionId") String imagesCollectionId);
 
-    void updateImagesCaches(String imagesCollectionId);
-
-    void updateMetadataFilesCaches(String imagesCollectionId);
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
+    void updateMetadataFilesCaches(@Param("imagesCollectionId") String imagesCollectionId);
 
 }

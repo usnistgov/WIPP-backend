@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 //@Api(tags="ImagesCollection Entity")
+// We make sure that the user is logged in before accessing the metadata file uploader
+@PreAuthorize("@securityServiceData.hasUserRole()")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/metadataFiles")
 public class MetadataFileUploadController extends FileUploadController {
 

@@ -42,7 +42,6 @@ public class ImagesCollectionResourceProcessor
     public Resource<ImagesCollection> process(
             Resource<ImagesCollection> resource) {
         ImagesCollection imagesCollection = resource.getContent();
-
         Link imagesLink = entityLinks.linkForSingleResource(
                 ImagesCollection.class, imagesCollection.getId())
                 .slash("images")

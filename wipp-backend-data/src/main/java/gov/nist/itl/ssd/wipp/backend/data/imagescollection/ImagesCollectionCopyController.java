@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +53,8 @@ public class ImagesCollectionCopyController {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
+    // Before copying an image collection, we check that the user is logged in and has the right to access the collection
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId)")
     @RequestMapping(
             value = "",
             method = RequestMethod.POST)
