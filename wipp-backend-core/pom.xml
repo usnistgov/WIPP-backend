@@ -9,7 +9,7 @@
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-core</artifactId>
 	<name>wipp-backend-core</name>
-	<version>3.0.0-beta</version>
+	<version>3.0.0-beta2</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,7 +22,7 @@
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</repository>
-	    <repository>
+		<repository>
 			<id>JFrog</id>
 			<name>JFrog Snapshot Repository</name>
 			<url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
@@ -65,20 +65,29 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>io.springfox</groupId>
-		    <artifactId>springfox-swagger2</artifactId>
-		    <version>3.0.0-SNAPSHOT</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0-20190808.104142-39</version>
 		</dependency>
 		<dependency>
-		    <groupId>io.springfox</groupId>
-		    <artifactId>springfox-data-rest</artifactId>
-		    <version>3.0.0-SNAPSHOT</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-data-rest</artifactId>
+			<version>3.0.0-20190808.104142-39</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>3.0.0-20190808.104142-39</version>
 		</dependency>
-
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-spring-web</artifactId>
+			<version>3.0.0-20190808.104142-38</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-schema</artifactId>
+			<version>3.0.0-20190808.104142-39</version>
+		</dependency>
 	</dependencies>
 </project>

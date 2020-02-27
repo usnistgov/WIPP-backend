@@ -9,27 +9,20 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
+package gov.nist.itl.ssd.wipp.backend.data.csvCollection.csv;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
- * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ *
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
-@RepositoryRestResource
-public interface CsvCollectionRepository
-		extends MongoRepository<CsvCollection, String>,
-		CsvCollectionRepositoryCustom{
+public interface CsvRepositoryCustom {
 
-	Page<CsvCollection> findByName(@Param("name") String name, Pageable p);
+    void deleteByCsvCollection(
+            @Param("csvCollection") String csvCollection);
 
-	Page<CsvCollection> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
-
-	long countByName(@Param("name") String name);
+    void deleteByCsvCollectionAndFileName(
+            @Param("csvCollection") String csvCollection,
+            @Param("fileName") String fileName);
 }
