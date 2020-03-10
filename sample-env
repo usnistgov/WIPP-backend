@@ -8,3 +8,4 @@ ELASTIC_APM_URL=<url to Elastic APM>
 
 BACKEND_HOST_NAME=<host name>
 MONGO_HOST_NAME=<host name>
+TENSORBOARD_HOST_NAME=<host name>
