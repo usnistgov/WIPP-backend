@@ -1,13 +1,14 @@
 #!/bin/sh
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then
   echo "Illegal number of parameters. Exiting..."
-  echo "Command: ./entrypoint.sh \${mongo_host} \${mongo_port}"
+  echo "Command: ./entrypoint.sh \${mongo_host} \${mongo_port} \${shared_pvc}"
   exit 1
 fi
 
 MONGO_HOST=$1
 MONGO_PORT=$2
+SHARED_PVC=$3
 
 sed -i \
   -e 's/@mongo_host@/'"${MONGO_HOST}"'/' \

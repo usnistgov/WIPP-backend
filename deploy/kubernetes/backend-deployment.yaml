@@ -49,7 +49,7 @@ spec:
         - image: labshare/wipp-backend:BACKEND_VERSION_VALUE
           name: wipp-backend
           imagePullPolicy: Always
-          args: ["wipp-mongo", "27017"]
+          args: ["wipp-mongo", "27017" "WIPP_PVC_NAME_VALUE"]
           env:
             - name: ELASTIC_APM_SERVER_URLS
               value: ELASTIC_APM_URL_VALUE
@@ -57,8 +57,6 @@ spec:
               value: wipp-backend
             - name: ELASTIC_APM_APPLICATION_PACKAGES
               value: gov.nist.itl.ssd.wipp.backend
-            - name: SHARED_PVC
-              value: WIPP_PVC_NAME_VALUE
             - name: NODE_SELECTOR
               value: NODE_SELECTOR_VALUE
             - name: TOLERATIONS
