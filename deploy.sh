@@ -15,6 +15,8 @@ sed -i.bak \
     -e "s/BACKEND_VERSION_VALUE/${DOCKER_VERSION}/g" \
     -e "s/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g" \
     -e "s|ELASTIC_APM_URL_VALUE|${ELASTIC_APM_URL}|g" \
+    -e "s|NODE_SELECTOR_VALUE|${NODE_SELECTOR}|g" \
+    -e "s|TOLERATIONS_VALUE|${TOLERATIONS}|g" \
     deploy/kubernetes/backend-deployment.yaml
 rm deploy/kubernetes/backend-deployment.yaml.bak
 
