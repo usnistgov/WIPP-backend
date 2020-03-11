@@ -49,7 +49,7 @@ spec:
         - image: labshare/wipp-backend:BACKEND_VERSION_VALUE
           name: wipp-backend
           imagePullPolicy: Always
-          args: ["wipp-mongo", "27017" "WIPP_PVC_NAME_VALUE"]
+          args: ["wipp-mongo", "27017", "WIPP_PVC_NAME_VALUE"]
           env:
             - name: ELASTIC_APM_SERVER_URLS
               value: ELASTIC_APM_URL_VALUE
