@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.spec;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 *
@@ -11,6 +12,8 @@ import java.util.List;
 public class ArgoWorkflowSpec {
     private final String entrypoint = "workflow";
     private final String onExit = "exit-handler";
+    private Map<String, String> nodeSelector;
+    private List<Map<String, String>> tolerations;
     private List<ArgoAbstractTemplate> templates;
     private List<ArgoVolume> volumes;
 
@@ -22,7 +25,23 @@ public class ArgoWorkflowSpec {
 		return onExit;
 	}
 
-	public List<ArgoAbstractTemplate> getTemplates() {
+    public Map<String, String> getNodeSelector() {
+        return nodeSelector;
+    }
+
+    public void setNodeSelector(Map<String, String> node) {
+        this.nodeSelector = node;
+    }
+
+    public List<Map<String, String>> getTolerations() {
+        return tolerations;
+    }
+
+    public void setTolerations(List<Map<String, String>> tolerations) {
+        this.tolerations = tolerations;
+    }
+
+    public List<ArgoAbstractTemplate> getTemplates() {
         return templates;
     }
 

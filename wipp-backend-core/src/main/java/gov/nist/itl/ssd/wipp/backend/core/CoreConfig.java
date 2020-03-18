@@ -42,7 +42,13 @@ public class CoreConfig {
     private String workflowsFolder;
 
     @Value("${workflow.binary}")
-    private String worflowBinary;
+    private String workflowBinary;
+
+    @Value("${workflow.nodeSelector}")
+    private String workflowNodeSelector;
+
+    @Value("${workflow.tolerations}")
+    private String workflowTolerations;
     
     @Value("${kube.wippdata.pvc}")
     private String wippDataPVCName;
@@ -146,8 +152,16 @@ public class CoreConfig {
 		return notebooksTmpFolder;
 	}
 
-	public String getWorflowBinary() {
-	    return worflowBinary;
+    public String getWorkflowBinary() {
+        return workflowBinary;
+    }
+
+    public String getWorkflowNodeSelector() {
+        return workflowNodeSelector;
+    }
+
+    public String getWorkflowTolerations() {
+        return workflowTolerations;
     }
 
 	public String getWippDataPVCName() {

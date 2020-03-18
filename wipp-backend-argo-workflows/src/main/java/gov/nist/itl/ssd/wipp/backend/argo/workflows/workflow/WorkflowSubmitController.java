@@ -156,7 +156,7 @@ public class WorkflowSubmitController {
 			throws IOException, InterruptedException, RuntimeException {
         // Build Argo command
     	List<String> builderCommands = new ArrayList<>();
-        Collections.addAll(builderCommands, config.getWorflowBinary().split(" "));
+        Collections.addAll(builderCommands, config.getWorkflowBinary().split(" "));
         builderCommands.add("submit");
         builderCommands.add("--output");
         builderCommands.add("name");
