@@ -11,30 +11,48 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
+import com.mongodb.lang.NonNull;
+import gov.nist.itl.ssd.wipp.backend.data.PrincipalFilteredRepository;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.util.Optional;
 
 /**
 *
 * @author Antoine Vandecreme
 */
 @RepositoryRestResource
-public interface StitchingVectorRepository  extends MongoRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
+public interface StitchingVectorRepository  extends PrincipalFilteredRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
+
+	@Override
+	// the findById method corresponds to a GET operation on a specific object. We can not use @PreAuthorize on the object's Id, as checkAuthorizeStitchingVectorId() in SecurityServiceData
+	// calls the findById method. Therefore, we use a @PostAuthorize on the object returned by the findById method. If the user is not allowed to GET the object, the object won't be
+	// returned and an ForbiddenException will be thrown
+	@PostAuthorize("@securityServiceData.checkAuthorize(returnObject.get(), false)")
+	@NonNull
+	Optional<StitchingVector> findById(@NonNull String stitchingVector);
 
 	@Override
 	@RestResource(exported = false)
-	<S extends StitchingVector> S save(S s);
+	@NonNull
+	// When calling the save method, which corresponds to a PUT/PATCH operation, we make sure that the user is logged in and has the right to access the object before calling the save method
+	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#s, true)")
+	<S extends StitchingVector> S save(@NonNull @Param("s") S s);
 
 	@Override
 	@RestResource(exported = false)
-	void delete(StitchingVector t);
+	// When calling the delete method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
+	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorize(#stitchingVector, true)")
+	void delete(@NonNull @Param("stitchingVector") StitchingVector stitchingVector);
 
-	Page<StitchingVector> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
 
 	long countByName(@Param("name") String name);
 

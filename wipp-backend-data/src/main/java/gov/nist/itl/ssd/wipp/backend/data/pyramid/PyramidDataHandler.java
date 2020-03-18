@@ -41,6 +41,11 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
     @Override
     public void importData(Job job, String outputName) throws JobExecutionException {
         Pyramid outputPyramid = new Pyramid(job, outputName);
+        // When a pyramid is created as a result of a Job, the pyramid's owner will correspond to the Job's owner and the pyramid's availability will be set to private by default
+        outputPyramid.setOwner(job.getOwner());
+        //TODO : set also the isPubliclyAvailable attribute here
+        //outputPyramid.setPubliclyAvailable(job.isPubliclyAvailable());
+        outputPyramid.setPubliclyAvailable(false);
         pyramidRepository.save(outputPyramid);
 
         File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());

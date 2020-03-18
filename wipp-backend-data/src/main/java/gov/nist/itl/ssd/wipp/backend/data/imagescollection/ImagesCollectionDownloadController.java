@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +66,8 @@ public class ImagesCollectionDownloadController {
             value = "",
             method = RequestMethod.GET,
             produces = "application/zip")
+    // We make sure the user trying to download the collection has the right to access it
+    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
     public void get(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletResponse response) throws IOException {

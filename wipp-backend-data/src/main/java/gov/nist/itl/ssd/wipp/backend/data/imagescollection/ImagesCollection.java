@@ -13,19 +13,17 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-
-//import gov.nist.itl.ssd.fes.job.Job;
-import java.util.Date;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.Date;
+
+//import gov.nist.itl.ssd.fes.job.Job;
 
 /**
  *
@@ -41,6 +39,8 @@ public class ImagesCollection extends Data {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -53,6 +53,8 @@ public class ImagesCollection extends Data {
     private ImagesCollectionImportMethod importMethod;
 
     private boolean locked;
+
+    private boolean publiclyAvailable;
 
     private String pattern;
 
@@ -75,7 +77,6 @@ public class ImagesCollection extends Data {
 
     @JsonProperty(access = Access.READ_ONLY)
     private long metadataFilesTotalSize;
-
     public ImagesCollection() {
     }
 
@@ -131,10 +132,13 @@ public class ImagesCollection extends Data {
     }
 
 	public String getPattern() {
-		return pattern;
+        return pattern;
+
 	}
 
-	public String getNotes() { return notes; }
+	public String getNotes() {
+        return notes;
+    }
 
 
     public void setNotes(String notes) {
@@ -169,12 +173,26 @@ public class ImagesCollection extends Data {
         return metadataFilesTotalSize;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) { this.owner = owner; }
+
+    public boolean isPubliclyAvailable() {
+        return publiclyAvailable;
+    }
+
+    public void setPubliclyAvailable(boolean publiclyAvailable) { this.publiclyAvailable = publiclyAvailable; }
+
 	public String getSourceCatalog() {
-		return sourceCatalog;
+        return sourceCatalog;
+
 	}
 
 	public ImagesCollectionImportMethod getImportMethod() {
-		return importMethod;
+        return importMethod;
+        
 	}
 
 	public void setImportMethod(ImagesCollectionImportMethod importMethod) {
@@ -182,4 +200,5 @@ public class ImagesCollection extends Data {
 	}
 	
     public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG}
+
 }

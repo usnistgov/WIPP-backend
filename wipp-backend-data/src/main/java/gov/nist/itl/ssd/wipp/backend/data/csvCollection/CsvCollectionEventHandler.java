@@ -16,6 +16,8 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -40,9 +42,14 @@ public class CsvCollectionEventHandler {
     @Autowired
     CoreConfig config;
 
+    // We make sure the user trying to create a collection is logged in.
+    @PreAuthorize("@securityServiceData.hasUserRole()")
     @HandleBeforeCreate
     public void handleBeforeCreate(CsvCollection csvCollection) {
         csvCollection.setCreationDate(new Date());
+        // We set the owner to the connected user
+        csvCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
+
     }
 
     @HandleBeforeSave
@@ -54,6 +61,10 @@ public class CsvCollectionEventHandler {
         }
 
         CsvCollection oldTc = result.get();
+        // A public collection can not become private
+        if (oldTc.isPubliclyAvailable() && !csvCollection.isPubliclyAvailable()){
+            throw new ClientException("Can not set change a public collection to private.");
+        }
         if (csvCollection.isLocked() != oldTc.isLocked()) {
             if (!csvCollection.isLocked()) {
                 throw new ClientException("Can not unlock CSV collection.");

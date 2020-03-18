@@ -19,6 +19,7 @@ import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
 import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowjsController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -63,6 +64,8 @@ public class CsvUploadController  extends FlowjsController {
                     "flowChunkNumber", "flowTotalChunks", "flowChunkSize",
                     "flowTotalSize", "flowIdentifier", "flowFilename",
                     "flowRelativePath"})
+    // We make sure that the user is logged in and has the right to access the csv collection before accessing the isChunckUploaded method
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, false)")
     public void isChunckUploaded(
             @PathVariable("csvCollectionId") String csvCollectionId,
             HttpServletRequest request, HttpServletResponse response)
@@ -79,6 +82,8 @@ public class CsvUploadController  extends FlowjsController {
                     "flowChunkNumber", "flowTotalChunks", "flowChunkSize",
                     "flowTotalSize", "flowIdentifier", "flowFilename",
                     "flowRelativePath"})
+    // We make sure that the user is logged in and has the right to access the csv collection before accessing the uploadChunck method
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, true)")
     public void uploadChunck(
             @PathVariable("csvCollectionId") String csvCollectionId,
             HttpServletRequest request,

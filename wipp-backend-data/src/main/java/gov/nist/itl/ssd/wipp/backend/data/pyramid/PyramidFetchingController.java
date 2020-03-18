@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,6 +92,8 @@ public class PyramidFetchingController {
 	            value = "",
 	            method = RequestMethod.GET,
 	            produces = "application/zip")
+		// Before fetching a pyramid, we check that the user has the right to access the pyramid
+		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	    public void fetch(@PathVariable("pyramidId") String pyramidId,
 	            @RequestParam("x") int x,
 	            @RequestParam("y") int y,

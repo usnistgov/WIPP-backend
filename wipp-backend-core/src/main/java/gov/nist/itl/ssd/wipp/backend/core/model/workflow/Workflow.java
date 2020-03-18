@@ -18,6 +18,8 @@ public class Workflow {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -139,5 +141,11 @@ public class Workflow {
 		this.errorMessage = errorMessage;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
 
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 }

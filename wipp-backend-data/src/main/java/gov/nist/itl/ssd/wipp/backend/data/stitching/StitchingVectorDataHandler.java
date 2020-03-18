@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +64,11 @@ public class StitchingVectorDataHandler extends BaseDataHandler implements DataH
                 .collect(Collectors.toList());
 
         StitchingVector vector = new StitchingVector(job, timeSlices, outputName);
+        // When a stitching vector is created as a result of a Job, the vector's owner will correspond to the Job's owner and the vector's availability will be set to private by default
+        vector.setOwner(job.getOwner());
+        //TODO : set also the isPubliclyAvailable attribute here
+        //vector.setPubliclyAvailable(job.isPubliclyAvailable());
+        vector.setPubliclyAvailable(false);
         // We save so that an Id is generated.
         stitchingVectorRepository.save(vector);
 

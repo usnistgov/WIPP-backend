@@ -20,19 +20,15 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.Metadat
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.core.annotation.HandleAfterDelete;
-import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
-import org.springframework.data.rest.core.annotation.HandleBeforeDelete;
-import org.springframework.data.rest.core.annotation.HandleBeforeSave;
-import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,7 +36,7 @@ import org.springframework.stereotype.Component;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @Component
-@RepositoryEventHandler(ImagesCollection.class)
+@RepositoryEventHandler
 public class ImagesCollectionEventHandler {
 	
 	private static final Logger LOGGER = Logger.getLogger(ImagesCollectionEventHandler.class.getName());
@@ -60,11 +56,17 @@ public class ImagesCollectionEventHandler {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
+    // We make sure the user trying to create a collection is logged in.
+    @PreAuthorize("@securityServiceData.hasUserRole()")
     @HandleBeforeCreate
     public void handleBeforeCreate(ImagesCollection imagesCollection) {
         imagesCollectionLogic.assertCollectionNameUnique(
                 imagesCollection.getName());
         imagesCollection.setCreationDate(new Date());
+
+        // We set the owner to the connected user
+        imagesCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
+
         
         // Default import method is UPLOADED
         if (imagesCollection.getImportMethod() == null) {
@@ -80,7 +82,7 @@ public class ImagesCollectionEventHandler {
 
     @HandleBeforeSave
     public void handleBeforeSave(ImagesCollection imagesCollection) {
-    	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
+        Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
     	if (!result.isPresent()) {
         	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
@@ -88,6 +90,10 @@ public class ImagesCollectionEventHandler {
 
         ImagesCollection oldTc = result.get();
 
+    	// A public collection can not become private
+    	if (oldTc.isPubliclyAvailable() && !imagesCollection.isPubliclyAvailable()){
+            throw new ClientException("Can not set change a public collection to private.");
+        }
 
         if (!Objects.equals(
                 imagesCollection.getCreationDate(),

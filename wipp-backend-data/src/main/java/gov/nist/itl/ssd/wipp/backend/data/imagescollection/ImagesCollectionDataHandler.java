@@ -50,6 +50,11 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     @Override
     public void importData(Job job, String outputName) throws IOException {
         ImagesCollection outputImagesCollection = new ImagesCollection(job, outputName);
+        // When a collection is created as a result of a Job, the collection's owner will correspond to the Job's owner and the collection's availability will be set to private by default
+        outputImagesCollection.setOwner(job.getOwner());
+        //TODO : set also the isPubliclyAvailable attribute here
+        //outputImagesCollection.setPubliclyAvailable(job.isPubliclyAvailable());
+        outputImagesCollection.setPubliclyAvailable(false);
         outputImagesCollection = imagesCollectionRepository.save(
                 outputImagesCollection);
 
@@ -81,7 +86,6 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     public String exportDataAsParam(String value) {
         String imagesCollectionId = value;
         String imagesCollectionPath;
-
         // check if the input of the job is the output of another job and if so return the associated path
         String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
         Pattern pattern = Pattern.compile(regex);
@@ -97,7 +101,7 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
 
         }
-        imagesCollectionPath = imagesCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
+        imagesCollectionPath = imagesCollectionPath.replace("\\","/").replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return imagesCollectionPath;
     }
 

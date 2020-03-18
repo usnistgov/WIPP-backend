@@ -11,7 +11,10 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
+import com.mongodb.lang.NonNull;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.io.File;
 import java.util.List;
@@ -21,12 +24,18 @@ import java.util.List;
 * @author Antoine Vandecreme
 */
 public interface StitchingVectorRepositoryCustom {
-	
-    void setTimeSlices(String stitchingVectorId,
-            List<StitchingVectorTimeSlice> timeSlices);
 
-    List<StitchingVectorTimeSlice> getTimeSlices(String stitchingVectorId);
+    // Only logged in user with access to the stitching vector can set it's time slices
+    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, true)")
+    void setTimeSlices(@Param("stitchingVectorId") String stitchingVectorId,
+                       @Param("timeSlices") List<StitchingVectorTimeSlice> timeSlices);
 
-    File getStatisticsFile(String stitchingVectorId);
+    // We make sure that the user trying to get the time slices of a stitching vector has the right to access it
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
+    List<StitchingVectorTimeSlice> getTimeSlices(@Param("stitchingVectorId") String stitchingVectorId);
+
+    // We make sure that the user trying to get the statistics of a stitching vector has the right to access it
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
+    File getStatisticsFile(@Param("stitchingVectorId") String stitchingVectorId);
 
 }

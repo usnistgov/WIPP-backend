@@ -14,6 +14,8 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +58,8 @@ public class WorkflowSubmitController {
     
     private static final Logger LOGGER = Logger.getLogger(WorkflowSubmitController.class.getName());
 
+    // We make sure the user is logged in and authorized to access the workflow before calling the submit method
+    @PreAuthorize("@securityServiceWorkflow.hasUserRole() and @securityServiceWorkflow.checkAuthorizeWorkflowId(#workflowId)")
     @RequestMapping(
         value = "",
         method = RequestMethod.POST,

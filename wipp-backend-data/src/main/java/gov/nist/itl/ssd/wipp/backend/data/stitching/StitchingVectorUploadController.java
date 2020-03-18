@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +48,8 @@ public class StitchingVectorUploadController {
     @Autowired
     private StitchingVectorLogic stitchingVectorLogic;
 
+    // We make sure the user trying to create a stitching vector is logged in.
+    @PreAuthorize("@securityServiceData.hasUserRole()")
     @RequestMapping(value = "", method = RequestMethod.POST)
     public StitchingVector upload(
             @RequestParam("file") MultipartFile file,
@@ -69,6 +73,8 @@ public class StitchingVectorUploadController {
                 new StitchingVectorTimeSlice(1, message));
         StitchingVector stitchingVector = new StitchingVector(name,
                 tilesPattern, timeSlices);
+        // We set the owner to the connected user
+        stitchingVector.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         stitchingVector = stitchingVectorRepository.save(stitchingVector);
         File stitchingVectorFolder = new File(
                 config.getStitchingFolder(),

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,6 +41,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -72,6 +73,8 @@ public class StitchingVectorTimeSliceController {
     private EntityLinks entityLinks;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
+    // We make sure the user trying to call the getTimeSlicesPage method is authorized to access the stitching vector
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public HttpEntity<PagedResources<Resource<StitchingVectorTimeSlice>>>
             getTimeSlicesPage(
                     @PathVariable("stitchingVectorId") String stitchingVectorId,
@@ -88,6 +91,8 @@ public class StitchingVectorTimeSliceController {
     }
 
     @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+    // We make sure the user trying to call the getTimeSlice method is authorized to access the stitching vector
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public HttpEntity<StitchingVectorTimeSlice> getTimeSlice(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId) {
@@ -104,6 +109,8 @@ public class StitchingVectorTimeSliceController {
     @RequestMapping(
             value = "/{timeSliceId}/globalPositions",
             method = RequestMethod.GET)
+    // We make sure the user trying to call the getGlobalPositions method is authorized to access the stitching vector
+    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public void getGlobalPositions(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId,

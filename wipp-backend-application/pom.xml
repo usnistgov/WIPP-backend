@@ -110,7 +110,25 @@
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
 		</profile>
-
+		<profile>
+			<id>windev</id>
+			<properties>
+				<mongodb.host>localhost</mongodb.host>
+				<mongodb.database>wipp-plugins</mongodb.database>
+				<workflow.management.system>argo</workflow.management.system>
+				<workflow.binary>argo</workflow.binary>
+				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
+				<storage.root>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins</storage.root>
+				<storage.workflows>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins/workflows</storage.workflows>
+				<storage.collections>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins/images-upload</storage.collections>
+				<storage.collections.upload.tmp>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
+				<storage.stitching>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins/stitching</storage.stitching>
+				<storage.pyramids>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins/pyramids</storage.pyramids>
+				<storage.temp.jobs>C:/Users/Administrateur.WIN-OUB6AD2PURC/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<fetching.pixels.max>125000000</fetching.pixels.max>
+				<ome.converter.threads>6</ome.converter.threads>
+			</properties>
+		</profile>
 	</profiles>
 
 	<dependencies>

@@ -32,10 +32,14 @@ public class Visualization {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
     private Manifest manifest;
+
+    private boolean publiclyAvailable;
 
     public String getId() {
         return id;
@@ -65,4 +69,19 @@ public class Visualization {
         this.manifest = manifest;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public boolean isPubliclyAvailable() {
+        return publiclyAvailable;
+    }
+
+    public void setPubliclyAvailable(boolean publiclyAvailable) {
+        this.publiclyAvailable = publiclyAvailable;
+    }
 }

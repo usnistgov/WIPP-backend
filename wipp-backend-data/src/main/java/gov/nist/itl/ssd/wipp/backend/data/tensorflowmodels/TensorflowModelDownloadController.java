@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,8 @@ public class TensorflowModelDownloadController {
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/zip")
+	// We make sure the user trying to download the model has the right to access it
+	@PreAuthorize("@securityServiceData.checkAuthorizeTensorflowModelId(#tensorflowModelId, false)")
 	public void get(
 			@PathVariable("tensorflowModelId") String tensorflowModelId,
 			HttpServletResponse response) throws IOException {
