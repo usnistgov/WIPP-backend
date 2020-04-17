@@ -1,0 +1,147 @@
+package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices;
+
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkBuilder;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationRepository;
+import io.swagger.annotations.Api;
+
+@RestController
+@Api(tags="PyramidAnnotation Entity")
+@RequestMapping(CoreConfig.BASE_URI + "/pyramidAnnotations/{pyramidAnnotationId}/timeSlices")
+@ExposesResourceFor(PyramidAnnotationTimeSlice.class)
+public class PyramidAnnotationTimeSliceController {
+	
+	@Autowired
+    private PyramidAnnotationRepository pyramidAnnotationRepository;
+
+    @Autowired
+    private PyramidAnnotationTimeSliceRepository pyramidAnnotationTimeSliceRepository;
+
+    @Autowired
+    private EntityLinks entityLinks;
+
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public HttpEntity<PagedResources<Resource<PyramidAnnotationTimeSlice>>>
+            getTimeSlicesPage(
+                    @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+                    @PageableDefault Pageable pageable,
+                    PagedResourcesAssembler<PyramidAnnotationTimeSlice> assembler) {
+
+        Page<PyramidAnnotationTimeSlice> page = getPage(
+        		pyramidAnnotationRepository.getTimeSlices(pyramidAnnotationId),
+                pageable);
+        for (PyramidAnnotationTimeSlice pats : page) {
+            processResource(pyramidAnnotationId, pats);
+        }
+        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+    public HttpEntity<PyramidAnnotationTimeSlice> getTimeSlice(
+            @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+            @PathVariable("timeSliceId") int timeSliceId) {
+    	PyramidAnnotationTimeSlice pats = pyramidAnnotationTimeSliceRepository
+                .findOne(pyramidAnnotationId, timeSliceId);
+        if (pats == null) {
+            throw new NotFoundException("Time slice " + timeSliceId
+                    + " not found in pyramid annotation " + pyramidAnnotationId);
+        }
+        processResource(pyramidAnnotationId, pats);
+        return new ResponseEntity<>(pats, HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/{timeSliceId}/globalPositions",
+            method = RequestMethod.GET)
+    public void getGlobalPositions(
+            @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+            @PathVariable("timeSliceId") int timeSliceId,
+            HttpServletResponse response) throws IOException {
+        File pyramidAnnotationFile = pyramidAnnotationTimeSliceRepository
+                .getGlobalPositionsFile(pyramidAnnotationId, timeSliceId);
+        if (!pyramidAnnotationFile.exists()) {
+            response.sendError(404);
+            return;
+        }
+
+        response.setHeader("Content-disposition",
+                "attachment;filename=pyramid-annotation-" + pyramidAnnotationId +
+                "-" + pyramidAnnotationFile.getName());
+        response.setContentType("text/plain");
+        try (InputStream is = new BufferedInputStream(
+                new FileInputStream(pyramidAnnotationFile))) {
+            IOUtils.copy(is, response.getOutputStream());
+        }
+        response.flushBuffer();
+    }
+
+    private void processResource(String pyramidAnnotationId,
+    		PyramidAnnotationTimeSlice pats) {
+        // Self
+        LinkBuilder lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
+        		pyramidAnnotationId);
+        Link link = lb.slash(pats.getSliceNumber()).withSelfRel();
+        pats.add(link);
+
+        // Global positions
+        lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
+        		pyramidAnnotationId);
+        link = lb.slash(pats.getSliceNumber()).slash("globalPositions")
+                .withRel("globalPositions");
+        pats.add(link);
+    }
+
+    private Page<PyramidAnnotationTimeSlice> getPage(
+            List<PyramidAnnotationTimeSlice> timeSlices, Pageable pageable) {
+        if (timeSlices == null) {
+            return new PageImpl<>(new ArrayList<>(0), pageable, 0);
+        }
+        long offset = pageable.getOffset();
+        if (offset >= timeSlices.size()) {
+            return new PageImpl<>(
+                    new ArrayList<>(0), pageable, timeSlices.size());
+        }
+
+        Stream<PyramidAnnotationTimeSlice> stream = timeSlices.stream();
+        Sort sort = pageable.getSort();
+        Comparator<PyramidAnnotationTimeSlice> comparator
+                = (pts1, pts2) -> Integer.compare(
+                        pts1.getSliceNumber(), pts2.getSliceNumber());
+        if (sort != null) {
+            for (Sort.Order order : sort) {
+                if ("sliceNumber".equals(order.getProperty())
+                        && order.getDirection() == Sort.Direction.DESC) {
+                    comparator = comparator.reversed();
+                }
+            }
+        }
+        List<PyramidAnnotationTimeSlice> result = stream
+                .sorted(comparator)
+                .skip(offset)
+                .limit(pageable.getPageSize())
+                .collect(Collectors.toList());
+        return new PageImpl<>(result, pageable, timeSlices.size());
+    }
+
+}
