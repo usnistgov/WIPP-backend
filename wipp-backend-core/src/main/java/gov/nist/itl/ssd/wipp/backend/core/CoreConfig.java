@@ -56,6 +56,9 @@ public class CoreConfig {
     @Value("${storage.pyramids}")
     private String pyramidsFolder;
     
+    @Value("${storage.pyramid.annotations}")
+    private String pyramidAnnotationsFolder;
+    
     @Value("${storage.tensorflow}")
     private String tensorflowModelsFolder;
     
@@ -123,7 +126,11 @@ public class CoreConfig {
         return pyramidsFolder;
     }
     
-    public String getTensorflowModelsFolder() {
+    public String getPyramidAnnotationsFolder() {
+		return pyramidAnnotationsFolder;
+	}
+
+	public String getTensorflowModelsFolder() {
     	return tensorflowModelsFolder;
     }
     

@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.pyramid.annotations;
+package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +9,9 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
 
-
+/**
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ */
 @RepositoryRestResource
 public interface PyramidAnnotationRepository extends MongoRepository<PyramidAnnotation, String> {
 
