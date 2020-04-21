@@ -44,7 +44,7 @@ public class PyramidAnnotationTimeSliceRepository {
                 .orElse(null);
     }
 
-    public File getGlobalPositionsFile(String pyramidAnnotationId, int timeSlice) {
+    public File getAnnotationPositionsFile(String pyramidAnnotationId, int timeSlice) {
         PyramidAnnotation pyramidAnnotation = null;
         Optional<PyramidAnnotation> optionalPyramidAnnotation = pyramidAnnotationRepository.findById(
         		pyramidAnnotationId);
@@ -63,14 +63,14 @@ public class PyramidAnnotationTimeSliceRepository {
                 PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX);
         
         File pyramidAnnotationFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotation.getId());
-        File gPFile = new File(pyramidAnnotationFolder, fileName);
+        File aPFile = new File(pyramidAnnotationFolder, fileName);
         
-        if(gPFile.exists()){
-        	return gPFile;
+        if(aPFile.exists()){
+        	return aPFile;
         }else{
         	fileName = PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX + timeSlice + PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX;
-        	gPFile = new File(pyramidAnnotationFolder, fileName);
-        	return gPFile;
+        	aPFile = new File(pyramidAnnotationFolder, fileName);
+        	return aPFile;
         }
     }
 

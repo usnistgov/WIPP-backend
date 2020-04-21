@@ -100,14 +100,14 @@ public class PyramidAnnotationTimeSliceController {
     }
 
     @RequestMapping(
-            value = "/{timeSliceId}/globalPositions",
+            value = "/{timeSliceId}/annotationPositions",
             method = RequestMethod.GET)
-    public void getGlobalPositions(
+    public void getAnnotationPositions(
             @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
             @PathVariable("timeSliceId") int timeSliceId,
             HttpServletResponse response) throws IOException {
         File pyramidAnnotationFile = pyramidAnnotationTimeSliceRepository
-                .getGlobalPositionsFile(pyramidAnnotationId, timeSliceId);
+                .getAnnotationPositionsFile(pyramidAnnotationId, timeSliceId);
         if (!pyramidAnnotationFile.exists()) {
             response.sendError(404);
             return;
@@ -132,11 +132,11 @@ public class PyramidAnnotationTimeSliceController {
         Link link = lb.slash(pats.getSliceNumber()).withSelfRel();
         pats.add(link);
 
-        // Global positions
+        // Annotation positions
         lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
         		pyramidAnnotationId);
-        link = lb.slash(pats.getSliceNumber()).slash("globalPositions")
-                .withRel("globalPositions");
+        link = lb.slash(pats.getSliceNumber()).slash("annotationPositions")
+                .withRel("annotationPositions");
         pats.add(link);
     }
 
