@@ -1,3 +1,14 @@
+/*
+ * This software was developed at the National Institute of Standards and
+ * Technology by employees of the Federal Government in the course of
+ * their official duties. Pursuant to title 17 Section 105 of the United
+ * States Code this software is not subject to copyright protection and is
+ * in the public domain. This software is an experimental system. NIST assumes
+ * no responsibility whatsoever for its use by other parties, and makes no
+ * guarantees, expressed or implied, about its quality, reliability, or
+ * any other characteristic. We would appreciate acknowledgement if the
+ * software is used.
+ */
 package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
 import java.util.Arrays;
@@ -22,12 +33,12 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAn
  */
 @Document
 @IdExposed
-public class PyramidAnnotation extends Data {
+public class PyramidAnnotation {
 	
     @Id
     private String id;
     
-	private final String name;
+	private String name;
 	
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
@@ -42,7 +53,7 @@ public class PyramidAnnotation extends Data {
     public PyramidAnnotation() {
     }
 
-    PyramidAnnotation(String name, List<PyramidAnnotationTimeSlice> timeSlices) {
+    public PyramidAnnotation(String name, List<PyramidAnnotationTimeSlice> timeSlices) {
         this.name = name;
         this.timeSlices = timeSlices;
         this.creationDate = new Date();
@@ -56,7 +67,7 @@ public class PyramidAnnotation extends Data {
         this.timeSlices = timeSlices;
     }
 
-    PyramidAnnotation(Job job, List<PyramidAnnotationTimeSlice> timeSlices, String outputName) {
+    public PyramidAnnotation(Job job, List<PyramidAnnotationTimeSlice> timeSlices, String outputName) {
     	this.name = job.getName() + "-" + outputName;
     	this.job = job.getId();
         this.creationDate = new Date();

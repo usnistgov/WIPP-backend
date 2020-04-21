@@ -1,3 +1,14 @@
+/*
+ * This software was developed at the National Institute of Standards and
+ * Technology by employees of the Federal Government in the course of
+ * their official duties. Pursuant to title 17 Section 105 of the United
+ * States Code this software is not subject to copyright protection and is
+ * in the public domain. This software is an experimental system. NIST assumes
+ * no responsibility whatsoever for its use by other parties, and makes no
+ * guarantees, expressed or implied, about its quality, reliability, or
+ * any other characteristic. We would appreciate acknowledgement if the
+ * software is used.
+ */
 package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
 import java.io.File;
@@ -23,7 +34,7 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAn
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Component("pyramidAnnotationDataHandler")
-public class PyramidAnnotationDataHandler extends BaseDataHandler implements DataHandler{
+public class PyramidAnnotationDataHandler extends BaseDataHandler implements DataHandler {
 
     @Autowired
     CoreConfig config;
@@ -38,7 +49,7 @@ public class PyramidAnnotationDataHandler extends BaseDataHandler implements Dat
     public void importData(Job job, String outputName) throws IOException, JobExecutionException {
 
         String pyramidAnnotationFilenamePattern =
-                PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX
+        		PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX
                         + "([0-9]+)"
                         + PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX;
         File jobTempOutputFolder = getJobOutputTempFolder(job.getId(), outputName);
