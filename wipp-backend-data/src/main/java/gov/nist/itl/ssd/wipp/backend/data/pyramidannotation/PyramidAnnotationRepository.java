@@ -34,6 +34,6 @@ public interface PyramidAnnotationRepository extends MongoRepository<PyramidAnno
     @RestResource(exported = false)
     void delete(PyramidAnnotation t);
 
-    Page<Pyramid> findByNameContainingIgnoreCase(@Param("name") String name,
+    Page<PyramidAnnotation> findByNameContainingIgnoreCase(@Param("name") String name,
             Pageable p);
 }
