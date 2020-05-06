@@ -22,10 +22,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
+import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAnnotationTimeSlice;
 
 /**
@@ -50,11 +50,22 @@ public class PyramidAnnotation {
     @ManualRef(Job.class)
     private String job;
     
+    @Indexed
+    @ManualRef(Pyramid.class)
+    private String pyramid;
+    
     public PyramidAnnotation() {
     }
 
     public PyramidAnnotation(String name, List<PyramidAnnotationTimeSlice> timeSlices) {
         this.name = name;
+        this.timeSlices = timeSlices;
+        this.creationDate = new Date();
+    }
+    
+    public PyramidAnnotation(Pyramid pyramid, List<PyramidAnnotationTimeSlice> timeSlices) {
+        this.name = pyramid.getName() + "-annotations";
+        this.pyramid = pyramid.getId();
         this.timeSlices = timeSlices;
         this.creationDate = new Date();
     }
@@ -95,7 +106,11 @@ public class PyramidAnnotation {
         return timeSlices;
     }
 
-    public int getNumberOfTimeSlices() {
+    public void setTimeSlices(List<PyramidAnnotationTimeSlice> timeSlices) {
+		this.timeSlices = timeSlices;
+	}
+
+	public int getNumberOfTimeSlices() {
         return getTimeSlices().size();
     }
 
@@ -103,4 +118,9 @@ public class PyramidAnnotation {
     public String getPyramidAnnotationJob() {
         return job;
     }
+
+    @JsonIgnore
+	public String getPyramid() {
+		return pyramid;
+	}
 }

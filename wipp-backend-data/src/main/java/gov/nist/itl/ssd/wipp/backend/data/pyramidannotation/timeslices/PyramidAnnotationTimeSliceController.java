@@ -17,8 +17,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityLinks;
@@ -44,10 +47,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
+import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
+import gov.nist.itl.ssd.wipp.backend.data.pyramid.PyramidRepository;
+import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotation;
+import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationConfig;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationRepository;
 import io.swagger.annotations.Api;
 
@@ -59,6 +69,9 @@ import io.swagger.annotations.Api;
 @RequestMapping(CoreConfig.BASE_URI + "/pyramidAnnotations/{pyramidAnnotationId}/timeSlices")
 @ExposesResourceFor(PyramidAnnotationTimeSlice.class)
 public class PyramidAnnotationTimeSliceController {
+	
+    @Autowired
+    private CoreConfig config;
 	
 	@Autowired
     private PyramidAnnotationRepository pyramidAnnotationRepository;
@@ -123,6 +136,46 @@ public class PyramidAnnotationTimeSliceController {
         }
         response.flushBuffer();
     }
+    
+    @RequestMapping(
+            value = "/{timeSliceId}/annotationPositions",
+            method = RequestMethod.POST)
+    public PyramidAnnotation uploadAnnotationPositions(
+            @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+            @PathVariable("timeSliceId") int timeSliceId,
+            @PathVariable("name") String name,
+            @RequestParam("file") MultipartFile file) throws IOException {        
+        PyramidAnnotationTimeSlice timeSlice = new PyramidAnnotationTimeSlice(timeSliceId);
+		PyramidAnnotation pyramidAnnotation = pyramidAnnotationRepository.findById(pyramidAnnotationId).get();
+        List<PyramidAnnotationTimeSlice> allTimeSlices = pyramidAnnotation.getTimeSlices();
+        File pyramidAnnotationFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotationId);
+        System.out.println("pyramidAnnotationFolder : " + pyramidAnnotationFolder);
+		
+		if(pyramidAnnotation != null) { 
+			System.out.println("Nummber Time Slices : " + pyramidAnnotation.getNumberOfTimeSlices());
+			allTimeSlices.add(timeSlice);
+			pyramidAnnotation.setTimeSlices(allTimeSlices);
+	        pyramidAnnotationRepository.save(pyramidAnnotation);
+			System.out.println("Nummber Time Slices : " + pyramidAnnotation.getNumberOfTimeSlices());
+			System.out.println("Time Slices : " + pyramidAnnotation.getTimeSlices().toString());
+	        file.transferTo(new File(pyramidAnnotationFolder,
+	        		PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX + timeSliceId
+	                + PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX));
+	        return pyramidAnnotation;
+		
+		} else {
+			
+	        List<PyramidAnnotationTimeSlice> timeSlices = Arrays.asList(new PyramidAnnotationTimeSlice(timeSliceId));
+			pyramidAnnotation = new PyramidAnnotation(name, timeSlices);
+			pyramidAnnotation = pyramidAnnotationRepository.save(pyramidAnnotation);
+	        pyramidAnnotationFolder.mkdirs();
+	        file.transferTo(new File(pyramidAnnotationFolder,
+	        		PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX + timeSliceId
+	                + PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX));
+	        return pyramidAnnotation;
+		}
+    }
+    
 
     private void processResource(String pyramidAnnotationId,
     		PyramidAnnotationTimeSlice pats) {
