@@ -27,10 +27,6 @@ import org.springframework.data.rest.core.annotation.RestResource;
 @RepositoryRestResource
 public interface PyramidAnnotationRepository extends MongoRepository<PyramidAnnotation, String>, PyramidAnnotationRepositoryCustom {
 
-	@Override
-    @RestResource(exported = false)
-    <S extends PyramidAnnotation> S save(S s);
-
     @Override
     @RestResource(exported = false)
     void delete(PyramidAnnotation t);

@@ -53,9 +53,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
-import gov.nist.itl.ssd.wipp.backend.data.pyramid.PyramidRepository;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotation;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationConfig;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationRepository;
@@ -69,160 +66,165 @@ import io.swagger.annotations.Api;
 @RequestMapping(CoreConfig.BASE_URI + "/pyramidAnnotations/{pyramidAnnotationId}/timeSlices")
 @ExposesResourceFor(PyramidAnnotationTimeSlice.class)
 public class PyramidAnnotationTimeSliceController {
-	
-    @Autowired
-    private CoreConfig config;
-	
+
 	@Autowired
-    private PyramidAnnotationRepository pyramidAnnotationRepository;
+	private CoreConfig config;
 
-    @Autowired
-    private PyramidAnnotationTimeSliceRepository pyramidAnnotationTimeSliceRepository;
+	@Autowired
+	private PyramidAnnotationRepository pyramidAnnotationRepository;
 
-    @Autowired
-    private EntityLinks entityLinks;
+	@Autowired
+	private PyramidAnnotationTimeSliceRepository pyramidAnnotationTimeSliceRepository;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public HttpEntity<PagedResources<Resource<PyramidAnnotationTimeSlice>>>
-            getTimeSlicesPage(
-                    @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
-                    @PageableDefault Pageable pageable,
-                    PagedResourcesAssembler<PyramidAnnotationTimeSlice> assembler) {
+	@Autowired
+	private EntityLinks entityLinks;
 
-        Page<PyramidAnnotationTimeSlice> page = getPage(
-        		pyramidAnnotationRepository.getTimeSlices(pyramidAnnotationId),
-                pageable);
-        for (PyramidAnnotationTimeSlice pats : page) {
-            processResource(pyramidAnnotationId, pats);
-        }
-        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
-    }
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public HttpEntity<PagedResources<Resource<PyramidAnnotationTimeSlice>>>
+	getTimeSlicesPage(
+			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+			@PageableDefault Pageable pageable,
+			PagedResourcesAssembler<PyramidAnnotationTimeSlice> assembler) {
 
-    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
-    public HttpEntity<PyramidAnnotationTimeSlice> getTimeSlice(
-            @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
-            @PathVariable("timeSliceId") int timeSliceId) {
-    	PyramidAnnotationTimeSlice pats = pyramidAnnotationTimeSliceRepository
-                .findOne(pyramidAnnotationId, timeSliceId);
-        if (pats == null) {
-            throw new NotFoundException("Time slice " + timeSliceId
-                    + " not found in pyramid annotation " + pyramidAnnotationId);
-        }
-        processResource(pyramidAnnotationId, pats);
-        return new ResponseEntity<>(pats, HttpStatus.OK);
-    }
-
-    @RequestMapping(
-            value = "/{timeSliceId}/annotationPositions",
-            method = RequestMethod.GET)
-    public void getAnnotationPositions(
-            @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
-            @PathVariable("timeSliceId") int timeSliceId,
-            HttpServletResponse response) throws IOException {
-        File pyramidAnnotationFile = pyramidAnnotationTimeSliceRepository
-                .getAnnotationPositionsFile(pyramidAnnotationId, timeSliceId);
-        if (!pyramidAnnotationFile.exists()) {
-            response.sendError(404);
-            return;
-        }
-
-        response.setHeader("Content-disposition",
-                "attachment;filename=pyramid-annotation-" + pyramidAnnotationId +
-                "-" + pyramidAnnotationFile.getName());
-        response.setContentType("text/plain");
-        try (InputStream is = new BufferedInputStream(
-                new FileInputStream(pyramidAnnotationFile))) {
-            IOUtils.copy(is, response.getOutputStream());
-        }
-        response.flushBuffer();
-    }
-    
-    @RequestMapping(
-            value = "/{timeSliceId}/annotationPositions",
-            method = RequestMethod.POST)
-    public PyramidAnnotation uploadAnnotationPositions(
-            @PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
-            @PathVariable("timeSliceId") int timeSliceId,
-            @PathVariable("name") String name,
-            @RequestParam("file") MultipartFile file) throws IOException {        
-        PyramidAnnotationTimeSlice timeSlice = new PyramidAnnotationTimeSlice(timeSliceId);
-		PyramidAnnotation pyramidAnnotation = pyramidAnnotationRepository.findById(pyramidAnnotationId).get();
-        List<PyramidAnnotationTimeSlice> allTimeSlices = pyramidAnnotation.getTimeSlices();
-        File pyramidAnnotationFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotationId);
-        System.out.println("pyramidAnnotationFolder : " + pyramidAnnotationFolder);
-		
-		if(pyramidAnnotation != null) { 
-			System.out.println("Nummber Time Slices : " + pyramidAnnotation.getNumberOfTimeSlices());
-			allTimeSlices.add(timeSlice);
-			pyramidAnnotation.setTimeSlices(allTimeSlices);
-	        pyramidAnnotationRepository.save(pyramidAnnotation);
-			System.out.println("Nummber Time Slices : " + pyramidAnnotation.getNumberOfTimeSlices());
-			System.out.println("Time Slices : " + pyramidAnnotation.getTimeSlices().toString());
-	        file.transferTo(new File(pyramidAnnotationFolder,
-	        		PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX + timeSliceId
-	                + PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX));
-	        return pyramidAnnotation;
-		
-		} else {
-			
-	        List<PyramidAnnotationTimeSlice> timeSlices = Arrays.asList(new PyramidAnnotationTimeSlice(timeSliceId));
-			pyramidAnnotation = new PyramidAnnotation(name, timeSlices);
-			pyramidAnnotation = pyramidAnnotationRepository.save(pyramidAnnotation);
-	        pyramidAnnotationFolder.mkdirs();
-	        file.transferTo(new File(pyramidAnnotationFolder,
-	        		PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX + timeSliceId
-	                + PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX));
-	        return pyramidAnnotation;
+		Page<PyramidAnnotationTimeSlice> page = getPage(
+				pyramidAnnotationRepository.getTimeSlices(pyramidAnnotationId),
+				pageable);
+		for (PyramidAnnotationTimeSlice pats : page) {
+			processResource(pyramidAnnotationId, pats);
 		}
-    }
-    
+		return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
+	}
 
-    private void processResource(String pyramidAnnotationId,
-    		PyramidAnnotationTimeSlice pats) {
-        // Self
-        LinkBuilder lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
-        		pyramidAnnotationId);
-        Link link = lb.slash(pats.getSliceNumber()).withSelfRel();
-        pats.add(link);
+	@RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+	public HttpEntity<PyramidAnnotationTimeSlice> getTimeSlice(
+			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+			@PathVariable("timeSliceId") int timeSliceId) {
+		PyramidAnnotationTimeSlice pats = pyramidAnnotationTimeSliceRepository
+				.findOne(pyramidAnnotationId, timeSliceId);
+		if (pats == null) {
+			throw new NotFoundException("Time slice " + timeSliceId
+					+ " not found in pyramid annotation " + pyramidAnnotationId);
+		}
+		processResource(pyramidAnnotationId, pats);
+		return new ResponseEntity<>(pats, HttpStatus.OK);
+	}
 
-        // Annotation positions
-        lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
-        		pyramidAnnotationId);
-        link = lb.slash(pats.getSliceNumber()).slash("annotationPositions")
-                .withRel("annotationPositions");
-        pats.add(link);
-    }
+	@RequestMapping(
+			value = "/{timeSliceId}/annotationPositions",
+			method = RequestMethod.GET)
+	public void getAnnotationPositions(
+			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+			@PathVariable("timeSliceId") int timeSliceId,
+			HttpServletResponse response) throws IOException {
+		File pyramidAnnotationFile = pyramidAnnotationTimeSliceRepository
+				.getAnnotationPositionsFile(pyramidAnnotationId, timeSliceId);
+		if (!pyramidAnnotationFile.exists()) {
+			response.sendError(404);
+			return;
+		}
 
-    private Page<PyramidAnnotationTimeSlice> getPage(
-            List<PyramidAnnotationTimeSlice> timeSlices, Pageable pageable) {
-        if (timeSlices == null) {
-            return new PageImpl<>(new ArrayList<>(0), pageable, 0);
-        }
-        long offset = pageable.getOffset();
-        if (offset >= timeSlices.size()) {
-            return new PageImpl<>(
-                    new ArrayList<>(0), pageable, timeSlices.size());
-        }
+		response.setHeader("Content-disposition",
+				"attachment;filename=pyramid-annotation-" + pyramidAnnotationId +
+				"-" + pyramidAnnotationFile.getName());
+		response.setContentType("text/plain");
+		try (InputStream is = new BufferedInputStream(
+				new FileInputStream(pyramidAnnotationFile))) {
+			IOUtils.copy(is, response.getOutputStream());
+		}
+		response.flushBuffer();
+	}
 
-        Stream<PyramidAnnotationTimeSlice> stream = timeSlices.stream();
-        Sort sort = pageable.getSort();
-        Comparator<PyramidAnnotationTimeSlice> comparator
-                = (pts1, pts2) -> Integer.compare(
-                        pts1.getSliceNumber(), pts2.getSliceNumber());
-        if (sort != null) {
-            for (Sort.Order order : sort) {
-                if ("sliceNumber".equals(order.getProperty())
-                        && order.getDirection() == Sort.Direction.DESC) {
-                    comparator = comparator.reversed();
-                }
-            }
-        }
-        List<PyramidAnnotationTimeSlice> result = stream
-                .sorted(comparator)
-                .skip(offset)
-                .limit(pageable.getPageSize())
-                .collect(Collectors.toList());
-        return new PageImpl<>(result, pageable, timeSlices.size());
-    }
+	@RequestMapping(
+			value = "/{timeSliceId}/annotationPositions",
+			method = RequestMethod.POST)
+	public PyramidAnnotation uploadAnnotationPositions(
+			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
+			@PathVariable("timeSliceId") int timeSliceId,
+			@RequestParam("file") MultipartFile file) throws IOException {     
+		PyramidAnnotationTimeSlice timeSlice = new PyramidAnnotationTimeSlice(timeSliceId);
+		PyramidAnnotation pyramidAnnotation = pyramidAnnotationRepository.findById(pyramidAnnotationId).get();
+		File pyramidAnnotationFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotationId);
+
+		if(!pyramidAnnotationFolder.exists()) {
+			pyramidAnnotationFolder.mkdirs();
+		}
+
+		List<PyramidAnnotationTimeSlice> allTimeSlices = pyramidAnnotation.getTimeSlices();
+
+		if(containsTimeSlice(allTimeSlices, timeSliceId)) {
+			for (int i = 0; i < allTimeSlices.size(); i++) {
+				if(allTimeSlices.get(i).getSliceNumber() == timeSliceId) {
+					allTimeSlices.set(i, timeSlice);
+				}
+			}
+		} else {
+			allTimeSlices.add(timeSlice);
+		}
+
+		pyramidAnnotation.setTimeSlices(allTimeSlices);
+		pyramidAnnotationRepository.save(pyramidAnnotation);
+		file.transferTo(new File(pyramidAnnotationFolder,
+				PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_PREFIX + timeSliceId
+				+ PyramidAnnotationConfig.PYRAMID_ANNOTATION_FILENAME_SUFFIX));
+		return pyramidAnnotation;
+	}
+
+
+	private void processResource(String pyramidAnnotationId,
+			PyramidAnnotationTimeSlice pats) {
+		// Self
+		LinkBuilder lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
+				pyramidAnnotationId);
+		Link link = lb.slash(pats.getSliceNumber()).withSelfRel();
+		pats.add(link);
+
+		// Annotation positions
+		lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
+				pyramidAnnotationId);
+		link = lb.slash(pats.getSliceNumber()).slash("annotationPositions")
+				.withRel("annotationPositions");
+		pats.add(link);
+	}
+
+	private Page<PyramidAnnotationTimeSlice> getPage(
+			List<PyramidAnnotationTimeSlice> timeSlices, Pageable pageable) {
+		if (timeSlices == null) {
+			return new PageImpl<>(new ArrayList<>(0), pageable, 0);
+		}
+		long offset = pageable.getOffset();
+		if (offset >= timeSlices.size()) {
+			return new PageImpl<>(
+					new ArrayList<>(0), pageable, timeSlices.size());
+		}
+
+		Stream<PyramidAnnotationTimeSlice> stream = timeSlices.stream();
+		Sort sort = pageable.getSort();
+		Comparator<PyramidAnnotationTimeSlice> comparator
+		= (pts1, pts2) -> Integer.compare(
+				pts1.getSliceNumber(), pts2.getSliceNumber());
+		if (sort != null) {
+			for (Sort.Order order : sort) {
+				if ("sliceNumber".equals(order.getProperty())
+						&& order.getDirection() == Sort.Direction.DESC) {
+					comparator = comparator.reversed();
+				}
+			}
+		}
+		List<PyramidAnnotationTimeSlice> result = stream
+				.sorted(comparator)
+				.skip(offset)
+				.limit(pageable.getPageSize())
+				.collect(Collectors.toList());
+		return new PageImpl<>(result, pageable, timeSlices.size());
+	}
+
+	public boolean containsTimeSlice(List<PyramidAnnotationTimeSlice> timeSlices, int timeSliceId){
+		for(int i = 0; i < timeSlices.size(); i++){
+			if(timeSlices.get(i).getSliceNumber() == timeSliceId){
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
