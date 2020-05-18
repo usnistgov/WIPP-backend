@@ -39,7 +39,7 @@ public class Visualization {
 
     private Manifest manifest;
 
-    private boolean publiclyAvailable;
+    private boolean publiclyShared;
 
     public String getId() {
         return id;
@@ -77,11 +77,11 @@ public class Visualization {
         this.owner = owner;
     }
 
-    public boolean isPubliclyAvailable() {
-        return publiclyAvailable;
+    public boolean isPubliclyShared() {
+        return publiclyShared;
     }
 
-    public void setPubliclyAvailable(boolean publiclyAvailable) {
-        this.publiclyAvailable = publiclyAvailable;
+    public void setPubliclyShared(boolean publiclyShared) {
+        this.publiclyShared = publiclyShared;
     }
 }

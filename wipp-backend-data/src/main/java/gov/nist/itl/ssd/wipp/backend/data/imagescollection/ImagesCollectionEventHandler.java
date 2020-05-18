@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component
 @RepositoryEventHandler
@@ -56,15 +57,17 @@ public class ImagesCollectionEventHandler {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
-    // We make sure the user trying to create a collection is logged in.
-    @PreAuthorize("@securityServiceData.hasUserRole()")
+    @PreAuthorize("isAuthenticated()")
     @HandleBeforeCreate
     public void handleBeforeCreate(ImagesCollection imagesCollection) {
+    	// Assert imagesCollection name is unique
         imagesCollectionLogic.assertCollectionNameUnique(
                 imagesCollection.getName());
+        
+        // Set creation date to current date
         imagesCollection.setCreationDate(new Date());
 
-        // We set the owner to the connected user
+        // Set the owner to the connected user
         imagesCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
 
         
@@ -81,7 +84,9 @@ public class ImagesCollectionEventHandler {
     }
 
     @HandleBeforeSave
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #imagesCollection.owner == principal.name)")
     public void handleBeforeSave(ImagesCollection imagesCollection) {
+    	// Assert collection exists
         Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
     	if (!result.isPresent()) {
@@ -90,40 +95,53 @@ public class ImagesCollectionEventHandler {
 
         ImagesCollection oldTc = result.get();
 
-    	// A public collection can not become private
-    	if (oldTc.isPubliclyAvailable() && !imagesCollection.isPubliclyAvailable()){
+    	// A public collection cannot become private
+    	if (oldTc.isPubliclyShared() && !imagesCollection.isPubliclyShared()){
             throw new ClientException("Can not set change a public collection to private.");
         }
+    	
+    	// Owner cannot be changed
+        if (!Objects.equals(
+        		imagesCollection.getOwner(),
+                oldTc.getOwner())) {
+            throw new ClientException("Can not change owner.");
+        }
 
+    	// Creation date cannot be changed
         if (!Objects.equals(
                 imagesCollection.getCreationDate(),
                 oldTc.getCreationDate())) {
             throw new ClientException("Can not change creation date.");
         }
 
+        // Import method cannot be changed
         if (!Objects.equals(
                 imagesCollection.getImportMethod(),
                 oldTc.getImportMethod())) {
             throw new ClientException("Can not change import method.");
         }
         
+        // Source catalog cannot be changed
         if (!Objects.equals(
                 imagesCollection.getSourceCatalog(),
                 oldTc.getSourceCatalog())) {
             throw new ClientException("Can not change source catalog.");
         }
         
+        // Source job cannot be changed
         if (!Objects.equals(
                 imagesCollection.getSourceJob(),
                 oldTc.getSourceJob())) {
             throw new ClientException("Can not change source job.");
         }
 
+        // Assert collection name is unique
         if (!Objects.equals(imagesCollection.getName(), oldTc.getName())) {
             imagesCollectionLogic.assertCollectionNameUnique(
                     imagesCollection.getName());
         }
 
+        // Cannot unlock locked collection
         if (imagesCollection.isLocked() != oldTc.isLocked()) {
             if (!imagesCollection.isLocked()) {
                 throw new ClientException("Can not unlock images collection.");
@@ -134,7 +152,9 @@ public class ImagesCollectionEventHandler {
     }
 
     @HandleBeforeDelete
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #imagesCollection.owner == principal.name)")
     public void handleBeforeDelete(ImagesCollection imagesCollection) {
+    	// Assert collection exists
     	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
     	if (!result.isPresent()) {
@@ -142,11 +162,14 @@ public class ImagesCollectionEventHandler {
         }
 
         ImagesCollection oldTc = result.get();
+        
+        // Locked collection cannot be deleted
         imagesCollectionLogic.assertCollectionNotLocked(oldTc);
     }
 
     @HandleAfterDelete
     public void handleAfterDelete(ImagesCollection imagesCollection) {
+    	// Delete all images and metadataFiles from deleted collection
     	imageRepository.deleteAll(imagesCollection.getId(), false);
     	metadataFileRepository.deleteAll(imagesCollection.getId(), false);
     	File imagesCollectionFolder = new File (config.getImagesCollectionsFolder(), imagesCollection.getId());

@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,8 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags="ImagesCollection Entity")
-// We make sure that the user is logged in before accessing the image uploader
-@PreAuthorize("@securityServiceData.hasUserRole()")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/images")
 public class ImageUploadController extends FileUploadController {
 

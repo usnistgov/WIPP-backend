@@ -58,6 +58,7 @@ import io.swagger.annotations.Api;
  * Inspired by ProbingSamplingResource in RestletDeepZoom project
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Controller
 @Api(tags="Pyramid Entity")
@@ -92,8 +93,7 @@ public class PyramidFetchingController {
 	            value = "",
 	            method = RequestMethod.GET,
 	            produces = "application/zip")
-		// Before fetching a pyramid, we check that the user has the right to access the pyramid
-		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
 	    public void fetch(@PathVariable("pyramidId") String pyramidId,
 	            @RequestParam("x") int x,
 	            @RequestParam("y") int y,

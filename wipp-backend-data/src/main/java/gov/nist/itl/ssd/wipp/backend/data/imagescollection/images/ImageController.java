@@ -55,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="ImagesCollection Entity")
@@ -78,8 +79,7 @@ public class ImageController {
     private PaginationParameterTemplatesHelper paginationParameterTemplatesHelper;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    // We make sure the user trying to call the getFilesPage method is authorized to access the image collection
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public HttpEntity<PagedResources<Resource<Image>>> getFilesPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PageableDefault Pageable pageable,
@@ -96,8 +96,8 @@ public class ImageController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    // We make sure the user trying to call the deleteAllFiles method is logged in and authorized to access the image collection
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void deleteAllFiles(
             @PathVariable("imagesCollectionId") String imagesCollectionId) {
     	Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
@@ -112,8 +112,7 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.HEAD)
-    // We make sure the user trying to call the headFile method is authorized to access the image collection
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public void headFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName,
@@ -126,8 +125,7 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.GET)
-    // We make sure the user trying to call the getFile method is authorized to access the image collection
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public void getFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName,
@@ -143,8 +141,8 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
-    // We make sure the user trying to call the deleteFile method is logged in and authorized to access the image collection
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void deleteFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName) {
@@ -163,8 +161,7 @@ public class ImageController {
             value = "/{fileName:.+}/ome",
             method = RequestMethod.GET,
             produces = "text/xml;charset=UTF-8")
-    // We make sure the user trying to call the getOmeMetadata method is logged in and authorized to access the image collection
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public String getOmeMetadata(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName,
@@ -175,8 +172,7 @@ public class ImageController {
     }
 
     @RequestMapping(value = "filterByFileNameRegex", method = RequestMethod.GET)
-    // We make sure the user trying to call the getFilesMatchingRegexPage method is logged in and authorized to access the image collection
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public HttpEntity<PagedResources<Resource<Image>>> getFilesMatchingRegexPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @RequestParam(value="regex") String regex,

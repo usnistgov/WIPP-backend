@@ -35,6 +35,8 @@ public class Workflow {
     private String generatedName;
 	
     private String errorMessage;
+    
+    private boolean publiclyShared;
 
     /**
 	 * @return the id
@@ -147,5 +149,13 @@ public class Workflow {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
 	}
 }

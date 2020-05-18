@@ -12,7 +12,6 @@
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection.images;
 
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -20,13 +19,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 public interface ImageRepositoryCustom {
 
-    // When calling the deleteByImagesCollection method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, true)")
     void deleteByImagesCollection(
             @Param("imagesCollection") String imagesCollection);
 
-    // When calling the deleteByImagesCollectionAndFileName method, which corresponds to a DELETE operation, we make sure that the user is logged in and has the right to access the object before calling the delete method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollection, true)")
     void deleteByImagesCollectionAndFileName(
             @Param("imagesCollection") String imagesCollection,
             @Param("fileName") String fileName);

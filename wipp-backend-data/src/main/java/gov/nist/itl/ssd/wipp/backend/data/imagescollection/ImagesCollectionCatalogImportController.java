@@ -54,8 +54,8 @@ public class ImagesCollectionCatalogImportController {
 	private ImageConversionService imageConversionService;
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	// Before importing from catalog, we make sure the user is logged in and has the right to access the collection
-	@PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
+	@PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
 	public void importFromCatalog(
 			@PathVariable("imagesCollectionId") String imagesCollectionId) throws IOException {
 

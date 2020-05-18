@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author Samia Benjida <samia.benjida at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("collectionDataHandler")
 public class ImagesCollectionDataHandler extends BaseDataHandler implements DataHandler {
@@ -50,11 +51,10 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     @Override
     public void importData(Job job, String outputName) throws IOException {
         ImagesCollection outputImagesCollection = new ImagesCollection(job, outputName);
-        // When a collection is created as a result of a Job, the collection's owner will correspond to the Job's owner and the collection's availability will be set to private by default
+        // Set collection owner to job owner
         outputImagesCollection.setOwner(job.getOwner());
-        //TODO : set also the isPubliclyAvailable attribute here
-        //outputImagesCollection.setPubliclyAvailable(job.isPubliclyAvailable());
-        outputImagesCollection.setPubliclyAvailable(false);
+        // Set collection to private
+        outputImagesCollection.setPubliclyShared(false);
         outputImagesCollection = imagesCollectionRepository.save(
                 outputImagesCollection);
 

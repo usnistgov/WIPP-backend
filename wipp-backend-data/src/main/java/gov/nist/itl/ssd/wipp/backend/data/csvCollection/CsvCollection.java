@@ -58,7 +58,7 @@ public class CsvCollection {
 	@ManualRef(Job.class)
 	private String sourceJob;
 
-	private boolean publiclyAvailable;
+	private boolean publiclyShared;
 
 
 	public CsvCollection() {
@@ -108,12 +108,12 @@ public class CsvCollection {
 		this.owner = owner;
 	}
 
-	public boolean isPubliclyAvailable() {
-		return publiclyAvailable;
+	public boolean isPubliclyShared() {
+		return publiclyShared;
 	}
 
-	public void setPubliclyAvailable(boolean publiclyAvailable) {
-		this.publiclyAvailable = publiclyAvailable;
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
 	}
 
 

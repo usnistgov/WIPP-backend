@@ -24,6 +24,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("pyramidDataHandler")
 public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
@@ -41,11 +42,10 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
     @Override
     public void importData(Job job, String outputName) throws JobExecutionException {
         Pyramid outputPyramid = new Pyramid(job, outputName);
-        // When a pyramid is created as a result of a Job, the pyramid's owner will correspond to the Job's owner and the pyramid's availability will be set to private by default
+        // Set pyramid owner to job owner
         outputPyramid.setOwner(job.getOwner());
-        //TODO : set also the isPubliclyAvailable attribute here
-        //outputPyramid.setPubliclyAvailable(job.isPubliclyAvailable());
-        outputPyramid.setPubliclyAvailable(false);
+        // Set pyramid to private
+        outputPyramid.setPubliclyShared(false);
         pyramidRepository.save(outputPyramid);
 
         File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());

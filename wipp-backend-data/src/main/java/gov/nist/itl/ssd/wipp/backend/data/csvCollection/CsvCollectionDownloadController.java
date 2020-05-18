@@ -53,8 +53,7 @@ public class CsvCollectionDownloadController {
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/zip")
-	// We make sure the user trying to download the collection has the right to access it
-	@PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, false)")
+	@PreAuthorize("hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, false)")
 	public void get(
 			@PathVariable("csvCollectionId") String csvCollectionId,
 			HttpServletResponse response) throws IOException {

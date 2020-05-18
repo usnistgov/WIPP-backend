@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,7 @@ public class NotebookGetFileController {
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/json")
+	@PreAuthorize("hasRole('admin') or @notebookSecurity.checkAuthorize(#notebookId, false)")
 	public void get(
 			@PathVariable("notebookId") String notebookId,
 			HttpServletResponse response) throws IOException {

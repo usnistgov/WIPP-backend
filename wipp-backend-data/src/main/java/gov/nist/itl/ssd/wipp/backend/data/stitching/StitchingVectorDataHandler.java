@@ -64,11 +64,10 @@ public class StitchingVectorDataHandler extends BaseDataHandler implements DataH
                 .collect(Collectors.toList());
 
         StitchingVector vector = new StitchingVector(job, timeSlices, outputName);
-        // When a stitching vector is created as a result of a Job, the vector's owner will correspond to the Job's owner and the vector's availability will be set to private by default
+        // Set SV owner to job owner
         vector.setOwner(job.getOwner());
-        //TODO : set also the isPubliclyAvailable attribute here
-        //vector.setPubliclyAvailable(job.isPubliclyAvailable());
-        vector.setPubliclyAvailable(false);
+        // Set SV to private
+        vector.setPubliclyShared(false);
         // We save so that an Id is generated.
         stitchingVectorRepository.save(vector);
 

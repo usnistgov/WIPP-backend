@@ -58,8 +58,7 @@ public class WorkflowSubmitController {
     
     private static final Logger LOGGER = Logger.getLogger(WorkflowSubmitController.class.getName());
 
-    // We make sure the user is logged in and authorized to access the workflow before calling the submit method
-    @PreAuthorize("@securityServiceWorkflow.hasUserRole() and @securityServiceWorkflow.checkAuthorizeWorkflowId(#workflowId)")
+    @PreAuthorize("isAuthenticated() and @workflowSecurity.checkAuthorizeWorkflowId(#workflowId)")
     @RequestMapping(
         value = "",
         method = RequestMethod.POST,

@@ -14,7 +14,6 @@ package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 
 import java.util.Date;
@@ -47,7 +46,7 @@ public class Pyramid {
     @ManualRef(Job.class)
     private String job;
 
-    private boolean publiclyAvailable;
+    private boolean publiclyShared;
 
     public Pyramid() {
     }
@@ -88,11 +87,11 @@ public class Pyramid {
         this.owner = owner;
     }
 
-    public boolean isPubliclyAvailable() {
-        return publiclyAvailable;
+    public boolean isPubliclyShared() {
+        return publiclyShared;
     }
 
-    public void setPubliclyAvailable(boolean publiclyAvailable) {
-        this.publiclyAvailable = publiclyAvailable;
+    public void setPubliclyShared(boolean publiclyShared) {
+        this.publiclyShared = publiclyShared;
     }
 }

@@ -54,7 +54,7 @@ public class ImagesCollection extends Data {
 
     private boolean locked;
 
-    private boolean publiclyAvailable;
+    private boolean publiclyShared;
 
     private String pattern;
 
@@ -177,13 +177,17 @@ public class ImagesCollection extends Data {
         return owner;
     }
 
-    public void setOwner(String owner) { this.owner = owner; }
-
-    public boolean isPubliclyAvailable() {
-        return publiclyAvailable;
+    public void setOwner(String owner) { 
+    	this.owner = owner; 
     }
 
-    public void setPubliclyAvailable(boolean publiclyAvailable) { this.publiclyAvailable = publiclyAvailable; }
+    public boolean isPubliclyShared() {
+        return publiclyShared;
+    }
+
+    public void setPubliclyShared(boolean publiclyShared) { 
+    	this.publiclyShared = publiclyShared; 
+    }
 
 	public String getSourceCatalog() {
         return sourceCatalog;

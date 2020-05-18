@@ -31,7 +31,6 @@ import loci.formats.ome.OMEXMLMetadata;
 import loci.formats.services.OMEXMLService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,8 +43,6 @@ public class PyramidTimeSliceRepository {
 	@Autowired
 	private CoreConfig config;
 
-	// We make sure the user trying to call the findOne method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public PyramidTimeSlice findOne(String pyramidId, String timeSliceId) {
 		File dziFile = getDziFile(pyramidId, timeSliceId);
 		if (!dziFile.exists()) {
@@ -54,8 +51,6 @@ public class PyramidTimeSliceRepository {
 		return new PyramidTimeSlice(timeSliceId);
 	}
 
-	// We make sure the user trying to call the getAllDziFiles method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public List<File> getAllDziFiles(String pyramidId) {
 		File[] dziFiles = new File(config.getPyramidsFolder(), pyramidId)
 				.listFiles((File dir, String name) -> name.endsWith(".dzi"));
@@ -66,8 +61,6 @@ public class PyramidTimeSliceRepository {
 		return Arrays.asList(dziFiles);
 	}
 
-	// We make sure the user trying to call the getDziFiles method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public List<File> getDziFiles(String pyramidId,
 			SortedSet<Integer> timeSlicesNumbers) {
 		return findAll(pyramidId).stream()
@@ -77,8 +70,6 @@ public class PyramidTimeSliceRepository {
 				.collect(Collectors.toList());
 	}
 
-	// We make sure the user trying to call the findAll method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public List<PyramidTimeSlice> findAll(String pyramidId) {
 		return getAllDziFiles(pyramidId).stream().map(f -> {
 			String fileName = f.getName();
@@ -88,8 +79,6 @@ public class PyramidTimeSliceRepository {
 		}).collect(Collectors.toList());
 	}
 
-	// We make sure the user trying to call the getAllOmeFiles method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public List<File> getAllOmeFiles(String pyramidId) {
 		File[] omeFiles = new File(config.getPyramidsFolder(), pyramidId)
 				.listFiles((File dir, String name) -> name.endsWith(".ome.xml"));
@@ -100,8 +89,6 @@ public class PyramidTimeSliceRepository {
 		return Arrays.asList(omeFiles);
 	}
 
-	// We make sure the user trying to call the getOmeXmlMetadata method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public OMEXMLMetadata getOmeXmlMetadata(String pyramidId)
 			throws IOException {
 		List<PyramidTimeSlice> pts = findAll(pyramidId);
@@ -112,8 +99,6 @@ public class PyramidTimeSliceRepository {
 		return getOmeXmlMetadata(pyramidId, pts.get(0).getName());
 	}
 
-	// We make sure the user trying to call the getOmeXmlMetadata method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	public OMEXMLMetadata getOmeXmlMetadata(String pyramidId,
 			String timeSliceId) throws IOException {
 		try {
@@ -128,16 +113,12 @@ public class PyramidTimeSliceRepository {
 		}
 	}
 
-	// We make sure the user trying to call the getDziFile method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	private File getDziFile(String pyramidId, String timeSliceId) {
 		return new File(
 				new File(config.getPyramidsFolder(), pyramidId),
 				timeSliceId + ".dzi");
 	}
 
-	// We make sure the user trying to call the getOmeFile method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	private File getOmeFile(String pyramidId, String timeSliceId) {
 		return new File(
 				new File(config.getPyramidsFolder(), pyramidId),

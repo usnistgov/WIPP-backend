@@ -347,13 +347,6 @@ public class WorkflowConverter {
      * @return the sub path of the data volume to mount 
      */
     private String getOutputMountSubPath(String jobId){
-        /**
-         * Fix for Windows :
-         *         File file = new File(coreConfig.getJobsTempFolder(), jobId);
-         *         String path = file.getAbsolutePath().replace("\\","/");
-         *         String rootfolder = coreConfig.getStorageRootFolder();
-         *         return(path.replaceFirst( rootfolder+ "/", ""));
-         */
         return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
                 .replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
     }

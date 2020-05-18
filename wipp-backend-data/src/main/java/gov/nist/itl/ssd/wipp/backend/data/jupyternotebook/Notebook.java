@@ -34,11 +34,15 @@ public class Notebook {
 
 	@Indexed(unique=true)
 	private String name;
+	
+	private String owner;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date creationDate;
 	
 	private String description;
+	
+	private boolean publiclyShared;
 
 	public Notebook() {
 	}
@@ -57,12 +61,28 @@ public class Notebook {
 		return name;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
 	}
 	
 }

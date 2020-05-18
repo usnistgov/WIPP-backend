@@ -72,8 +72,7 @@ public class VisualizationDownloadController {
             value = "",
             method = RequestMethod.GET,
             produces = "application/zip")
-	// We make sure the user trying to download the visualization has the right to access it
-	@PreAuthorize("@securityServiceData.checkAuthorizeVisualizationId(#visualizationId, false)")
+	@PreAuthorize("hasRole('admin') or @visualizationSecurity.checkAuthorize(#visualizationId, false)")
     public void get(
             @PathVariable("visualizationId") String visualizationId,
             HttpServletResponse response) throws IOException {

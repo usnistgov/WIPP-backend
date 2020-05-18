@@ -28,6 +28,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("csvCollectionDataHandler")
 public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHandler{
@@ -45,13 +46,11 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		CsvCollection csvCollection = new CsvCollection(job, outputName);
-        // When a collection is created as a result of a Job, the collection's owner will correspond to the Job's owner and the collection's availability will be set to private by default
+        // Set collection owner to job owner
         csvCollection.setOwner(job.getOwner());
-        //TODO : set also the isPubliclyAvailable attribute here
-        //csvCollection.setPubliclyAvailable(job.isPubliclyAvailable());
-        csvCollection.setPubliclyAvailable(false);
+        // Set collection to private
+        csvCollection.setPubliclyShared(false);
 		csvCollectionRepository.save(csvCollection);
-
 
         try {
             File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);

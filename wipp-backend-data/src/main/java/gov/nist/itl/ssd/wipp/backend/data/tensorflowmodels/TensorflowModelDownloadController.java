@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  *
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Controller
 @Api(tags="TensorflowModel Entity")
@@ -53,8 +54,7 @@ public class TensorflowModelDownloadController {
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/zip")
-	// We make sure the user trying to download the model has the right to access it
-	@PreAuthorize("@securityServiceData.checkAuthorizeTensorflowModelId(#tensorflowModelId, false)")
+	@PreAuthorize("hasRole('admin') or @tensorflowModelSecurity.checkAuthorize(#tensorflowModelId, false)")
 	public void get(
 			@PathVariable("tensorflowModelId") String tensorflowModelId,
 			HttpServletResponse response) throws IOException {

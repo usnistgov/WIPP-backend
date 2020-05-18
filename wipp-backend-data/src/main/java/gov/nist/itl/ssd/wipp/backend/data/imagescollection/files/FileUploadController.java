@@ -20,8 +20,6 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepos
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 public abstract class FileUploadController extends FlowjsController {
 
@@ -53,8 +52,8 @@ public abstract class FileUploadController extends FlowjsController {
                 "flowChunkNumber", "flowTotalChunks", "flowChunkSize",
                 "flowTotalSize", "flowIdentifier", "flowFilename",
                 "flowRelativePath"})
-    // We make sure that the user is logged in and has the right to access the image collection before accessing the isChunckUploaded method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void isChunckUploaded(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletRequest request, HttpServletResponse response)
@@ -71,8 +70,8 @@ public abstract class FileUploadController extends FlowjsController {
                 "flowChunkNumber", "flowTotalChunks", "flowChunkSize",
                 "flowTotalSize", "flowIdentifier", "flowFilename",
                 "flowRelativePath"})
-    // We make sure that the user is logged in and has the right to access the image collection before accessing the uploadChunck method
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, true)")
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void uploadChunck(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletRequest request,

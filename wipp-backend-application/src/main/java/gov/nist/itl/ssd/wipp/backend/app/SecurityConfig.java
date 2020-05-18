@@ -1,40 +1,51 @@
 package gov.nist.itl.ssd.wipp.backend.app;
 
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
+import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 /**
- * This class is the Keycloak's configuration class
+ * Keycloak/Spring security configuration
  */
 @KeycloakConfiguration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, // We enable @PreAuthorize and @PostAuthorize
+@EnableGlobalMethodSecurity(prePostEnabled = true,
         securedEnabled = true,
         jsr250Enabled = true)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 {
-    /**
-     * Registers the KeycloakAuthenticationProvider with the authentication manager.
-     */
+    
 
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
         return new SecurityEvaluationContextExtension();
     }
 
+    /**
+     * Registers the KeycloakAuthenticationProvider with the authentication manager.
+     * SimpleAuthorityMapper is used to make sure roles are not prefixed with ROLE_
+     */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(keycloakAuthenticationProvider());
+    	KeycloakAuthenticationProvider keycloakAuthenticationProvider
+        = keycloakAuthenticationProvider();
+       keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(
+         new SimpleAuthorityMapper());
+       auth.authenticationProvider(keycloakAuthenticationProvider);    
     }
 
     /**
@@ -46,14 +57,28 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
         return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
     }
 
+    /**
+     * Configures HTTP security
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
-        super.configure(http);
-        http
-                .csrf().disable() // Controls CSRF
-                .authorizeRequests()
-                //.antMatchers("/api*").hasRole("user") // Here we could restrict some APIs endpont directly. This is not what we used in this project.
-                .anyRequest().permitAll();
+		super.configure(http);
+		
+		// restrict Create/Update/Delete operations to authenticated users
+		http
+			.csrf().disable() 
+			.authorizeRequests()
+				.antMatchers(HttpMethod.POST).authenticated()
+				.antMatchers(HttpMethod.PUT).authenticated()
+				.antMatchers(HttpMethod.PATCH).authenticated()
+				.antMatchers(HttpMethod.DELETE).authenticated()
+				.anyRequest().permitAll();
+		
+		// return 401 Unauthorized instead of 302 redirect to login page 
+		// for unauthorized access by anonymous user
+		http
+			.exceptionHandling()
+			.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 }

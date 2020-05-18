@@ -33,6 +33,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="StitchingVector Entity")
@@ -48,9 +49,8 @@ public class StitchingVectorUploadController {
     @Autowired
     private StitchingVectorLogic stitchingVectorLogic;
 
-    // We make sure the user trying to create a stitching vector is logged in.
-    @PreAuthorize("@securityServiceData.hasUserRole()")
     @RequestMapping(value = "", method = RequestMethod.POST)
+    @PreAuthorize("isAuthenticated()")
     public StitchingVector upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
@@ -73,7 +73,7 @@ public class StitchingVectorUploadController {
                 new StitchingVectorTimeSlice(1, message));
         StitchingVector stitchingVector = new StitchingVector(name,
                 tilesPattern, timeSlices);
-        // We set the owner to the connected user
+        // Set the owner to the connected user
         stitchingVector.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         stitchingVector = stitchingVectorRepository.save(stitchingVector);
         File stitchingVectorFolder = new File(

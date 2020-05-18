@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Controller
 @Api(tags="ImagesCollection Entity")
@@ -66,8 +67,7 @@ public class ImagesCollectionDownloadController {
             value = "",
             method = RequestMethod.GET,
             produces = "application/zip")
-    // We make sure the user trying to download the collection has the right to access it
-    @PreAuthorize("@securityServiceData.checkAuthorizeImagesCollectionId(#imagesCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public void get(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletResponse response) throws IOException {

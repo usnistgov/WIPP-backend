@@ -39,6 +39,7 @@ import java.util.Optional;
 /**
  *
  * @author Samia Benjida <samia.benjida at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="CsvCollection Entity")
@@ -59,8 +60,7 @@ public class CsvController {
     private CsvHandler csvHandler;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    // We make sure the user trying to call the getFilesPage method is authorized to access the csv collection
-    @PreAuthorize("@securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, false)")
+    @PreAuthorize("hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, false)")
     public HttpEntity<PagedResources<Resource<Csv>>> getFilesPage(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PageableDefault Pageable pageable,
@@ -75,8 +75,8 @@ public class CsvController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    // We make sure the user trying to call the deleteAllFiles method is logged in and authorized to access the csv collection
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, true)")
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteAllFiles(
             @PathVariable("csvCollectionId") String csvCollectionId) {
         Optional<CsvCollection> tc =csvCollectionRepository.findById(
@@ -91,8 +91,8 @@ public class CsvController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
-    // We make sure the user trying to call the deleteFile method is logged in and authorized to access the csv collection
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, true)")
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteFile(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PathVariable("fileName") String fileName) {

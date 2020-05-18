@@ -56,6 +56,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 /**
  *
  * @author Antoine Vandecreme
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="StitchingVector Entity")
@@ -73,8 +74,7 @@ public class StitchingVectorTimeSliceController {
     private EntityLinks entityLinks;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    // We make sure the user trying to call the getTimeSlicesPage method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
+	@PreAuthorize("hasRole('admin') or @stitchingVectorSecurity.checkAuthorize(#stitchingVectorId, false)")
     public HttpEntity<PagedResources<Resource<StitchingVectorTimeSlice>>>
             getTimeSlicesPage(
                     @PathVariable("stitchingVectorId") String stitchingVectorId,
@@ -91,8 +91,7 @@ public class StitchingVectorTimeSliceController {
     }
 
     @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
-    // We make sure the user trying to call the getTimeSlice method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
+	@PreAuthorize("hasRole('admin') or @stitchingVectorSecurity.checkAuthorize(#stitchingVectorId, false)")
     public HttpEntity<StitchingVectorTimeSlice> getTimeSlice(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId) {
@@ -109,8 +108,7 @@ public class StitchingVectorTimeSliceController {
     @RequestMapping(
             value = "/{timeSliceId}/globalPositions",
             method = RequestMethod.GET)
-    // We make sure the user trying to call the getGlobalPositions method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
+	@PreAuthorize("hasRole('admin') or @stitchingVectorSecurity.checkAuthorize(#stitchingVectorId, false)")
     public void getGlobalPositions(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId,

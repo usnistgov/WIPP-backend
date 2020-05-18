@@ -56,7 +56,7 @@ public class StitchingVector extends Data {
     @ManualRef(Job.class)
     private String job;
 
-    private boolean publiclyAvailable;
+    private boolean publiclyShared;
 
     public StitchingVector() {
     }
@@ -128,12 +128,12 @@ public class StitchingVector extends Data {
         this.owner = owner;
     }
 
-    public boolean isPubliclyAvailable() {
-        return publiclyAvailable;
+    public boolean isPubliclyShared() {
+        return publiclyShared;
     }
 
-    public void setPubliclyAvailable(boolean publiclyAvailable) {
-        this.publiclyAvailable = publiclyAvailable;
+    public void setPubliclyShared(boolean publiclyShared) {
+        this.publiclyShared = publiclyShared;
     }
 }
 

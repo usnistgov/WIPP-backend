@@ -26,6 +26,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("tensorflowModelDataHandler")
 
@@ -41,12 +42,10 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		TensorflowModel tm = new TensorflowModel(job, outputName);
 		tensorflowModelRepository.save(tm);
-
+		// Set owner to job owner
         tm.setOwner(job.getOwner());
-        // When a tensorflow model is created as a result of a Job, the model's owner will correspond to the Job's owner and the model's availability will be set to private by default
-        //TODO : set also the isPubliclyAvailable attribute here
-        //tm.setPubliclyAvailable(job.isPubliclyAvailable());
-        tm.setPubliclyAvailable(false);
+        // Set TM to private
+        tm.setPubliclyShared(false);
 
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();

@@ -12,18 +12,14 @@
 package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
  * @author Samia Benjida  <samia.benjida at nist.gov>
  */
 public interface CsvCollectionRepositoryCustom {
-    /**
-     *
-     * We check before updating csv caches that the user is connected and has the right to access the collection
-     */
-    @PreAuthorize("@securityServiceData.hasUserRole() and @securityServiceData.checkAuthorizeCsvCollectionId(#csvCollectionId, true)")
+    
+	// not exported
     void updateCsvCaches(@Param("csvCollectionId") String csvCollectionId);
 
 }

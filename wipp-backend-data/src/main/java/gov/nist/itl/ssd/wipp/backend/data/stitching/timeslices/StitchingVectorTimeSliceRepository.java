@@ -15,7 +15,6 @@ import java.io.File;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVector;
@@ -38,8 +37,6 @@ public class StitchingVectorTimeSliceRepository {
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
 
-    // We make sure the user trying to call the findOne method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public StitchingVectorTimeSlice findOne(String stitchingVectorId,
             int timeSlice) {
         return stitchingVectorRepository.getTimeSlices(stitchingVectorId)
@@ -49,8 +46,6 @@ public class StitchingVectorTimeSliceRepository {
                 .orElse(null);
     }
 
-    // We make sure the user trying to call the getGlobalPositionsFile method is authorized to access the stitching vector
-    @PreAuthorize("@securityServiceData.checkAuthorizeStitchingVectorId(#stitchingVectorId, false)")
     public File getGlobalPositionsFile(String stitchingVectorId, int timeSlice) {
         StitchingVector stitchingVector = null;
         Optional<StitchingVector> optionalStitchingVector = stitchingVectorRepository.findById(

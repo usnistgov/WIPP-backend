@@ -69,6 +69,8 @@ public class Job {
     private String wippWorkflow;
 
     private String wippVersion;
+    
+    private boolean publiclyShared;
 
     public String getId() {
         return id;
@@ -185,4 +187,12 @@ public class Job {
     public void setOwner(String owner) {
         this.owner = owner;
     }
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
+	}
 }

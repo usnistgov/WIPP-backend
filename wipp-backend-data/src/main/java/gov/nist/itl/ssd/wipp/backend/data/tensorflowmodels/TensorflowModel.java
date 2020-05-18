@@ -44,7 +44,7 @@ public class TensorflowModel extends Data {
     @ManualRef(Job.class)
     private String sourceJob;
 
-	private boolean publiclyAvailable;
+	private boolean publiclyShared;
 
 	public TensorflowModel(){
 	}
@@ -90,11 +90,11 @@ public class TensorflowModel extends Data {
 		this.owner = owner;
 	}
 
-	public boolean isPubliclyAvailable() {
-		return publiclyAvailable;
+	public boolean isPubliclyShared() {
+		return publiclyShared;
 	}
 
-	public void setPubliclyAvailable(boolean publiclyAvailable) {
-		this.publiclyAvailable = publiclyAvailable;
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
 	}
 }

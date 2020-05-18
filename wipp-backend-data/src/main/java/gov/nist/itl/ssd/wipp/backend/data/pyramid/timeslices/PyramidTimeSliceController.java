@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  *
  * @author Antoine Vandecreme
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="Pyramid Entity")
@@ -62,8 +63,7 @@ public class PyramidTimeSliceController {
 	    private EntityLinks entityLinks;
 
 	    @RequestMapping(value = "", method = RequestMethod.GET)
-		// We make sure the user trying to call the getTimeSlicesPage method is authorized to access the pyramid
-		@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
 	    public HttpEntity<PagedResources<Resource<PyramidTimeSlice>>>
 	            getTimeSlicesPage(
 	                    @PathVariable("pyramidId") String pyramidId,
@@ -78,9 +78,8 @@ public class PyramidTimeSliceController {
 	        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
 	    }
 
-	// We make sure the user trying to call the getTimeSlice method is authorized to access the pyramid
-	@PreAuthorize("@securityServiceData.checkAuthorizePyramidId(#pyramidId, false)")
 	    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
 	    public HttpEntity<PyramidTimeSlice> getTimeSlice(
 	            @PathVariable("pyramidId") String pyramidId,
 	            @PathVariable("timeSliceId") String timeSliceId) {
