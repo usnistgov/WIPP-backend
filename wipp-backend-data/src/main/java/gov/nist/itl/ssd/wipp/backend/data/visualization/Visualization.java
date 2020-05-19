@@ -40,6 +40,15 @@ public class Visualization {
     private Manifest manifest;
 
     private boolean publiclyShared;
+    
+    public Visualization() {
+    	
+    }
+    
+    public Visualization(String name) {
+    	this.name = name;
+    	this.creationDate = new Date();
+    }
 
     public String getId() {
         return id;

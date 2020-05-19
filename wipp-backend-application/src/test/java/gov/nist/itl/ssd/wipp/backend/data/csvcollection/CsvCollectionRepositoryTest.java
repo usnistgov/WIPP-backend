@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
+package gov.nist.itl.ssd.wipp.backend.data.csvcollection;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -33,10 +33,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
 import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
+import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 
 /**
- * Collection of tests for {@link ImagesCollectionRepository} exposed methods
+ * Collection of tests for {@link CsvCollectionRepository} exposed methods
  * Testing access control on READ operations
  * Uses embedded MongoDB database and mock Keycloak users
  * 
@@ -46,7 +48,7 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
 				properties = { "spring.data.mongodb.port=0" })
-public class ImagesCollectionRepositoryTest {
+public class CsvCollectionRepositoryTest {
 	
 	@Autowired WebApplicationContext context;
 	@Autowired FilterChainProxy filterChain;
@@ -54,9 +56,9 @@ public class ImagesCollectionRepositoryTest {
 	MockMvc mvc;
 	
 	@Autowired
-	ImagesCollectionRepository imagesCollectionRepository;
+	CsvCollectionRepository csvCollectionRepository;
 	
-	ImagesCollection publicCollA, publicCollB, privateCollA, privateCollB;
+	CsvCollection publicCollA, publicCollB, privateCollA, privateCollB;
 	
 	@Before
 	public void setUp() {
@@ -66,28 +68,28 @@ public class ImagesCollectionRepositoryTest {
 				.build();
 		
 		// Clear embedded database
-		imagesCollectionRepository.deleteAll();
+		csvCollectionRepository.deleteAll();
 		
 		// Create and save publicCollA (public: true, owner: user1)
-		publicCollA = new ImagesCollection("publicCollA");
+		publicCollA = new CsvCollection("publicCollA", false);
 		publicCollA.setOwner("user1");
 		publicCollA.setPubliclyShared(true);
-		publicCollA = imagesCollectionRepository.save(publicCollA);
+		publicCollA = csvCollectionRepository.save(publicCollA);
 		// Create and save publicCollB (public: true, owner: user2)
-		publicCollB = new ImagesCollection("publicCollB");
+		publicCollB = new CsvCollection("publicCollB", false);
 		publicCollB.setOwner("user2");
 		publicCollB.setPubliclyShared(true);
-		publicCollB = imagesCollectionRepository.save(publicCollB);
+		publicCollB = csvCollectionRepository.save(publicCollB);
 		// Create and save privateCollA (public: false, owner: user1)
-		privateCollA = new ImagesCollection("privateCollA");
+		privateCollA = new CsvCollection("privateCollA", false);
 		privateCollA.setOwner("user1");
 		privateCollA.setPubliclyShared(false);
-		privateCollA = imagesCollectionRepository.save(privateCollA);
+		privateCollA = csvCollectionRepository.save(privateCollA);
 		// Create and save privateCollB (public: false, owner: user2)
-		privateCollB = new ImagesCollection("privateCollB");
+		privateCollB = new CsvCollection("privateCollB", false);
 		privateCollB.setOwner("user2");
 		privateCollB.setPubliclyShared(false);
-		privateCollB = imagesCollectionRepository.save(privateCollB);
+		privateCollB = csvCollectionRepository.save(privateCollB);
 	}
 	
 	@Test
@@ -95,11 +97,11 @@ public class ImagesCollectionRepositoryTest {
 	public void findById_anonymousCallingShouldReturnOnlyPublicItems() throws Exception {
 		
 		// Anonymous user should be able to read a public collection
-		imagesCollectionRepository.findById(publicCollA.getId());
+		csvCollectionRepository.findById(publicCollA.getId());
 		
 		// Anonymous user should not be able to read a private collection
 		try {
-			imagesCollectionRepository.findById(privateCollA.getId());
+			csvCollectionRepository.findById(privateCollA.getId());
 			fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
@@ -111,14 +113,14 @@ public class ImagesCollectionRepositoryTest {
 	public void findById_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		// Non-admin user1 should be able to read own private collection
-		imagesCollectionRepository.findById(privateCollA.getId());
+		csvCollectionRepository.findById(privateCollA.getId());
 				
 		// Non-admin user1 should be able to read a public collection from user2
-		imagesCollectionRepository.findById(publicCollB.getId());
+		csvCollectionRepository.findById(publicCollB.getId());
 		
 		// Non-admin user1 should not be able to read a private collection from user2
 		try {
-			imagesCollectionRepository.findById(privateCollB.getId());
+			csvCollectionRepository.findById(privateCollB.getId());
 			fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
@@ -130,10 +132,10 @@ public class ImagesCollectionRepositoryTest {
 	public void findById_adminCallingShouldReturnAllItems() throws Exception {
 		
 		// Admin should be able to read a public collection from user1
-		imagesCollectionRepository.findById(publicCollA.getId());
+		csvCollectionRepository.findById(publicCollA.getId());
 		
 		// Admin should be able to read a private collection from user1
-		imagesCollectionRepository.findById(privateCollA.getId());
+		csvCollectionRepository.findById(privateCollA.getId());
 	}
 	
 	@Test
@@ -143,10 +145,10 @@ public class ImagesCollectionRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Anonymous user should get only get list of public collections
-		Page<ImagesCollection> result = imagesCollectionRepository.findAll(pageable);
+		Page<CsvCollection> result = csvCollectionRepository.findAll(pageable);
 		assertThat(result.getContent(), hasSize(2));
-		result.getContent().forEach(imgColl -> {
-			assertThat(imgColl.isPubliclyShared(), is(true));
+		result.getContent().forEach(csvColl -> {
+			assertThat(csvColl.isPubliclyShared(), is(true));
 		});
 	}
 	
@@ -157,10 +159,10 @@ public class ImagesCollectionRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Non-admin user1 should only get list of own and public collections
-		Page<ImagesCollection> result = imagesCollectionRepository.findAll(pageable);
+		Page<CsvCollection> result = csvCollectionRepository.findAll(pageable);
 		assertThat(result.getContent(), hasSize(3));
-		result.getContent().forEach(imgColl -> {
-			assertThat((imgColl.isPubliclyShared() || imgColl.getOwner().equals("user1")), is(true));
+		result.getContent().forEach(csvColl -> {
+			assertThat((csvColl.isPubliclyShared() || csvColl.getOwner().equals("user1")), is(true));
 		});
 	}
 
@@ -171,7 +173,7 @@ public class ImagesCollectionRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Admin should get list of all collections
-		Page<ImagesCollection> result = imagesCollectionRepository.findAll(pageable);
+		Page<CsvCollection> result = csvCollectionRepository.findAll(pageable);
 		assertThat(result.getContent(), hasSize(4));
 	}
 	
@@ -182,10 +184,10 @@ public class ImagesCollectionRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Anonymous user should get only get list of public collections matching search criteria
-		Page<ImagesCollection> result = imagesCollectionRepository.findByNameContainingIgnoreCase("collA", pageable);
+		Page<CsvCollection> result = csvCollectionRepository.findByNameContainingIgnoreCase("collA", pageable);
 		assertThat(result.getContent(), hasSize(1));
-		result.getContent().forEach(imgColl -> {
-			assertThat(imgColl.isPubliclyShared(), is(true));
+		result.getContent().forEach(csvColl -> {
+			assertThat(csvColl.isPubliclyShared(), is(true));
 		});
 	}
 	
@@ -196,10 +198,10 @@ public class ImagesCollectionRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Non-admin user1 should only get list of own and public collections matching search criteria
-		Page<ImagesCollection> result = imagesCollectionRepository.findByNameContainingIgnoreCase("coll", pageable);
+		Page<CsvCollection> result = csvCollectionRepository.findByNameContainingIgnoreCase("coll", pageable);
 		assertThat(result.getContent(), hasSize(3));
-		result.getContent().forEach(imgColl -> {
-			assertThat((imgColl.isPubliclyShared() || imgColl.getOwner().equals("user1")), is(true));
+		result.getContent().forEach(csvColl -> {
+			assertThat((csvColl.isPubliclyShared() || csvColl.getOwner().equals("user1")), is(true));
 		});
 	}
 
@@ -210,58 +212,64 @@ public class ImagesCollectionRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Admin should get list of all collections matching search criteria
-		Page<ImagesCollection> resultColl = imagesCollectionRepository.findByNameContainingIgnoreCase("coll", pageable);
+		Page<CsvCollection> resultColl = csvCollectionRepository.findByNameContainingIgnoreCase("coll", pageable);
 		assertThat(resultColl.getContent(), hasSize(4));
-		Page<ImagesCollection> resultPrivate = imagesCollectionRepository.findByNameContainingIgnoreCase("private", pageable);
+		Page<CsvCollection> resultPrivate = csvCollectionRepository.findByNameContainingIgnoreCase("private", pageable);
 		assertThat(resultPrivate.getContent(), hasSize(2));
 	}
 	
 	@Test
 	@WithAnonymousUser
-	public void findByNameContainingIgnoreCaseAndNumberOfImages_anonymousCallingShouldReturnOnlyPublicItems() 
+	public void findByName_anonymousCallingShouldReturnOnlyPublicItems() 
 			throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Anonymous user should get only get list of public collections matching search criteria
-		Page<ImagesCollection> result = imagesCollectionRepository
-				.findByNameContainingIgnoreCaseAndNumberOfImages("collA", 0, pageable);
-		assertThat(result.getContent(), hasSize(1));
-		result.getContent().forEach(imgColl -> {
-			assertThat(imgColl.isPubliclyShared(), is(true));
+		Page<CsvCollection> resultPublic = csvCollectionRepository
+				.findByName("publicCollA", pageable);
+		assertThat(resultPublic.getContent(), hasSize(1));
+		resultPublic.getContent().forEach(csvColl -> {
+			assertThat(csvColl.isPubliclyShared(), is(true));
 		});
+		Page<CsvCollection> resultPrivate = csvCollectionRepository
+				.findByName("privateCollA", pageable);
+		assertThat(resultPrivate.getContent(), hasSize(0));
 	}
 	
 	@Test
 	@WithMockKeycloakUser(username="user1", roles={ "user" })
-	public void findByNameContainingIgnoreCaseAndNumberOfImages_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() 
+	public void findByName_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() 
 			throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Non-admin user1 should only get list of own and public collections matching search criteria
-		Page<ImagesCollection> result = imagesCollectionRepository
-				.findByNameContainingIgnoreCaseAndNumberOfImages("coll", 0, pageable);
-		assertThat(result.getContent(), hasSize(3));
-		result.getContent().forEach(imgColl -> {
-			assertThat((imgColl.isPubliclyShared() || imgColl.getOwner().equals("user1")), is(true));
+		Page<CsvCollection> resultOwnPrivate = csvCollectionRepository
+				.findByName("privateCollA", pageable);
+		assertThat(resultOwnPrivate.getContent(), hasSize(1));
+		resultOwnPrivate.getContent().forEach(csvColl -> {
+			assertThat((csvColl.isPubliclyShared() || csvColl.getOwner().equals("user1")), is(true));
 		});
+		Page<CsvCollection> resultOtherPrivate = csvCollectionRepository
+				.findByName("privateCollB", pageable);
+		assertThat(resultOtherPrivate.getContent(), hasSize(0));
 	}
 
 	@Test
 	@WithMockKeycloakUser(username="admin", roles={ "admin" })
-	public void findByNameContainingIgnoreCaseAndNumberOfImages_adminCallingShouldReturnAllItems() 
+	public void findByName_adminCallingShouldReturnAllItems() 
 			throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Admin should get list of all collections matching search criteria
-		Page<ImagesCollection> resultColl = imagesCollectionRepository
-				.findByNameContainingIgnoreCaseAndNumberOfImages("coll", 0, pageable);
-		assertThat(resultColl.getContent(), hasSize(4));
-		Page<ImagesCollection> resultPrivate = imagesCollectionRepository
-				.findByNameContainingIgnoreCaseAndNumberOfImages("private", 0, pageable);
-		assertThat(resultPrivate.getContent(), hasSize(2));
+		Page<CsvCollection> resultColl = csvCollectionRepository
+				.findByName("publicCollA", pageable);
+		assertThat(resultColl.getContent(), hasSize(1));
+		Page<CsvCollection> resultPrivate = csvCollectionRepository
+				.findByName("privateCollA", pageable);
+		assertThat(resultPrivate.getContent(), hasSize(1));
 	}
 
 }

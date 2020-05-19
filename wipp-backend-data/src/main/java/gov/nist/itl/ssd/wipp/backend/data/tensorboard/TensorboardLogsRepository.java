@@ -23,8 +23,8 @@ public interface TensorboardLogsRepository extends PrincipalFilteredRepository<T
 	void delete(TensorboardLogs t);
 
 	@PostAuthorize("hasRole('admin') "
-			+ "or (isAuthenticated() and returnObject?.get()?.owner == principal.name) "
-			+ "or returnObject?.get()?.publiclyShared == true")
+			+ "or (isAuthenticated() and returnObject?.owner == principal.name) "
+			+ "or returnObject?.publiclyShared == true")
 	TensorboardLogs findOneBySourceJob(@Param("sourceJob") String sourceJob);
 
 }

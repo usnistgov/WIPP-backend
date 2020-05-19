@@ -37,6 +37,15 @@ public class Workflow {
     private String errorMessage;
     
     private boolean publiclyShared;
+    
+    public Workflow() {
+    	
+    }
+    
+    public Workflow(String name) {
+    	this.name = name;
+    	this.creationDate = new Date();
+    }
 
     /**
 	 * @return the id

@@ -50,6 +50,11 @@ public class Pyramid {
 
     public Pyramid() {
     }
+    
+    public Pyramid(String name) {
+    	this.name = name;
+    	this.creationDate = new Date();
+    }
 
     public Pyramid(Job job) {
         this.name = job.getName();
