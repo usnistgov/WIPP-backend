@@ -29,8 +29,8 @@ public interface PrincipalFilteredRepository<T, ID extends Serializable>
 	 */
 	@Override
 	@PostAuthorize("hasRole('admin') "
-			+ "or (isAuthenticated() and returnObject?.get()?.owner == principal.name) "
-			+ "or returnObject?.get()?.publiclyShared == true")
+			+ "or (isAuthenticated() and returnObject.orElse(null)?.owner == principal.name) "
+			+ "or returnObject.orElse(null)?.publiclyShared == true")
 	Optional<T> findById(ID id);
 
 	/* (non-Javadoc)
