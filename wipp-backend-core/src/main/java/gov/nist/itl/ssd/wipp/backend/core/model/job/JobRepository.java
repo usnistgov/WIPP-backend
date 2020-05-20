@@ -70,14 +70,14 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
     /*
      * Check user is authorized to access workflow before retrieving jobs
      */
-    @PreAuthorize("@workflowSecurity.checkAuthorize(#wippWorkflow)")
+    @PreAuthorize("hasRole('admin') or @workflowSecurity.checkAuthorize(#wippWorkflow, false)")
     Page<T> findByWippWorkflow(@Param("wippWorkflow") String workflow,
                                Pageable p);
 
     /*
      * Check user is authorized to access workflow before retrieving jobs
      */
-    @PreAuthorize("@workflowSecurity.checkAuthorize(#wippWorkflow)")
+    @PreAuthorize("hasRole('admin') or @workflowSecurity.checkAuthorize(#wippWorkflow, false)")
     List<T> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
     
 }

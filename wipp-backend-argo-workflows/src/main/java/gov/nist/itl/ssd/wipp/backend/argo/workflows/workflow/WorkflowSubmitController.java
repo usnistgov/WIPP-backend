@@ -58,7 +58,7 @@ public class WorkflowSubmitController {
     
     private static final Logger LOGGER = Logger.getLogger(WorkflowSubmitController.class.getName());
 
-    @PreAuthorize("isAuthenticated() and @workflowSecurity.checkAuthorizeWorkflowId(#workflowId)")
+    @PreAuthorize("isAuthenticated() and @workflowSecurity.checkAuthorize(#workflowId, true)")
     @RequestMapping(
         value = "",
         method = RequestMethod.POST,

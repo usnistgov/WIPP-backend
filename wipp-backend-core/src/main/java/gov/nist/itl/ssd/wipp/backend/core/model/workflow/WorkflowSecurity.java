@@ -1,7 +1,5 @@
 package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
-import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
@@ -22,26 +20,6 @@ import java.util.Optional;
 public class WorkflowSecurity {
     @Autowired
     private WorkflowRepository workflowRepository;
-    @Autowired
-    private JobRepository jobRepository;
-
-    public boolean checkAuthorizeJobId(String jobId){
-        Optional<Job> job = jobRepository.findById(jobId);
-        if (job.isPresent()){
-            return(checkAuthorize(job.get()));
-        }
-        else {
-            throw new NotFoundException("Job with id " + jobId + " not found");
-        }
-    }
-    public boolean checkAuthorize(Job job){
-        String jobOwner = job.getOwner();
-        String connectedUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (jobOwner != null && !jobOwner.equals(connectedUser)) {
-            throw new ForbiddenException("You do not have access to this job");
-        }
-        return(true);
-    }
 
     public boolean checkAuthorize(String workflowId, Boolean editMode) {
         Optional<Workflow> workflow = workflowRepository.findById(workflowId);

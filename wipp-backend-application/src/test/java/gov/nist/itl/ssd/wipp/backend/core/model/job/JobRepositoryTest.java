@@ -16,6 +16,8 @@ import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,7 +91,7 @@ public class JobRepositoryTest {
 		publicJobA = (Job) jobRepository.save(publicJobA);
 		// Create and save publicJobB (public: true, owner: user2)
 		publicWorkflowB = new Workflow("publicWorkflowB");
-		publicWorkflowB.setOwner("user1");
+		publicWorkflowB.setOwner("user2");
 		publicWorkflowB.setPubliclyShared(true);
 		publicWorkflowB = workflowRepository.save(publicWorkflowB);
 		publicJobB = new Job();
@@ -113,7 +115,7 @@ public class JobRepositoryTest {
 		privateJobA = (Job) jobRepository.save(privateJobA);
 		// Create and save privateJobB (public: false, owner: user2)
 		privateWorkflowB = new Workflow("privateWorkflowB");
-		privateWorkflowB.setOwner("user1");
+		privateWorkflowB.setOwner("user2");
 		privateWorkflowB.setPubliclyShared(false);
 		privateWorkflowB = workflowRepository.save(privateWorkflowB);
 		privateJobB = new Job();
@@ -251,6 +253,215 @@ public class JobRepositoryTest {
 		assertThat(resultPrivate.getContent(), hasSize(2));
 	}
 	
-	// TODO: add tests for additional findBy methods
+	@Test
+	@WithAnonymousUser
+	public void findByStatus_anonymousCallingShouldReturnOnlyPublicItems() throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Anonymous user should get only get list of public jobs matching search criteria
+		Page<Job> resultCreated = jobRepository.findByStatus(JobStatus.CREATED, pageable);
+		assertThat(resultCreated.getContent(), hasSize(2));
+		resultCreated.getContent().forEach(job -> {
+			assertThat(job.isPubliclyShared(), is(true));
+		});
+		Page<Job> resultSucceeded = jobRepository.findByStatus(JobStatus.SUCCEEDED, pageable);
+		assertThat(resultSucceeded.getContent(), hasSize(0));
+	}
 	
+	@Test
+	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	public void findByStatus_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Non-admin user1 should only get list of own and public jobs matching search criteria
+		Page<Job> resultCreated = jobRepository.findByStatus(JobStatus.CREATED, pageable);
+		assertThat(resultCreated.getContent(), hasSize(3));
+		resultCreated.getContent().forEach(job -> {
+			assertThat((job.isPubliclyShared() || job.getOwner().equals("user1")), is(true));
+		});
+		Page<Job> resultSucceeded = jobRepository.findByStatus(JobStatus.SUCCEEDED, pageable);
+		assertThat(resultSucceeded.getContent(), hasSize(0));
+	}
+
+	@Test
+	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	public void findByStatus_adminCallingShouldReturnAllItems() throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Admin should get list of all jobs matching search criteria
+		Page<Job> resultColl = jobRepository.findByStatus(JobStatus.CREATED, pageable);
+		assertThat(resultColl.getContent(), hasSize(4));
+		Page<Job> resultSucceeded = jobRepository.findByStatus(JobStatus.SUCCEEDED, pageable);
+		assertThat(resultSucceeded.getContent(), hasSize(0));
+	}
+	
+	@Test
+	@WithAnonymousUser
+	public void findByNameContainingIgnoreCaseAndStatus_anonymousCallingShouldReturnOnlyPublicItems() 
+			throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Anonymous user should get only get list of public jobs matching search criteria
+		Page<Job> resultCreated = jobRepository.findByNameContainingIgnoreCaseAndStatus(
+				"jobA", JobStatus.CREATED.name(), pageable);
+		assertThat(resultCreated.getContent(), hasSize(1));
+		resultCreated.getContent().forEach(job -> {
+			assertThat(job.isPubliclyShared(), is(true));
+		});
+		Page<Job> resultSucceeded = jobRepository.findByNameContainingIgnoreCaseAndStatus(
+				"jobA", JobStatus.SUCCEEDED.name(), pageable);
+		assertThat(resultSucceeded.getContent(), hasSize(0));
+	}
+	
+	@Test
+	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	public void findByNameContainingIgnoreCaseAndStatus_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() 
+			throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Non-admin user1 should only get list of own and public jobs matching search criteria
+		Page<Job> resultCreated = jobRepository.findByNameContainingIgnoreCaseAndStatus(
+				"job", JobStatus.CREATED.name(), pageable);
+		assertThat(resultCreated.getContent(), hasSize(3));
+		resultCreated.getContent().forEach(job -> {
+			assertThat((job.isPubliclyShared() || job.getOwner().equals("user1")), is(true));
+		});
+		Page<Job> resultSucceeded = jobRepository.findByNameContainingIgnoreCaseAndStatus(
+				"job", JobStatus.SUCCEEDED.name(), pageable);
+		assertThat(resultSucceeded.getContent(), hasSize(0));
+	}
+
+	@Test
+	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	public void findByNameContainingIgnoreCaseAndStatus_adminCallingShouldReturnAllItems() 
+			throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Admin should get list of all jobs matching search criteria
+		Page<Job> resultColl = jobRepository.findByNameContainingIgnoreCaseAndStatus(
+				"job", JobStatus.CREATED.name(), pageable);
+		assertThat(resultColl.getContent(), hasSize(4));
+		Page<Job> resultSucceeded = jobRepository.findByNameContainingIgnoreCaseAndStatus(
+				"job", JobStatus.SUCCEEDED.name(), pageable);
+		assertThat(resultSucceeded.getContent(), hasSize(0));
+	}
+	
+	@Test
+	@WithAnonymousUser
+	public void findByWippWorkflow_anonymousCallingShouldReturnOnlyPublicItems() throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Anonymous user should get only get list of public jobs matching search criteria
+		Page<Job> resultCreated = jobRepository.findByWippWorkflow(publicWorkflowA.getId(), pageable);
+		assertThat(resultCreated.getContent(), hasSize(1));
+		resultCreated.getContent().forEach(job -> {
+			assertThat(job.isPubliclyShared(), is(true));
+		});
+		try {
+			jobRepository.findByWippWorkflow(privateWorkflowA.getId(), pageable);
+			fail("Expected AccessDenied security error");
+		} catch (AccessDeniedException e) {
+			// expected
+		}
+	}
+	
+	@Test
+	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	public void findByWippWorkflow_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Non-admin user1 should only get list of own and public jobs matching search criteria
+		Page<Job> resultPrivateA = jobRepository.findByWippWorkflow(privateWorkflowA.getId(), pageable);
+		assertThat(resultPrivateA.getContent(), hasSize(1));
+		resultPrivateA.getContent().forEach(job -> {
+			assertThat((job.getOwner().equals("user1")), is(true));
+		});
+		Page<Job> resultPublicB = jobRepository.findByWippWorkflow(publicWorkflowB.getId(), pageable);
+		assertThat(resultPublicB.getContent(), hasSize(1));
+		resultPublicB.getContent().forEach(job -> {
+			assertThat(job.isPubliclyShared(), is(true));
+		});
+		try {
+			jobRepository.findByWippWorkflow(privateWorkflowB.getId(), pageable);
+			fail("Expected AccessDenied security error");
+		} catch (AccessDeniedException e) {
+			// expected
+		}
+	}
+
+	@Test
+	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	public void findByWippWorkflow_adminCallingShouldReturnAllItems() throws Exception {
+		
+		Pageable pageable = PageRequest.of(0, 10);
+
+		// Admin should get list of all jobs matching search criteria
+		Page<Job> resultPublic = jobRepository.findByWippWorkflow(publicWorkflowA.getId(), pageable);
+		assertThat(resultPublic.getContent(), hasSize(1));
+		Page<Job> resultPrivate = jobRepository.findByWippWorkflow(privateWorkflowA.getId(), pageable);
+		assertThat(resultPrivate.getContent(), hasSize(1));
+	}
+	
+	@Test
+	@WithAnonymousUser
+	public void findByWippWorkflowOrderByCreationDateAsc_anonymousCallingShouldReturnOnlyPublicItems() 
+			throws Exception {
+		
+		// Anonymous user should get only get list of public jobs matching search criteria
+		List<Job> resultCreated = jobRepository.findByWippWorkflowOrderByCreationDateAsc(publicWorkflowA.getId());
+		assertThat(resultCreated, hasSize(1));
+		resultCreated.forEach(job -> {
+			assertThat(job.isPubliclyShared(), is(true));
+		});
+		try {
+			jobRepository.findByWippWorkflowOrderByCreationDateAsc(privateWorkflowA.getId());
+			fail("Expected AccessDenied security error");
+		} catch (AccessDeniedException e) {
+			// expected
+		}
+	}
+	
+	@Test
+	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	public void findByWippWorkflowOrderByCreationDateAsc_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() 
+			throws Exception {
+		
+		// Non-admin user1 should only get list of own and public jobs matching search criteria
+		List<Job> resultPrivateA = jobRepository.findByWippWorkflowOrderByCreationDateAsc(privateWorkflowA.getId());
+		assertThat(resultPrivateA, hasSize(1));
+		resultPrivateA.forEach(job -> {
+			assertThat((job.getOwner().equals("user1")), is(true));
+		});
+		List<Job> resultPublicB = jobRepository.findByWippWorkflowOrderByCreationDateAsc(publicWorkflowB.getId());
+		assertThat(resultPublicB, hasSize(1));
+		resultPublicB.forEach(job -> {
+			assertThat(job.isPubliclyShared(), is(true));
+		});
+		try {
+			jobRepository.findByWippWorkflowOrderByCreationDateAsc(privateWorkflowB.getId());
+			fail("Expected AccessDenied security error");
+		} catch (AccessDeniedException e) {
+			// expected
+		}
+	}
+
+	@Test
+	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	public void findByWippWorkflowOrderByCreationDateAsc_adminCallingShouldReturnAllItems() 
+			throws Exception {
+		
+		// Admin should get list of all jobs matching search criteria
+		List<Job> resultPublic = jobRepository.findByWippWorkflowOrderByCreationDateAsc(publicWorkflowA.getId());
+		assertThat(resultPublic, hasSize(1));
+		List<Job> resultPrivate = jobRepository.findByWippWorkflow(privateWorkflowA.getId());
+		assertThat(resultPrivate, hasSize(1));
+	}
 }
