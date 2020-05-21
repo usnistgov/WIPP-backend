@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 @Component
 public class WorkflowConverter {
     private Workflow workflow;
+    private gov.nist.itl.ssd.wipp.backend.argo.workflows.persistence.ArgoWorkflow argoWorkflow;
     private Map<Job, List<String>> jobsDependencies;
     private Map<Job, Plugin> jobsPlugins;
 
@@ -63,7 +64,7 @@ public class WorkflowConverter {
 
     private List<ArgoVolume> generateSpecVolumes() {
         ArrayList<ArgoVolume> argoVolumeList = new ArrayList<>();
-        ArgoVolume inputArgoVolume = new ArgoVolume(wippDataVolumeName, 
+        ArgoVolume inputArgoVolume = new ArgoVolume(wippDataVolumeName,
 				coreConfig.getWippDataPVCName());
         argoVolumeList.add(inputArgoVolume);
 
@@ -226,7 +227,7 @@ public class WorkflowConverter {
         return container;
     }
     /**
-     * Get and parse nodeSelector labels for all jobs within workflow. 
+     * Get and parse nodeSelector labels for all jobs within workflow.
      * Can be overridden by nodeSelector in container template.
      * Expects nodeSelector to be formatted as key-value pairs split by semi-colons (eg. "key1:value1;key2:value2;").
      * @return nodeSelector labels as a Map
@@ -339,12 +340,12 @@ public class WorkflowConverter {
     private String getOutputMountPath(String jobId){
         return coreConfig.getContainerOutputsMountPath() + "/" + jobId;
     }
-    
+
     /**
-     * Get data volume mount sub path for job work folder 
+     * Get data volume mount sub path for job work folder
      * (relative to root in data volume)
      * @param jobId
-     * @return the sub path of the data volume to mount 
+     * @return the sub path of the data volume to mount
      */
     private String getOutputMountSubPath(String jobId){
 		return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
