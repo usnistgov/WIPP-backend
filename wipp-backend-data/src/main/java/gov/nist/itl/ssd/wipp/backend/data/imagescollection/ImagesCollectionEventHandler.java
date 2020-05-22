@@ -100,6 +100,8 @@ public class ImagesCollectionEventHandler {
             throw new ClientException("Can not set change a public collection to private.");
         }
     	
+    	// TODO: unlocked collection cannot become public
+    	
     	// Owner cannot be changed
         if (!Objects.equals(
         		imagesCollection.getOwner(),

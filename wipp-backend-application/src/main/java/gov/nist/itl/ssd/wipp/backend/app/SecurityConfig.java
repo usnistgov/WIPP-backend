@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -17,6 +18,8 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 
 /**
  * Keycloak/Spring security configuration
@@ -65,20 +68,28 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
     {
 		super.configure(http);
 		
-		// restrict Create/Update/Delete operations to authenticated users
 		http
 			.csrf().disable() 
+			// restrict Create/Update/Delete operations to authenticated users
 			.authorizeRequests()
 				.antMatchers(HttpMethod.POST).authenticated()
 				.antMatchers(HttpMethod.PUT).authenticated()
 				.antMatchers(HttpMethod.PATCH).authenticated()
 				.antMatchers(HttpMethod.DELETE).authenticated()
-				.anyRequest().permitAll();
-		
-		// return 401 Unauthorized instead of 302 redirect to login page 
-		// for unauthorized access by anonymous user
-		http
-			.exceptionHandling()
-			.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+				.anyRequest().permitAll()
+			// return 401 Unauthorized instead of 302 redirect to login page 
+			// for unauthorized access by anonymous user
+			.and()			
+				.exceptionHandling()
+				.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+    }
+    
+    /**
+     * Exclude workflow exit controller from requiring authentication to allow Argo 
+     * to POST workflow exit status
+     */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(HttpMethod.POST, CoreConfig.BASE_URI + "/workflows/{workflowId}/exit");
     }
 }

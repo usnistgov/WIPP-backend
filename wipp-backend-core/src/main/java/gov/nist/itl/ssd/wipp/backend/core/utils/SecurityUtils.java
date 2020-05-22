@@ -35,6 +35,6 @@ public class SecurityUtils {
 	public static void runAsSystem() {
 
 		SecurityContextHolder.getContext().setAuthentication(
-				new UsernamePasswordAuthenticationToken("system", "system", AuthorityUtils.createAuthorityList("admin")));
+				new UsernamePasswordAuthenticationToken("system", "system", AuthorityUtils.createAuthorityList("ROLE_admin")));
 	}
 }

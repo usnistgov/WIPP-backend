@@ -85,6 +85,8 @@ public class CsvCollectionEventHandler {
             throw new ClientException("Can not set change a public collection to private.");
         }
         
+        // TODO: an unlocked collection cannot become public
+        
         // Owner cannot be changed
         if (!Objects.equals(
         		csvCollection.getOwner(),

@@ -87,6 +87,12 @@ public class WorkflowExitController {
         }
 
         Workflow workflow = wippWorkflow.get();
+        
+        // Only statuses from running or submitted workflows can be updated
+        if (workflow.getStatus() != WorkflowStatus.SUBMITTED && 
+        		workflow.getStatus() != WorkflowStatus.RUNNING) {
+            throw new ClientException("Workflow status cannot be updated if current status is not SUBMITTED or RUNNING");
+        }
 
         // Check validity of status
         WorkflowStatus wfStatus;
