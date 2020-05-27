@@ -141,7 +141,6 @@ public class PyramidAnnotationTimeSliceController {
 			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
 			@PathVariable("timeSliceId") int timeSliceId,
 			@RequestParam("file") MultipartFile file) throws IOException {     
-		PyramidAnnotationTimeSlice timeSlice = new PyramidAnnotationTimeSlice(timeSliceId);
 		PyramidAnnotation pyramidAnnotation = pyramidAnnotationRepository.findById(pyramidAnnotationId).get();
 		File pyramidAnnotationFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotationId);
 
@@ -150,14 +149,11 @@ public class PyramidAnnotationTimeSliceController {
 		}
 
 		List<PyramidAnnotationTimeSlice> allTimeSlices = pyramidAnnotation.getTimeSlices();
-		
-		PyramidAnnotationTimeSlice timeSliceFound = pyramidAnnotationTimeSliceRepository.findOne(pyramidAnnotationId, timeSliceId);
-		
-		if(timeSliceFound != null) {
-			timeSlice = timeSliceFound;
-		} else {
+				
+		if(pyramidAnnotationTimeSliceRepository.findOne(pyramidAnnotationId, timeSliceId) == null) {
+			PyramidAnnotationTimeSlice timeSlice = new PyramidAnnotationTimeSlice(timeSliceId);
 			allTimeSlices.add(timeSlice);
-		}
+		} 
 
 		pyramidAnnotation.setTimeSlices(allTimeSlices);
 		pyramidAnnotationRepository.save(pyramidAnnotation);
