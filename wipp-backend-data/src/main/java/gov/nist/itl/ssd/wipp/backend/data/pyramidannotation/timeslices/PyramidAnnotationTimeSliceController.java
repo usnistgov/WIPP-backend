@@ -151,12 +151,10 @@ public class PyramidAnnotationTimeSliceController {
 
 		List<PyramidAnnotationTimeSlice> allTimeSlices = pyramidAnnotation.getTimeSlices();
 		
-		if(pyramidAnnotationTimeSliceRepository.findOne(pyramidAnnotationId, timeSliceId) != null) {	
-			for (int i = 0; i < allTimeSlices.size(); i++) {
-				if(allTimeSlices.get(i).getSliceNumber() == timeSliceId) {
-					allTimeSlices.set(i, timeSlice);
-				}
-			}
+		PyramidAnnotationTimeSlice timeSliceFound = pyramidAnnotationTimeSliceRepository.findOne(pyramidAnnotationId, timeSliceId);
+		
+		if(timeSliceFound != null) {
+			timeSlice = timeSliceFound;
 		} else {
 			allTimeSlices.add(timeSlice);
 		}
