@@ -70,21 +70,12 @@ public class PyramidAnnotation {
         this.creationDate = new Date();
     }
 
-    public PyramidAnnotation(Job job,
-            List<PyramidAnnotationTimeSlice> timeSlices) {
-        this.name = job.getName();
-        this.job = job.getId();
-        this.creationDate = new Date();
-        this.timeSlices = timeSlices;
-    }
-
     public PyramidAnnotation(Job job, List<PyramidAnnotationTimeSlice> timeSlices, String outputName) {
     	this.name = job.getName() + "-" + outputName;
     	this.job = job.getId();
         this.creationDate = new Date();
         this.timeSlices = timeSlices;
     }
-    
 
     public String getName() {
         return name;

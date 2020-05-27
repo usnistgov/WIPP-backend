@@ -93,8 +93,8 @@ public class PyramidAnnotationDataHandler extends BaseDataHandler implements Dat
         }
         // else return the path of the notebook
         else {
-            File notebookFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotationId);
-            pyramidAnnotationPath = notebookFolder.getAbsolutePath();
+            File pyramidAnnotationFolder = new File(config.getPyramidAnnotationsFolder(), pyramidAnnotationId);
+            pyramidAnnotationPath = pyramidAnnotationFolder.getAbsolutePath();
 
         }
         pyramidAnnotationPath = pyramidAnnotationPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());

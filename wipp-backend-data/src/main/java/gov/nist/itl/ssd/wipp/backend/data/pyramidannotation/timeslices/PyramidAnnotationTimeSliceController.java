@@ -150,8 +150,8 @@ public class PyramidAnnotationTimeSliceController {
 		}
 
 		List<PyramidAnnotationTimeSlice> allTimeSlices = pyramidAnnotation.getTimeSlices();
-
-		if(containsTimeSlice(allTimeSlices, timeSliceId)) {
+		
+		if(pyramidAnnotationTimeSliceRepository.findOne(pyramidAnnotationId, timeSliceId) != null) {	
 			for (int i = 0; i < allTimeSlices.size(); i++) {
 				if(allTimeSlices.get(i).getSliceNumber() == timeSliceId) {
 					allTimeSlices.set(i, timeSlice);
@@ -217,14 +217,4 @@ public class PyramidAnnotationTimeSliceController {
 				.collect(Collectors.toList());
 		return new PageImpl<>(result, pageable, timeSlices.size());
 	}
-
-	public boolean containsTimeSlice(List<PyramidAnnotationTimeSlice> timeSlices, int timeSliceId){
-		for(int i = 0; i < timeSlices.size(); i++){
-			if(timeSlices.get(i).getSliceNumber() == timeSliceId){
-				return true;
-			}
-		}
-		return false;
-	}
-
 }
