@@ -18,3 +18,6 @@ wipp-backend-images/bin
 wipp-backend-argo-workflows/bin
 wipp-backend-application/pom.xml
 
+# Local environment files
+.env
+
