@@ -24,30 +24,31 @@ import java.util.List;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RepositoryRestResource
-public interface JobRepository<T extends Job> extends MongoRepository<T, String> {
+//public interface JobRepository<T extends Job> extends MongoRepository<T, String> {
+public interface JobRepository extends MongoRepository<Job, String> {
     @Override
     @RestResource(exported = false)
-    void delete(T t);
+    void delete(Job t);
 
     long countByName(@Param("name") String name);
 
     @RestResource(exported = false)
-    List<T> findByStatus(JobStatus status);
+    List<Job> findByStatus(JobStatus status);
 
-    Page<T> findByStatus(@Param("status") JobStatus status, Pageable p);
+    Page<Job> findByStatus(@Param("status") JobStatus status, Pageable p);
 
-    Page<T> findByNameContainingIgnoreCase(
+    Page<Job> findByNameContainingIgnoreCase(
             @Param("name") String name, Pageable p);
 
-    Page<T> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
+    Page<Job> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
                                                     @Param("status") String status, Pageable p);
 
     @RestResource(exported = false)
-    List<T> findByWippWorkflow(String workflow);
+    List<Job> findByWippWorkflow(String workflow);
 
-    Page<T> findByWippWorkflow(@Param("wippWorkflow") String workflow,
+    Page<Job> findByWippWorkflow(@Param("wippWorkflow") String workflow,
                                Pageable p);
 
-    List<T> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
+    List<Job> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
 
 }
