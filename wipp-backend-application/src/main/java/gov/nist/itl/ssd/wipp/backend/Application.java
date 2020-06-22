@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import gov.nist.itl.ssd.wipp.backend.argo.workflows.persistence.ArgoWorkflow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -55,15 +57,16 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
 @EnableAutoConfiguration
 @EnableEntityLinks
+@EnableJpaRepositories(basePackageClasses = ArgoWorkflow.class)
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @EnableWebMvc
 @EnableSwagger2WebMvc
 @Import({ SpringDataRestConfiguration.class })
 public class Application implements WebMvcConfigurer {
-	
+
 	@Autowired
     private CoreConfig coreConfig;
-	
+
 	public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(
                 Application.class, args);
@@ -101,11 +104,11 @@ public class Application implements WebMvcConfigurer {
         bean.setServiceLocatorInterface(DataHandlerFactory.class);
         return bean;
     }
-    
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
     	// Force creation of pyramids folder to avoid pyramids viewing being
-    	// unavailable at first launch 
+    	// unavailable at first launch
     	File pyramidsFolderFile = new File(coreConfig.getPyramidsFolder());
     	if(! pyramidsFolderFile.exists()) {
     		pyramidsFolderFile.mkdirs();
@@ -122,20 +125,20 @@ public class Application implements WebMvcConfigurer {
     	registry.addResourceHandler(CoreConfig.BASE_URI + "/webjars/**")
 			.addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
-    
+
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		// Add redirects to move Swagger UI under /api/
-		registry.addRedirectViewController(CoreConfig.BASE_URI + "/v2/api-docs", 
+		registry.addRedirectViewController(CoreConfig.BASE_URI + "/v2/api-docs",
 				"/v2/api-docs");
 		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources/configuration/ui",
 				"/swagger-resources/configuration/ui");
 		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources/configuration/security",
 				"/swagger-resources/configuration/security");
-		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources", 
+		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources",
 				"/swagger-resources");
 	}
-    
+
     /**
      * Configure Swagger API documentation
      * @return API Documentation configuration
@@ -143,14 +146,14 @@ public class Application implements WebMvcConfigurer {
     @Bean
     public Docket wippApi() {
       return new Docket(DocumentationType.SWAGGER_2)
-          .select() 
-          .apis(RequestHandlerSelectors.any())    
-          .paths(PathSelectors.any()) 
+          .select()
+          .apis(RequestHandlerSelectors.any())
+          .paths(PathSelectors.any())
           .paths(PathSelectors.regex("/error.*").negate())
           .paths(PathSelectors.regex("/api/profile").negate())
       	  // workaround to avoid duplicate entries for plugins
           .paths(PathSelectors.regex("/api/plugins").negate())
-          .build() 
+          .build()
           // manually create tags to manage custom descriptions
           .tags(
               new Tag("CsvCollection Entity", "REST API for CSV Collections"),
@@ -167,7 +170,7 @@ public class Application implements WebMvcConfigurer {
           .apiInfo(apiEndPointsInfo())
           .enableUrlTemplating(true);
     }
-    
+
     /**
      * Configure Swagger API general information
      * @return API information
