@@ -16,7 +16,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowjsController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @RestController
-@Api(tags="CsvCollection Entity")
+//@Api(tags="CsvCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/csvCollections/{csvCollectionId}/csv")
 public class CsvUploadController  extends FlowjsController {
 

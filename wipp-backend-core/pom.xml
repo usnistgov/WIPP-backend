@@ -64,7 +64,7 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
 		
-		<dependency>
+<!-- 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>3.0.0-20190808.104142-39</version>
@@ -88,6 +88,6 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-schema</artifactId>
 			<version>3.0.0-20190808.104142-39</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 </project>
