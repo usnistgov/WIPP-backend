@@ -9,7 +9,9 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.model.job;
+package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
+
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,35 +20,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-import java.util.List;
 
 /**
- * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @RepositoryRestResource
-public interface JobRepository<T extends Job> extends MongoRepository<T, String> {
+public interface PyramidAnnotationRepository extends MongoRepository<PyramidAnnotation, String>, PyramidAnnotationRepositoryCustom {
+
     @Override
-    void delete(T t);
-
-    long countByName(@Param("name") String name);
-
     @RestResource(exported = false)
-    List<T> findByStatus(JobStatus status);
+    void delete(PyramidAnnotation t);
 
-    Page<T> findByStatus(@Param("status") JobStatus status, Pageable p);
-
-    Page<T> findByNameContainingIgnoreCase(
-            @Param("name") String name, Pageable p);
-
-    Page<T> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
-                                                    @Param("status") String status, Pageable p);
-
-    @RestResource(exported = false)
-    List<T> findByWippWorkflow(String workflow);
-
-    Page<T> findByWippWorkflow(@Param("wippWorkflow") String workflow,
-                               Pageable p);
-
-    List<T> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
+    Page<PyramidAnnotation> findByNameContainingIgnoreCase(@Param("name") String name,
+            Pageable p);
+    
+    PyramidAnnotation findByPyramid(@Param("pyramid") String pyramid);
 
 }
