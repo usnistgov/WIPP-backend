@@ -93,6 +93,13 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         }
         // else return the path of the regular images collection
         else {
+            if (imagesCollectionRepository.findById(imagesCollectionId).isPresent()) {
+           ImagesCollection imagesCollection = imagesCollectionRepository.findById(imagesCollectionId).get();
+           if (!imagesCollection.isLocked()) {
+               imagesCollection.setLocked(true);
+               imagesCollectionRepository.save(imagesCollection);
+           }
+       }
             File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
 

@@ -72,6 +72,14 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
         }
         // else return the path of the csv collection
         else {
+            if(csvCollectionRepository.findById(csvCollectionId).isPresent()) {
+                CsvCollection csvCollection = csvCollectionRepository.findById(csvCollectionId).get();
+                if (!csvCollection.isLocked()) {
+                    csvCollection.setLocked(true);
+                    csvCollectionRepository.save(csvCollection);
+                }
+            }
+
             File csvCollectionFolder = new File(config.getCsvCollectionsFolder(), csvCollectionId);
             csvCollectionPath = csvCollectionFolder.getAbsolutePath();
 
