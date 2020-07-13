@@ -24,7 +24,6 @@ import java.util.List;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RepositoryRestResource
-//public interface JobRepository<T extends Job> extends MongoRepository<T, String> {
 public interface JobRepository extends MongoRepository<Job, String> {
     @Override
     void delete(Job t);
@@ -40,13 +39,13 @@ public interface JobRepository extends MongoRepository<Job, String> {
             @Param("name") String name, Pageable p);
 
     Page<Job> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
-                                                    @Param("status") String status, Pageable p);
+                                                      @Param("status") String status, Pageable p);
 
     @RestResource(exported = false)
     List<Job> findByWippWorkflow(String workflow);
 
     Page<Job> findByWippWorkflow(@Param("wippWorkflow") String workflow,
-                               Pageable p);
+                                 Pageable p);
 
     List<Job> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
 
