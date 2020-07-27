@@ -26,7 +26,6 @@ import java.util.List;
 @RepositoryRestResource
 public interface JobRepository<T extends Job> extends MongoRepository<T, String> {
     @Override
-    @RestResource(exported = false)
     void delete(T t);
 
     long countByName(@Param("name") String name);
