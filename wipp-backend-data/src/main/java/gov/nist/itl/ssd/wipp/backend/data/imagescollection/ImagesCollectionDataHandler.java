@@ -23,6 +23,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,13 +94,14 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         }
         // else return the path of the regular images collection
         else {
-            if (imagesCollectionRepository.findById(imagesCollectionId).isPresent()) {
-           ImagesCollection imagesCollection = imagesCollectionRepository.findById(imagesCollectionId).get();
-           if (!imagesCollection.isLocked()) {
-               imagesCollection.setLocked(true);
-               imagesCollectionRepository.save(imagesCollection);
-           }
-       }
+            Optional<ImagesCollection> optImagesCollection = imagesCollectionRepository.findById(imagesCollectionId);
+            if (optImagesCollection.isPresent()) {
+                ImagesCollection imagesCollection = optImagesCollection.get();
+                if (!imagesCollection.isLocked()) {
+                    imagesCollection.setLocked(true);
+                    imagesCollectionRepository.save(imagesCollection);
+                }
+            }
             File inputImagesFolder = imageRepository.getFilesFolder(imagesCollectionId);
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
 
