@@ -69,9 +69,17 @@ public class WorkflowCopyController
             List<Job> jobList = jobRepository.findByWippWorkflow(workflowId);
             // Map the base job ids to their corresponding new job ids
             Map<String, String> dependenciesMapping = new HashMap<>();
-            for (Job job : jobList) {
 
+            // create all the new jobs
+            for (Job job : jobList) {
                 Job copiedJob = new Job();
+                copiedJob = jobRepository.save(copiedJob);
+                dependenciesMapping.put(job.getId(), copiedJob.getId());
+            }
+
+            // populate the jobs
+            for (Job job: jobList) {
+                Job copiedJob = jobRepository.findById(dependenciesMapping.get(job.getId())).get();
                 copiedJob.setName(job.getName().replace(workflow.getName(), workflowName));
                 copiedJob.setStatus(JobStatus.CREATED);
                 copiedJob.setCreationDate(new Date());
@@ -102,11 +110,9 @@ public class WorkflowCopyController
                 }
                 copiedJob.setParameters(inputs);
                 copiedJob.setDependencies(dependencies);
-
-                copiedJob = jobRepository.save(copiedJob);
-
-                dependenciesMapping.put(job.getId(), copiedJob.getId());
+                jobRepository.save(copiedJob);
             }
+
             newWorkflow = workflowRepository.save(newWorkflow);
             return new ResponseEntity<>(newWorkflow, HttpStatus.OK);
         } catch (Exception e) {
