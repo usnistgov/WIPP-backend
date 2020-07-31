@@ -11,7 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.visualization.manifest.layers;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.IOException;
 

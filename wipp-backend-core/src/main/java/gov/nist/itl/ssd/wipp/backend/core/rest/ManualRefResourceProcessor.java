@@ -19,10 +19,10 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
@@ -33,7 +33,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
  */
 @Component
 public class ManualRefResourceProcessor
-        implements ResourceProcessor<Resource<?>> {
+        implements RepresentationModelProcessor<EntityModel<?>> {
 
     @Autowired
     private EntityLinks entityLinks;
@@ -42,7 +42,7 @@ public class ManualRefResourceProcessor
             ManualRefResourceProcessor.class.getName());
 
     @Override
-    public Resource<?> process(Resource<?> resource) {
+    public EntityModel<?> process(EntityModel<?> resource) {
 
         Class clazz = resource.getContent().getClass();
         Stream<Field> ownFields = Arrays.stream(clazz.getDeclaredFields());
@@ -62,7 +62,7 @@ public class ManualRefResourceProcessor
                     field.setAccessible(true);
                     Object fieldValue = field.get(resource.getContent());
                     if (fieldValue != null) {
-                        Link link = entityLinks.linkToSingleResource(
+                        Link link = entityLinks.linkToItemResource(
                                 manualRef.value(),
                                 fieldValue
                         );
