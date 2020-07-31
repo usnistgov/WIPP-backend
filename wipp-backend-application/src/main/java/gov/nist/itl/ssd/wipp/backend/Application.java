@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -54,7 +53,6 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 @Configuration
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
 @EnableAutoConfiguration
-@EnableEntityLinks
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @EnableWebMvc
 //@EnableSwagger2WebMvc

@@ -25,6 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,14 +60,14 @@ public class CsvController {
     private CsvHandler csvHandler;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public HttpEntity<PagedResources<Resource<Csv>>> getFilesPage(
+    public HttpEntity<PagedModel<EntityModel<Csv>>> getFilesPage(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PageableDefault Pageable pageable,
             PagedResourcesAssembler<Csv> assembler) {
         Page<Csv> files = csvRepository.findByCsvCollection(
                 csvCollectionId, pageable);
-        PagedResources<Resource<Csv>> resources
-                = assembler.toResource(files);
+        PagedModel<EntityModel<Csv>> resources
+                = assembler.toModel(files);
         resources.forEach(
                 resource -> processResource(csvCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
@@ -101,9 +103,9 @@ public class CsvController {
     }
 
     protected void processResource(String csvCollectionId,
-                                   Resource<Csv> resource) {
+                                   EntityModel<Csv> resource) {
         Csv file = resource.getContent();
-        Link link = entityLinks.linkForSingleResource(
+        Link link = entityLinks.linkForItemResource(
                 CsvCollection.class, csvCollectionId)
                 .slash("csv")
                 .slash(file.getFileName())

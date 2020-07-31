@@ -2,9 +2,9 @@ package gov.nist.itl.ssd.wipp.backend.argo.workflows.workflow;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,18 +14,18 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class WorkflowResourceProcessor
-    implements ResourceProcessor<Resource<Workflow>> {
+    implements RepresentationModelProcessor<EntityModel<Workflow>> {
 
     @Override
-    public Resource<Workflow> process(Resource<Workflow> resource) {
+    public EntityModel<Workflow> process(EntityModel<Workflow> resource) {
         Workflow workflow = resource.getContent();
 
-        Link submitLink = ControllerLinkBuilder.linkTo(
+        Link submitLink = WebMvcLinkBuilder.linkTo(
             WorkflowSubmitController.class, workflow.getId())
             .withRel("submit");
         resource.add(submitLink);
 
-        Link exitLink = ControllerLinkBuilder.linkTo(
+        Link exitLink = WebMvcLinkBuilder.linkTo(
                 WorkflowExitController.class, workflow.getId())
                 .withRel("exit");
             resource.add(exitLink);
