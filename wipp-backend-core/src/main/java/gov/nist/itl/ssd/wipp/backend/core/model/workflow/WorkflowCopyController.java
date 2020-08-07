@@ -18,7 +18,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobStatus;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @Controller
-//@Api(tags="Workflow Copy")
+@Api(tags="Workflow Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/workflows/{workflowName}/copy")
 public class WorkflowCopyController
 {

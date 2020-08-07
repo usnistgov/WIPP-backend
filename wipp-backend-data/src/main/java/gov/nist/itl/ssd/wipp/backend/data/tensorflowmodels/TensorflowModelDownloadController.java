@@ -12,7 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Controller
-//@Api(tags="TensorflowModel Entity")
+@Api(tags="TensorflowModel Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/tensorflowModels/{tensorflowModelId}/download")
 public class TensorflowModelDownloadController {
 

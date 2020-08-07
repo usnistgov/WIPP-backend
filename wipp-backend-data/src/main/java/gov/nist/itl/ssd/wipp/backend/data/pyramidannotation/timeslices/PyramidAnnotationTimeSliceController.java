@@ -56,13 +56,13 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotation;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationConfig;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationRepository;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @RestController
-//@Api(tags="PyramidAnnotation Entity")
+@Api(tags="PyramidAnnotation Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramidAnnotations/{pyramidAnnotationId}/timeSlices")
 @ExposesResourceFor(PyramidAnnotationTimeSlice.class)
 public class PyramidAnnotationTimeSliceController {

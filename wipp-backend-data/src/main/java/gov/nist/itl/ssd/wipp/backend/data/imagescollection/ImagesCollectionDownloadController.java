@@ -18,7 +18,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepositor
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFile;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileRepository;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @Controller
-//@Api(tags="ImagesCollection Entity")
+@Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/download")
 public class ImagesCollectionDownloadController {
 
