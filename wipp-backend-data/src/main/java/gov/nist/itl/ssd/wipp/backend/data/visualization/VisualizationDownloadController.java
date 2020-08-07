@@ -42,7 +42,7 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramid.PyramidRepository;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSlice;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSliceRepository;
 import gov.nist.itl.ssd.wipp.backend.data.visualization.manifest.Manifest;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
  * Controller for downloading visualization, returns a ZIP folder with pyramids + manifest
@@ -51,7 +51,7 @@ import gov.nist.itl.ssd.wipp.backend.data.visualization.manifest.Manifest;
  *
  */
 @Controller
-//@Api(tags="Visualization Entity")
+@Api(tags="Visualization Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/visualizations/{visualizationId}/download")
 public class VisualizationDownloadController {
 
