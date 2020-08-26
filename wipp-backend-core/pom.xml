@@ -66,5 +66,4 @@
 	    </dependency>
 	
 	</dependencies>
-	<packaging>ear</packaging>
 </project>
