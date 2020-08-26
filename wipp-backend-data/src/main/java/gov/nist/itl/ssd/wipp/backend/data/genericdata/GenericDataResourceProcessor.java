@@ -11,11 +11,11 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,10 +23,10 @@ import org.springframework.stereotype.Component;
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Component
-public class GenericDataResourceProcessor implements ResourceProcessor<Resource<GenericData>>{
+public class GenericDataResourceProcessor implements RepresentationModelProcessor<EntityModel<GenericData>>{
 	
 	@Override
-	public Resource<GenericData> process(Resource<GenericData> resource) {
+	public EntityModel<GenericData> process(EntityModel<GenericData> resource) {
 		GenericData genericData = resource.getContent();
 		
         Link downloadLink = linkTo(GenericDataDownloadController.class,
