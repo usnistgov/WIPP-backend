@@ -44,5 +44,11 @@ public class JobLogic {
             throw new ClientException("You must specify a job name.");
         }
     }
+    
+    public void assertStatusIsCreated(Job job) {
+    	if (job.getStatus() != JobStatus.CREATED) {
+    		throw new ClientException("Job status does not allow for this operation.");
+    	}
+    }
 
 }

@@ -8,6 +8,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
+import org.springframework.data.rest.core.annotation.HandleBeforeDelete;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -93,6 +94,25 @@ public class JobEventHandler {
                 oldJ.getCreationDate())) {
             throw new ClientException("Can not change creation date.");
         }
+        
+        // Only jobs with status "CREATED" can be modified
+        jobLogic.assertStatusIsCreated(oldJ);
 
+    }
+    
+    @HandleBeforeDelete
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #job.owner == principal.name)")
+    public void handleBeforeDelete(Job job) {
+    	// Assert job exists
+    	Optional<Job> result = jobRepository.findById(
+                job.getId());
+    	if (!result.isPresent()) {
+        	throw new NotFoundException("Job with id " + job.getId() + " not found");
+        }
+
+        Job oldJob = result.get();
+        
+        // Only jobs with status "CREATED" can be deleted
+        jobLogic.assertStatusIsCreated(oldJob);
     }
 }
