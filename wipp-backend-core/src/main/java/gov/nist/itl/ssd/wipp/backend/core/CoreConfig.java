@@ -62,6 +62,9 @@ public class CoreConfig {
     @Value("${storage.pyramids}")
     private String pyramidsFolder;
     
+    @Value("${storage.pyramid.annotations}")
+    private String pyramidAnnotationsFolder;
+    
     @Value("${storage.tensorflow}")
     private String tensorflowModelsFolder;
     
@@ -73,6 +76,9 @@ public class CoreConfig {
     
     @Value("${storage.notebooks}")
     private String notebooksFolder;
+    
+    @Value("${storage.generic.datas}")
+    private String genericDatasFolder;
 
     @Value("${storage.notebooks.tmp}")
     private String notebooksTmpFolder;
@@ -124,7 +130,7 @@ public class CoreConfig {
 		return workflowsFolder;
 	}
 
-    public String getStitchingFolder() {
+	public String getStitchingFolder() {
         return stitchingFolder;
     }
     
@@ -132,7 +138,11 @@ public class CoreConfig {
         return pyramidsFolder;
     }
     
-    public String getTensorflowModelsFolder() {
+    public String getPyramidAnnotationsFolder() {
+		return pyramidAnnotationsFolder;
+	}
+
+	public String getTensorflowModelsFolder() {
     	return tensorflowModelsFolder;
     }
     
@@ -150,6 +160,10 @@ public class CoreConfig {
 
 	public String getNotebooksTmpFolder() {
 		return notebooksTmpFolder;
+	}
+	
+    public String getGenericDatasFolder() {
+		return genericDatasFolder;
 	}
 
     public String getWorkflowBinary() {

@@ -26,9 +26,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.rest.webmvc.RepositoryLinksResource;
-import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RootResourceProcessor
-        implements ResourceProcessor<RepositoryLinksResource> {
+        implements RepresentationModelProcessor<RepositoryLinksResource> {
 
     @Autowired
     private EntityLinks entityLinks;

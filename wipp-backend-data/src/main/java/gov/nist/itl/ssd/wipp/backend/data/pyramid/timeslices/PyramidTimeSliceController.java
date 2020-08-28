@@ -30,12 +30,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.server.LinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +64,7 @@ public class PyramidTimeSliceController {
 
 	    @RequestMapping(value = "", method = RequestMethod.GET)
 		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
-	    public HttpEntity<PagedResources<Resource<PyramidTimeSlice>>>
+	    public HttpEntity<PagedModel<EntityModel<PyramidTimeSlice>>>
 	            getTimeSlicesPage(
 	                    @PathVariable("pyramidId") String pyramidId,
 	                    @PageableDefault Pageable pageable,
@@ -75,7 +75,7 @@ public class PyramidTimeSliceController {
 	        for (PyramidTimeSlice pts : page) {
 	            processResource(pyramidId, pts);
 	        }
-	        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
+	        return new ResponseEntity<>(assembler.toModel(page), HttpStatus.OK);
 	    }
 
 	    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)

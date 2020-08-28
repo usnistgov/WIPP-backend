@@ -9,49 +9,37 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.stitching;
+package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.stereotype.Component;
+
+import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelper;
+import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAnnotationTimeSliceController;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.stereotype.Component;
-
-import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSliceController;
-import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelper;
 
 /**
- *
- * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Component
-public class StitchingVectorResourceProcessor
-        implements RepresentationModelProcessor<EntityModel<StitchingVector>> {
-
-    @Autowired
-    private StitchingVectorRepository stitchingVectorRepository;
+public class PyramidAnnotationResourceProcessor implements RepresentationModelProcessor<EntityModel<PyramidAnnotation>> {
 
     @Autowired
     private PaginationParameterTemplatesHelper assembler;
 
     @Override
-    public EntityModel<StitchingVector> process(
-            EntityModel<StitchingVector> resource) {
-        StitchingVector vector = resource.getContent();
+    public EntityModel<PyramidAnnotation> process(
+            EntityModel<PyramidAnnotation> resource) {
+    	PyramidAnnotation annotation = resource.getContent();
 
         Link link = WebMvcLinkBuilder.linkTo(
-                StitchingVectorTimeSliceController.class, vector.getId())
+                PyramidAnnotationTimeSliceController.class, annotation.getId())
                 .withRel("timeSlices");
         resource.add(assembler.appendPaginationParameterTemplates(link));
-
-        if (stitchingVectorRepository.getStatisticsFile(
-                vector.getId()).exists()) {
-            link = WebMvcLinkBuilder.linkTo(
-                    StitchingVectorStatisticsController.class, vector.getId())
-                    .withRel("statistics");
-            resource.add(link);
-        }
 
         return resource;
     }

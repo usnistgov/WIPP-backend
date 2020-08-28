@@ -70,7 +70,8 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 @RunWith(SpringRunner.class)
 @ContextConfiguration
 @SpringBootTest(classes = { Application.class, SecurityConfig.class, MyKeycloakSpringBootConfigResolver.class }, 
-				properties = { "spring.data.mongodb.port=0" })
+				properties = { "spring.data.mongodb.port=0", 
+						"spring.data.mongodb.auto-index-creation=false" })
 public class ImagesCollectionRepositoryRestTest {
 
 	static final String PAYLOAD = "{\"name\": \"test-coll\"}";

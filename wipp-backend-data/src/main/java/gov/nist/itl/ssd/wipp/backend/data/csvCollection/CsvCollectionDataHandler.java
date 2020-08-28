@@ -13,6 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,6 +80,15 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
         }
         // else return the path of the csv collection
         else {
+            Optional<CsvCollection> optCsvCollection = csvCollectionRepository.findById(csvCollectionId);
+            if(optCsvCollection.isPresent()) {
+                CsvCollection csvCollection = optCsvCollection.get();
+                if (!csvCollection.isLocked()) {
+                    csvCollection.setLocked(true);
+                    csvCollectionRepository.save(csvCollection);
+                }
+            }
+
             File csvCollectionFolder = new File(config.getCsvCollectionsFolder(), csvCollectionId);
             csvCollectionPath = csvCollectionFolder.getAbsolutePath();
 

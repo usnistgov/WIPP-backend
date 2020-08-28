@@ -9,27 +9,20 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.rest;
+package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
 import java.util.List;
 
-import org.springframework.data.annotation.AccessType;
-import org.springframework.data.annotation.AccessType.Type;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
+import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAnnotationTimeSlice;
 
 /**
- * Workaround for https://jira.spring.io/browse/DATAREST-1363
- * 
- * @author Mylene Simon <mylene.simon at nist.gov>
- *
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
-public abstract class CustomResourceSupport extends RepresentationModel {
+public interface PyramidAnnotationRepositoryCustom {
+	
+    void setTimeSlices(String pyramidAnnotationId,
+            List<PyramidAnnotationTimeSlice> timeSlices);
 
-    @AccessType(Type.PROPERTY)
-    public void setLinks(List<Link> links) {
-        List<Link> actual = super.getLinks().toList();
-        actual.clear();
-        actual.addAll(links);
-    }
+    List<PyramidAnnotationTimeSlice> getTimeSlices(String pyramidAnnotationId);
+
 }

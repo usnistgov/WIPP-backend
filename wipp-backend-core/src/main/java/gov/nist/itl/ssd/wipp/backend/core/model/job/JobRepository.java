@@ -31,13 +31,12 @@ import java.util.List;
 public interface JobRepository<T extends Job> extends PrincipalFilteredRepository<T, String> {
 
 	@Override
-    @RestResource(exported = false)
     void delete(T t);
 
     long countByName(@Param("name") String name);
 
     @RestResource(exported = false)
-    List<T> findByStatus(JobStatus status);
+    List<Job> findByStatus(JobStatus status);
 
     /*
 	 * Filter collection resources access by object status depending on user
@@ -65,7 +64,7 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
                                                     @Param("status") String status, Pageable p);
 
     @RestResource(exported = false)
-    List<T> findByWippWorkflow(String workflow);
+    List<Job> findByWippWorkflow(String workflow);
 
     /*
      * Check user is authorized to access workflow before retrieving jobs

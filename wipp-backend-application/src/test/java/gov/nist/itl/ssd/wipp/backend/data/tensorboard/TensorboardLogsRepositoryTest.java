@@ -48,7 +48,8 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 @SuppressWarnings({"unchecked","rawtypes"})
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
-				properties = { "spring.data.mongodb.port=0" })
+				properties = { "spring.data.mongodb.port=0", 
+						"spring.data.mongodb.auto-index-creation=false" })
 public class TensorboardLogsRepositoryTest {
 	
 	@Autowired WebApplicationContext context;

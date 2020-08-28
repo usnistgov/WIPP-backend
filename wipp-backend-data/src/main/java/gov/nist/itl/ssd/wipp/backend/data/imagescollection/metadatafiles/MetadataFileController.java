@@ -33,11 +33,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,14 +72,14 @@ public class MetadataFileController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
-    public HttpEntity<PagedResources<Resource<MetadataFile>>> getFilesPage(
+    public HttpEntity<PagedModel<EntityModel<MetadataFile>>> getFilesPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PageableDefault Pageable pageable,
             PagedResourcesAssembler<MetadataFile> assembler) {
         Page<MetadataFile> files = metadataFileRepository.findByImagesCollection(
                 imagesCollectionId, pageable);
-        PagedResources<Resource<MetadataFile>> resources
-                = assembler.toResource(files);
+        PagedModel<EntityModel<MetadataFile>> resources
+                = assembler.toModel(files);
         resources.forEach(
                 resource -> processResource(imagesCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
@@ -149,10 +149,10 @@ public class MetadataFileController {
     }
 
     protected void processResource(String imagesCollectionId,
-            Resource<MetadataFile> resource) {
+            EntityModel<MetadataFile> resource) {
         MetadataFile file = resource.getContent();
 
-        Link link = entityLinks.linkForSingleResource(
+        Link link = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollectionId)
                 .slash("metadataFiles")
                 .slash(file.getFileName())

@@ -25,10 +25,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -42,9 +40,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 
 /**
@@ -54,11 +50,8 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 @Configuration
 @ComponentScan(basePackages = {"gov.nist.itl.ssd.wipp.backend"})
 @EnableAutoConfiguration
-@EnableEntityLinks
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @EnableWebMvc
-@EnableSwagger2WebMvc
-@Import({ SpringDataRestConfiguration.class })
 public class Application implements WebMvcConfigurer {
 	
 	@Autowired
@@ -117,10 +110,10 @@ public class Application implements WebMvcConfigurer {
                 		pyramidsFolderFile
                         .toURI().toString());
     	// Add Swagger UI resource handler
-    	registry.addResourceHandler(CoreConfig.BASE_URI + "/swagger-ui.html**")
-    		.addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
-    	registry.addResourceHandler(CoreConfig.BASE_URI + "/webjars/**")
-			.addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.
+            addResourceHandler(CoreConfig.BASE_URI + "/swagger-ui/**")
+            .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/")
+            .resourceChain(false);
     }
     
 	@Override
@@ -134,6 +127,9 @@ public class Application implements WebMvcConfigurer {
 				"/swagger-resources/configuration/security");
 		registry.addRedirectViewController(CoreConfig.BASE_URI + "/swagger-resources", 
 				"/swagger-resources");
+		
+		registry.addViewController(CoreConfig.BASE_URI + "/swagger-ui/")
+        .setViewName("forward:" + CoreConfig.BASE_URI + "/swagger-ui/index.html");
 	}
     
     /**
@@ -159,6 +155,7 @@ public class Application implements WebMvcConfigurer {
               new Tag("Notebook Entity", "REST API for Notebooks"),
               new Tag("Plugin Entity", "REST API for Plugins"),
               new Tag("Pyramid Entity", "REST API for Pyramids"),
+              new Tag("PyramidAnnotation Entity", "REST API for Pyramid Annotations"),
               new Tag("StitchingVector Entity", "REST API for Stitching Vectors"),
               new Tag("TensorboardLogs Entity", "REST API for Tensorboard Logs"),
               new Tag("TensorflowModel Entity", "REST API for Tensorflow Models"),
