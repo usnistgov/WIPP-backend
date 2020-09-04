@@ -31,7 +31,7 @@ public class VisualizationResourceProcessor
     public EntityModel<Visualization> process(EntityModel<Visualization> resource) {
 
         Link downloadLink = linkTo(VisualizationDownloadController.class,
-                resource.getContent().getId())
+                resource.getContent().getId()).slash("request")
                 .withRel("download");
         resource.add(downloadLink);
 

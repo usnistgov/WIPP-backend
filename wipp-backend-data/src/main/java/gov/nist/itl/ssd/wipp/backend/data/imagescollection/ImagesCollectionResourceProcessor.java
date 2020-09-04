@@ -57,6 +57,7 @@ public class ImagesCollectionResourceProcessor
 
         Link downloadLink = linkTo(ImagesCollectionDownloadController.class,
                 imagesCollection.getId())
+        		.slash("request")
                 .withRel("download");
         resource.add(downloadLink);
 
