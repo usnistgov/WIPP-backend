@@ -63,9 +63,6 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
     Page<T> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
                                                     @Param("status") String status, Pageable p);
 
-    @RestResource(exported = false)
-    List<Job> findByWippWorkflow(String workflow);
-
     /*
      * Check user is authorized to access workflow before retrieving jobs
      */
@@ -78,5 +75,11 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
      */
     @PreAuthorize("hasRole('admin') or @workflowSecurity.checkAuthorize(#wippWorkflow, false)")
     List<T> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
+    
+    @RestResource(exported = false)
+    List<Job> findByWippWorkflow(String workflow);
+    
+    @RestResource(exported = false)
+    Long deleteByWippWorkflow(String workflow);
     
 }

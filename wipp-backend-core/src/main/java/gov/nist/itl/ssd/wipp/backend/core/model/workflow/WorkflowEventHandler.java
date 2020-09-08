@@ -26,10 +26,17 @@ public class WorkflowEventHandler {
 	
 	@Autowired
 	WorkflowRepository workflowRepository;
+	
+	@Autowired
+    private WorkflowLogic workflowLogic;
 
 	@PreAuthorize("isAuthenticated()")
     @HandleBeforeCreate
     public void handleBeforeCreate(Workflow workflow) {
+		// Assert workflow name is unique
+		workflowLogic.assertWorkflowNameUnique(
+				workflow.getName());
+        
         // Set the owner to the connected user
         workflow.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         

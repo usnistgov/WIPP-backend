@@ -3,6 +3,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
@@ -18,4 +19,7 @@ public interface WorkflowRepository extends PrincipalFilteredRepository<Workflow
 	@Override
     @RestResource(exported = false)
     void delete(Workflow w);
+	
+	// Not exported
+    long countByName(@Param("name") String name);
 }
