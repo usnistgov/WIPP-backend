@@ -47,8 +47,7 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
-				properties = { "spring.data.mongodb.port=0", 
-						"spring.data.mongodb.auto-index-creation=false" })
+				properties = { "spring.data.mongodb.port=0" })
 public class CsvCollectionRepositoryTest {
 	
 	@Autowired WebApplicationContext context;

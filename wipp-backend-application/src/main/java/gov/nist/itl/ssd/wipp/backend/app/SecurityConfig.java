@@ -1,5 +1,6 @@
 package gov.nist.itl.ssd.wipp.backend.app;
 
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
@@ -31,15 +32,8 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
         jsr250Enabled = true)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 {
-    
-
-    @Bean
-    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-        return new SecurityEvaluationContextExtension();
-    }
-
     /**
-     * Registers the KeycloakAuthenticationProvider with the authentication manager.
+     * Register the KeycloakAuthenticationProvider with the authentication manager.
      * SimpleAuthorityMapper is used to make sure roles are not prefixed with ROLE_
      */
     @Autowired
@@ -50,9 +44,27 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
          new SimpleAuthorityMapper());
        auth.authenticationProvider(keycloakAuthenticationProvider);    
     }
+	
+    /**
+     * Use Spring Security expressions in Spring Data queries
+     * @return
+     */
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
+    }
+    
+    /**
+     * Use the Spring Boot properties file support instead of the default keycloak.json
+     * @return
+     */
+    @Bean
+    public KeycloakSpringBootConfigResolver KeycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
+    }
 
     /**
-     * Defines the session authentication strategy.
+     * Define the session authentication strategy.
      */
     @Bean
     @Override
@@ -61,7 +73,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
     }
 
     /**
-     * Configures HTTP security
+     * Configure HTTP security
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception

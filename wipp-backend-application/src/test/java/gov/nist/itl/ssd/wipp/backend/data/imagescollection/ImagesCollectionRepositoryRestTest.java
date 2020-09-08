@@ -46,7 +46,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
-import gov.nist.itl.ssd.wipp.backend.app.MyKeycloakSpringBootConfigResolver;
 import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
 import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 
@@ -69,9 +68,8 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-@SpringBootTest(classes = { Application.class, SecurityConfig.class, MyKeycloakSpringBootConfigResolver.class }, 
-				properties = { "spring.data.mongodb.port=0", 
-						"spring.data.mongodb.auto-index-creation=false" })
+@SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
+				properties = { "spring.data.mongodb.port=0" })
 public class ImagesCollectionRepositoryRestTest {
 
 	static final String PAYLOAD = "{\"name\": \"test-coll\"}";
