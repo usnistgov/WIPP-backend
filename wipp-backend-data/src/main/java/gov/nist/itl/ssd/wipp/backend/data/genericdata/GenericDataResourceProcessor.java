@@ -13,17 +13,26 @@ package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
+import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelper;
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Component
 public class GenericDataResourceProcessor implements RepresentationModelProcessor<EntityModel<GenericData>>{
+	
+	@Autowired
+	private PaginationParameterTemplatesHelper assembler;
+
+	@Autowired
+	private EntityLinks entityLinks;
 	
 	@Override
 	public EntityModel<GenericData> process(EntityModel<GenericData> resource) {
@@ -34,7 +43,12 @@ public class GenericDataResourceProcessor implements RepresentationModelProcesso
                 .withRel("download");
         resource.add(downloadLink);
         
+		Link genericFilesLink = entityLinks.linkForItemResource(
+				GenericData.class, genericData.getId())
+				.slash("genericFile")
+				.withRel("genericFile");
+		resource.add(assembler.appendPaginationParameterTemplates(genericFilesLink));
+        
 		return resource;
 	}
-
 }

@@ -38,6 +38,8 @@ public class GenericData {
 	@Indexed(unique=true)
 	private String name;
 	
+	private boolean locked;
+	
 	private String type;
 	
 	private String description;
@@ -53,6 +55,12 @@ public class GenericData {
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date creationDate;
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private int numberOfImportErrors;
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private int numberImportingGenericFiles;
+
 	@Indexed(unique = true, sparse = true)
 	@ManualRef(Job.class)
 	private String sourceJob;
@@ -60,21 +68,24 @@ public class GenericData {
 	public GenericData() {
 	}
 
-	public GenericData(String name){
+	public GenericData(String name, boolean locked){
 		this.name = name;
 		this.creationDate = new Date();
+		this.locked = locked;
 	}
 
 	public GenericData(Job job){
 		this.name = job.getName();
 		this.sourceJob = job.getId();
 		this.creationDate = new Date();
+		this.locked = true;
 	}
 
 	public GenericData(Job job, String outputName) {
 		this.name = job.getName() + "-" + outputName;
 		this.sourceJob = job.getId();
 		this.creationDate = new Date();
+		this.locked = true;
 	}
 
 	public String getId() {
@@ -127,6 +138,20 @@ public class GenericData {
 
 	public long getFileTotalSize() {
 		return fileTotalSize;
+	}
+	
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {this.locked = locked;}
+
+	public int getNumberOfImportErrors() {
+		return numberOfImportErrors;
+	}
+
+	public int getNumberImportingGenericFiles() {
+		return numberImportingGenericFiles;
 	}
 	
 }

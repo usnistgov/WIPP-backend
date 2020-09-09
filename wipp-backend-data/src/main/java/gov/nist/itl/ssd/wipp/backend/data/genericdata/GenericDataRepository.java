@@ -19,21 +19,19 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 /**
-*
-* @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
-*/
+ *
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ */
 @RepositoryRestResource
-public interface GenericDataRepository extends MongoRepository<GenericData, String>{
+public interface GenericDataRepository 
+		extends MongoRepository<GenericData, String>, 
+		GenericDataRepositoryCustom{
 
-	@Override
-	@RestResource(exported = false)
-	<S extends GenericData> S save(S s);
-
-	@Override
-	@RestResource(exported = false)
-	void delete(GenericData t);
+	Page<GenericData> findByName(@Param("name") String name, Pageable p);
 
 	Page<GenericData> findByNameContainingIgnoreCase(
 			@Param("name") String name, Pageable p);
-
+	
+	long countByName(@Param("name") String name);
+	
 }
