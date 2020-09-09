@@ -38,6 +38,8 @@ public class GenericData {
 	@Indexed(unique=true)
 	private String name;
 	
+	private String owner;
+	
 	private String type;
 	
 	private String description;
@@ -56,6 +58,8 @@ public class GenericData {
 	@Indexed(unique = true, sparse = true)
 	@ManualRef(Job.class)
 	private String sourceJob;
+	
+    private boolean publiclyShared;
 	
 	public GenericData() {
 	}
@@ -83,6 +87,14 @@ public class GenericData {
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 
 	public String getType() {
@@ -128,5 +140,13 @@ public class GenericData {
 	public long getFileTotalSize() {
 		return fileTotalSize;
 	}
+	
+	public boolean isPubliclyShared() {
+        return publiclyShared;
+    }
+
+    public void setPubliclyShared(boolean publiclyShared) { 
+    	this.publiclyShared = publiclyShared; 
+    }
 	
 }

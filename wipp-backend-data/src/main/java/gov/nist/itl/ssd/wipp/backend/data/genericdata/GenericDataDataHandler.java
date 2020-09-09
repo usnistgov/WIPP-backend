@@ -44,6 +44,10 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		GenericData genericData = new GenericData(job, outputName);
+		// Set genericData owner to job owner
+		genericData.setOwner(job.getOwner());
+		// Set genericData to private
+		genericData.setPubliclyShared(false);
 		genericDataRepository.save(genericData);
 
 		File genericDataFolder = new File(config.getGenericDatasFolder(), genericData.getId());

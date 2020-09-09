@@ -11,19 +11,17 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @RepositoryRestResource
-public interface GenericDataRepository extends MongoRepository<GenericData, String>{
+public interface GenericDataRepository extends PrincipalFilteredRepository<GenericData, String>{
 
 	@Override
 	@RestResource(exported = false)
@@ -32,8 +30,5 @@ public interface GenericDataRepository extends MongoRepository<GenericData, Stri
 	@Override
 	@RestResource(exported = false)
 	void delete(GenericData t);
-
-	Page<GenericData> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
 
 }
