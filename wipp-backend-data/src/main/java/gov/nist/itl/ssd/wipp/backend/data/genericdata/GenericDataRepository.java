@@ -25,10 +25,6 @@ public interface GenericDataRepository extends PrincipalFilteredRepository<Gener
 
 	@Override
 	@RestResource(exported = false)
-	<S extends GenericData> S save(S s);
-
-	@Override
-	@RestResource(exported = false)
 	void delete(GenericData t);
 
 }
