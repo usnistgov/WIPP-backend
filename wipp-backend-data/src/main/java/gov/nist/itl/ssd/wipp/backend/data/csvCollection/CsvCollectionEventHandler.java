@@ -85,7 +85,10 @@ public class CsvCollectionEventHandler {
             throw new ClientException("Can not set change a public collection to private.");
         }
         
-        // TODO: an unlocked collection cannot become public
+        // An unlocked collection cannot become public
+    	if (!oldTc.isPubliclyShared() && csvCollection.isPubliclyShared()){
+            throw new ClientException("Can not set an unlocked collection to public, please lock collection first.");
+        }
         
         // Owner cannot be changed
         if (!Objects.equals(

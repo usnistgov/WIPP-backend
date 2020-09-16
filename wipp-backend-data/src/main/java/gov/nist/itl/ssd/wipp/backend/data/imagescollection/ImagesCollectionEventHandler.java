@@ -97,10 +97,13 @@ public class ImagesCollectionEventHandler {
 
     	// A public collection cannot become private
     	if (oldTc.isPubliclyShared() && !imagesCollection.isPubliclyShared()){
-            throw new ClientException("Can not set change a public collection to private.");
+            throw new ClientException("Can not set a public collection to private.");
         }
     	
-    	// TODO: unlocked collection cannot become public
+    	// An unlocked collection cannot become public
+    	if (!oldTc.isPubliclyShared() && imagesCollection.isPubliclyShared()){
+            throw new ClientException("Can not set an unlocked collection to public, please lock collection first.");
+        }
     	
     	// Owner cannot be changed
         if (!Objects.equals(
