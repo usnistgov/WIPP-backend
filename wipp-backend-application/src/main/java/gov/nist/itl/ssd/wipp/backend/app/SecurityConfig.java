@@ -88,7 +88,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 				.antMatchers(HttpMethod.PUT).authenticated()
 				.antMatchers(HttpMethod.PATCH).authenticated()
 				.antMatchers(HttpMethod.DELETE).authenticated()
-				.anyRequest().permitAll()
+				// restrict wdzt pyramid files access to users authorized to access the pyramid
+				.antMatchers(CoreConfig.PYRAMIDS_BASE_URI + "/{pyramidId}/**")
+					.access("@pyramidSecurity.checkAuthorize(#pyramidId, false)")
 			// return 401 Unauthorized instead of 302 redirect to login page 
 			// for unauthorized access by anonymous user
 			.and()			

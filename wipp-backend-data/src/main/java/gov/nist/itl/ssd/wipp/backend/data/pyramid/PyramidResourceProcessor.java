@@ -55,6 +55,7 @@ public class PyramidResourceProcessor implements RepresentationModelProcessor<En
 
         Link fetchingLink = linkTo(PyramidFetchingController.class,
                 resource.getContent().getId())
+                .slash("request")
                 .withRel("fetching");
         resource.add(fetchingLink);
 
