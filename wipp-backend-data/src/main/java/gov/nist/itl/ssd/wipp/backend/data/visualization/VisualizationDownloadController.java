@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,8 +46,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionDownloadController;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.PyramidRepository;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSlice;
@@ -116,7 +116,10 @@ public class VisualizationDownloadController {
             @RequestParam("token") String token,
             HttpServletResponse response) throws IOException {
         
-		// Check validity of download token
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+    	
+    	// Check validity of download token
     	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
     	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(visualizationId)) {
     		throw new ForbiddenException("Invalid download token.");
@@ -164,6 +167,9 @@ public class VisualizationDownloadController {
 	        zos.putNextEntry(new ZipEntry("/visualization/README.txt"));
 	        printWriter.write(generateREADME());
         }
+        
+        // Clear security context after system operations
+        SecurityContextHolder.clearContext();
         
     }
 	

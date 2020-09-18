@@ -16,6 +16,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepository;
@@ -39,6 +40,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -108,6 +110,9 @@ public class ImagesCollectionDownloadController {
             @RequestParam("token") String token,
             HttpServletResponse response) throws IOException {
     	
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+    	
     	// Check validity of download token
     	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
     	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(imagesCollectionId)) {
@@ -148,6 +153,9 @@ public class ImagesCollectionDownloadController {
             }
         }
         zos.finish();
+        
+     // Clear security context after system operations
+        SecurityContextHolder.clearContext();
     }
     
 }

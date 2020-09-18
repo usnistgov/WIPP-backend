@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 
 /**
 *
@@ -93,7 +95,10 @@ public class GenericDataDownloadController {
 			@RequestParam("token")String token,
 			HttpServletResponse response) throws IOException {
 		
-		// Check validity of download token
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+		
+    	// Check validity of download token
     	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
     	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(genericDataId)) {
     		throw new ForbiddenException("Invalid download token.");
@@ -123,6 +128,9 @@ public class GenericDataDownloadController {
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 		addToZip("", zos, genericDataStorageFolder);
 		zos.finish();
+		
+		// Clear security context after system operations
+		SecurityContextHolder.clearContext();
 	}
 
 	//Recursive method to handle sub-folders

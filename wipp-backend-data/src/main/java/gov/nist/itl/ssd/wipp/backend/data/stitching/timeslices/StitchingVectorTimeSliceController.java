@@ -49,16 +49,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionDownloadController;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
 import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
 
@@ -152,7 +152,16 @@ public class StitchingVectorTimeSliceController {
     public void getGlobalPositions(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId,
+            @RequestParam("token")String token,
             HttpServletResponse response) throws IOException {
+    	
+    	// Check validity of download token
+    	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
+    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(stitchingVectorId)) {
+    		throw new ForbiddenException("Invalid download token.");
+    	}
+    	
+    	// Check existence of stitching file
         File stitchingFile = stitchingVectorTimeSliceRepository
                 .getGlobalPositionsFile(stitchingVectorId, timeSliceId);
         if (!stitchingFile.exists()) {

@@ -16,6 +16,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -35,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -97,6 +99,9 @@ public class TensorflowModelDownloadController {
 			@RequestParam("token") String token,
 			HttpServletResponse response) throws IOException {
 		
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+    	
 		// Check validity of download token
     	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
     	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(tensorflowModelId)) {
@@ -127,6 +132,9 @@ public class TensorflowModelDownloadController {
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 		addToZip("", zos, tensorflowModelStorageFolder);
 		zos.finish();
+		
+		// Clear security context after system operations
+		SecurityContextHolder.clearContext();
 	}
 
 	//Recursive method to handle sub-folders
