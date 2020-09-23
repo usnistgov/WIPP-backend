@@ -11,29 +11,27 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PostAuthorize;
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RepositoryRestResource
-public interface PyramidAnnotationRepository extends MongoRepository<PyramidAnnotation, String>, PyramidAnnotationRepositoryCustom {
+public interface PyramidAnnotationRepository extends PrincipalFilteredRepository<PyramidAnnotation, String>, PyramidAnnotationRepositoryCustom {
 
     @Override
     @RestResource(exported = false)
     void delete(PyramidAnnotation t);
 
-    Page<PyramidAnnotation> findByNameContainingIgnoreCase(@Param("name") String name,
-            Pageable p);
-    
+    @PostAuthorize("hasRole('admin') "
+			+ "or (isAuthenticated() and returnObject?.owner == principal.name) "
+			+ "or returnObject?.publiclyShared == true")
     PyramidAnnotation findByPyramid(@Param("pyramid") String pyramid);
 
 }

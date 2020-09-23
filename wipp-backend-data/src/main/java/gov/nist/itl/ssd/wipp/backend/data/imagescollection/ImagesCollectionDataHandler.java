@@ -113,6 +113,18 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
         imagesCollectionPath = imagesCollectionPath.replace("\\","/").replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return imagesCollectionPath;
     }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<ImagesCollection> optImagesCollection = imagesCollectionRepository.findById(value);
+        if(optImagesCollection.isPresent()) {
+        	ImagesCollection imagesCollections = optImagesCollection.get();
+            if (!imagesCollections.isPubliclyShared()) {
+            	imagesCollections.setPubliclyShared(true);
+            	imagesCollectionRepository.save(imagesCollections);
+            }
+        }
+    }
 
     private void importFolder(FileHandler fileHandler, File file, String id) throws IOException {
         fileHandler.importFolder(id, file);

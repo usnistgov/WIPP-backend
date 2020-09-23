@@ -26,10 +26,6 @@ public interface StitchingVectorRepository extends PrincipalFilteredRepository<S
 
 	@Override
 	@RestResource(exported = false)
-	<S extends StitchingVector> S save(S s);
-
-	@Override
-	@RestResource(exported = false)
 	void delete(StitchingVector s);
 
 	// not exported

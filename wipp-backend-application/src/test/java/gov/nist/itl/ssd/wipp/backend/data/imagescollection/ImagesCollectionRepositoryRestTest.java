@@ -37,6 +37,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -158,36 +159,5 @@ public class ImagesCollectionRepositoryRestTest {
 				.andExpect(content().contentTypeCompatibleWith(MediaTypes.HAL_JSON))
 				.andExpect(status().isOk());
 	}
-	
-//	@Test
-//	@WithMockKeycloakUser(username="user1", roles={ "user" })
-//	//@WithMockUser
-//	public void allowsPostRequestsToCollectionResourceForAuthenticatedUser() throws Exception {
-//		System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
-//		System.out.println(this.mvc.toString());
-//		System.out.println(SecurityContextHolder.getContext().getAuthentication().toString());
-////		KeycloakAuthenticationToken token = (KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-////		token.getPrincipal().
-////        AccessToken accessToken = token.getToken();
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.add(HttpHeaders.ACCEPT, MediaTypes.HAL_JSON_VALUE);
-//		//headers.add(HttpHeaders.AUTHORIZATION);
-//		KeycloakPrincipal<KeycloakSecurityContext> principal = (KeycloakPrincipal<KeycloakSecurityContext>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		String responseContent = mvc.perform(post("/api/imagesCollections")
-//				//.with(securityContext(SecurityContextHolder.getContext()))
-//				//.with(testSecurityContext())
-//				//.with(opaqueToken())
-//				.header("Authorization", "Bearer " + principal.getKeycloakSecurityContext().getIdTokenString())
-//				.content(PAYLOAD)
-//				.accept(MediaTypes.HAL_JSON))
-//				.andExpect(status().isCreated())
-//				.andReturn().getResponse().getContentAsString();
-//		System.out.println(responseContent);
-//		ObjectMapper mapper = new ObjectMapper();
-//		ImagesCollection testColl = mapper.readValue(responseContent, ImagesCollection.class);
-//		assertThat(testColl.getName(), is("test-coll"));
-//		
-//		imagesCollectionRepository.delete(testColl);
-//	}
 	
 }

@@ -20,9 +20,11 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAn
  */
 public interface PyramidAnnotationRepositoryCustom {
 	
+	// not exported
     void setTimeSlices(String pyramidAnnotationId,
             List<PyramidAnnotationTimeSlice> timeSlices);
-
+    
+    // not exported
     List<PyramidAnnotationTimeSlice> getTimeSlices(String pyramidAnnotationId);
 
 }

@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.jupyternotebook;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,13 +26,16 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("notebookDataHandler")
 public class NotebookDataHandler extends BaseDataHandler implements DataHandler{
 	
 	@Autowired
-	CoreConfig config;
+	NotebookRepository notebookRepository;
 	
+	@Autowired
+	CoreConfig config;
 	
 	@Override
 	public void importData(Job job, String outputName) throws Exception {
@@ -61,5 +65,17 @@ public class NotebookDataHandler extends BaseDataHandler implements DataHandler{
         notebookPath = notebookPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return notebookPath;
 	}
+	
+	@Override
+    public void setDataToPublic(String value) {
+    	Optional<Notebook> optNotebook = notebookRepository.findById(value);
+        if(optNotebook.isPresent()) {
+        	Notebook notebook = optNotebook.get();
+            if (!notebook.isPubliclyShared()) {
+            	notebook.setPubliclyShared(true);
+            	notebookRepository.save(notebook);
+            }
+        }
+    }
 
 }

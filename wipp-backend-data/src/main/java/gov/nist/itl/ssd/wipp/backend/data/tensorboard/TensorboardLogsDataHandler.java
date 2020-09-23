@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import java.io.File;
+import java.util.Optional;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,17 @@ public class TensorboardLogsDataHandler extends BaseDataHandler implements DataH
 		String tensorboardLogsPath = inputTensorboardLogs.getAbsolutePath();
 		return tensorboardLogsPath;
 	}
+	
+	@Override
+    public void setDataToPublic(String value) {
+    	Optional<TensorboardLogs> optTensorboardLogs = tensorboardLogsRepository.findById(value);
+        if(optTensorboardLogs.isPresent()) {
+        	TensorboardLogs tensorboardLogs = optTensorboardLogs.get();
+            if (!tensorboardLogs.isPubliclyShared()) {
+            	tensorboardLogs.setPubliclyShared(true);
+            	tensorboardLogsRepository.save(tensorboardLogs);
+            }
+        }
+    }
 	
 }

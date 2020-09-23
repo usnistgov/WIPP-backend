@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import java.io.File;
+import java.util.Optional;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
         setOutputId(job, outputName, outputPyramid.getId());
     }
 
+    @Override
     public String exportDataAsParam(String value) {
         String pyramidId = value;
         File inputPyramidFolder = new File(config.getPyramidsFolder(), pyramidId);
@@ -68,4 +70,15 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
         return pyramidPath;
     }
 
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<Pyramid> optPyramid = pyramidRepository.findById(value);
+        if(optPyramid.isPresent()) {
+        	Pyramid pyramid = optPyramid.get();
+            if (!pyramid.isPubliclyShared()) {
+            	pyramid.setPubliclyShared(true);
+            	pyramidRepository.save(pyramid);
+            }
+        }
+    }
 }

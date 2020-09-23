@@ -97,5 +97,17 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
         return csvCollectionPath;
 
     }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<CsvCollection> optCsvCollection = csvCollectionRepository.findById(value);
+        if(optCsvCollection.isPresent()) {
+            CsvCollection csvCollection = optCsvCollection.get();
+            if (!csvCollection.isPubliclyShared()) {
+                csvCollection.setPubliclyShared(true);
+                csvCollectionRepository.save(csvCollection);
+            }
+        }
+    }
 
 }

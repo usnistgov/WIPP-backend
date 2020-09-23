@@ -3,6 +3,7 @@ package gov.nist.itl.ssd.wipp.backend.core.model.job;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
@@ -60,6 +61,9 @@ public class JobEventHandler {
             job.setOwner(workflow.get().getOwner());
         } else {
         	throw new NotFoundException("Workflow with id " + job.getWippWorkflow() + " not found");
+        }
+        if (workflow.get().getStatus() != WorkflowStatus.CREATED) {
+            throw new ClientException("Can not add job to workflow that is not in CREATION mode");
         }
 
     }

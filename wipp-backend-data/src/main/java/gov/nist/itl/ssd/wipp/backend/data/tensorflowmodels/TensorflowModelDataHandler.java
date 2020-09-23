@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +61,7 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 		setOutputId(job, outputName, tm.getId());
 	}
 	
+	@Override
     public String exportDataAsParam(String value) {
         String tensorflowModelId = value;
         String tensorflowModelPath;
@@ -82,6 +84,18 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
         tensorflowModelPath = tensorflowModelPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return tensorflowModelPath;
 
+    }
+	
+	@Override
+    public void setDataToPublic(String value) {
+    	Optional<TensorflowModel> optTensorflowModel = tensorflowModelRepository.findById(value);
+        if(optTensorflowModel.isPresent()) {
+        	TensorflowModel tensorflowModel = optTensorflowModel.get();
+            if (!tensorflowModel.isPubliclyShared()) {
+            	tensorflowModel.setPubliclyShared(true);
+            	tensorflowModelRepository.save(tensorflowModel);
+            }
+        }
     }
 
 }

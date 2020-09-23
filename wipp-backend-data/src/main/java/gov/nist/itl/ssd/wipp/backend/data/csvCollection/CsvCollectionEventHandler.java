@@ -86,7 +86,7 @@ public class CsvCollectionEventHandler {
         }
         
         // An unlocked collection cannot become public
-    	if (!oldTc.isPubliclyShared() && csvCollection.isPubliclyShared()){
+    	if (!oldTc.isPubliclyShared() && csvCollection.isPubliclyShared() && !oldTc.isLocked()){
             throw new ClientException("Can not set an unlocked collection to public, please lock collection first.");
         }
         

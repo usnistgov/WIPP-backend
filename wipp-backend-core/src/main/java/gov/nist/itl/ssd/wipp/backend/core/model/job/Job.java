@@ -175,6 +175,10 @@ public class Job {
     public Map<String, String> getOutputParameters() {
         return outputParameters;
     }
+    
+    public String getOutputParameter(String key) {
+        return this.outputParameters.get(key);
+    }
 
     public void setOutputParameters(Map<String, String> outputParameters) {
         this.outputParameters = outputParameters;

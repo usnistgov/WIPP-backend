@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.core.annotation.HandleAfterSave;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
@@ -8,10 +9,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.job.JobUtilsService;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,6 +34,12 @@ public class WorkflowEventHandler {
 	
 	@Autowired
     private WorkflowLogic workflowLogic;
+	
+	@Autowired
+	JobRepository jobRepository;
+	
+	@Autowired
+	JobUtilsService jobUtilsService;
 
 	@PreAuthorize("isAuthenticated()")
     @HandleBeforeCreate
@@ -64,6 +75,11 @@ public class WorkflowEventHandler {
             throw new ClientException("Can not change a public workflow to private.");
         }
     	
+    	// Only succeeded workflows can become public
+    	if (!oldW.isPubliclyShared() && workflow.isPubliclyShared() && oldW.getStatus() != WorkflowStatus.SUCCEEDED){
+            throw new ClientException("Only workflows with status SUCCEEDED can be made public.");
+        }
+    	
     	// Owner cannot be changed
         if (!Objects.equals(
         		workflow.getOwner(),
@@ -79,4 +95,19 @@ public class WorkflowEventHandler {
         }
 
     }
+	
+	@HandleAfterSave
+	public void handleAfterSave(Workflow workflow) {
+		// If workflow was made public, propagate public status to jobs and outputs
+		if (workflow.isPubliclyShared() && workflow.getStatus() == WorkflowStatus.SUCCEEDED) {
+			List<Job> jobs = jobRepository.findByWippWorkflow(workflow.getId());
+			for (Job job: jobs) {
+				if (!job.isPubliclyShared()) {
+					job.setPubliclyShared(true);
+					jobRepository.save(job);
+					jobUtilsService.setOutputsToPublic(job);
+				}
+			}
+		}
+	}
 }

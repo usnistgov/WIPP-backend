@@ -9,33 +9,27 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
-import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
-
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
- * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
-@RepositoryRestResource
-public interface TensorflowModelRepository extends PrincipalFilteredRepository<TensorflowModel, String> {
+@Component
+public class TensorflowModelLogic {
 
-	@Override
-	@RestResource(exported = false)
-	<S extends TensorflowModel> S save(S s);
-	
-	@Override
-	@RestResource(exported = false)
-	void delete(TensorflowModel t);
-	
-	// not exported
-	long countByName(@Param("name") String name);
+    @Autowired
+    private TensorflowModelRepository tensorflowModelRepository;
 
+    public void assertTensorflowModelNameUnique(String name) {
+        if (tensorflowModelRepository.countByName(name) != 0) {
+            throw new ClientException("A tensorflow model named \""
+                    + name + "\" already exists.");
+        }
+    }
 
 }

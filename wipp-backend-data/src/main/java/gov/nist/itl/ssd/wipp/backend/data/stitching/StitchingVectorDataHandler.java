@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.stitching;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,6 +86,7 @@ public class StitchingVectorDataHandler extends BaseDataHandler implements DataH
 
     }
 
+    @Override
     public String exportDataAsParam(String value) {
         String stitchingVectorId = value;
         String stitchingVectorPath;
@@ -107,6 +109,18 @@ public class StitchingVectorDataHandler extends BaseDataHandler implements DataH
         stitchingVectorPath = stitchingVectorPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return stitchingVectorPath;
 
+    }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<StitchingVector> optStitchingVector = stitchingVectorRepository.findById(value);
+        if(optStitchingVector.isPresent()) {
+        	StitchingVector stitchingVector = optStitchingVector.get();
+            if (!stitchingVector.isPubliclyShared()) {
+            	stitchingVector.setPubliclyShared(true);
+            	stitchingVectorRepository.save(stitchingVector);
+            }
+        }
     }
 
     private StitchingVectorTimeSlice createTimeSlice(String filename) {

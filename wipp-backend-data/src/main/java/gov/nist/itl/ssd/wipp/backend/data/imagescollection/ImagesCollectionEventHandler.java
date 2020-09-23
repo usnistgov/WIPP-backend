@@ -101,7 +101,7 @@ public class ImagesCollectionEventHandler {
         }
     	
     	// An unlocked collection cannot become public
-    	if (!oldTc.isPubliclyShared() && imagesCollection.isPubliclyShared()){
+    	if (!oldTc.isPubliclyShared() && imagesCollection.isPubliclyShared() && !oldTc.isLocked()){
             throw new ClientException("Can not set an unlocked collection to public, please lock collection first.");
         }
     	

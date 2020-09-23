@@ -17,10 +17,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.server.EntityLinks;
@@ -44,6 +41,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,6 +58,7 @@ import io.swagger.annotations.Api;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="PyramidAnnotation Entity")
@@ -80,6 +79,7 @@ public class PyramidAnnotationTimeSliceController {
 	private EntityLinks entityLinks;
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('admin') or @pyramidAnnotationSecurity.checkAuthorize(#pyramidAnnotationId, false)")
 	public HttpEntity<PagedModel<EntityModel<PyramidAnnotationTimeSlice>>>
 	getTimeSlicesPage(
 			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
@@ -96,6 +96,7 @@ public class PyramidAnnotationTimeSliceController {
 	}
 
 	@RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('admin') or @pyramidAnnotationSecurity.checkAuthorize(#pyramidAnnotationId, false)")
 	public HttpEntity<PyramidAnnotationTimeSlice> getTimeSlice(
 			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
 			@PathVariable("timeSliceId") int timeSliceId) {
@@ -112,6 +113,7 @@ public class PyramidAnnotationTimeSliceController {
 	@RequestMapping(
 			value = "/{timeSliceId}/annotationPositions",
 			method = RequestMethod.GET)
+	@PreAuthorize("hasRole('admin') or @pyramidAnnotationSecurity.checkAuthorize(#pyramidAnnotationId, false)")
 	public void getAnnotationPositions(
 			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
 			@PathVariable("timeSliceId") int timeSliceId,
@@ -137,6 +139,7 @@ public class PyramidAnnotationTimeSliceController {
 	@RequestMapping(
 			value = "/{timeSliceId}/annotationPositions",
 			method = RequestMethod.POST)
+	@PreAuthorize("hasRole('admin') or @pyramidAnnotationSecurity.checkAuthorize(#pyramidAnnotationId, true)")
 	public PyramidAnnotation uploadAnnotationPositions(
 			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
 			@PathVariable("timeSliceId") int timeSliceId,
