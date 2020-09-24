@@ -10,12 +10,12 @@ MONGO_HOST=$1
 MONGO_PORT=$2
 SHARED_PVC=$3
 
-if [[ -ne ${KEYCLOAK_AUTH_URL} ]]; then
+if [[ -z ${KEYCLOAK_AUTH_URL} ]]; then
   echo "Missing Keycloak auth server URL env var."
   exit 1
 fi
 
-if [[ -ne ${KEYCLOAK_SSL_REQUIRED} ]]; then
+if [[ -z ${KEYCLOAK_SSL_REQUIRED} ]]; then
   KEYCLOAK_SSL_REQUIRED="external"
 fi
 
