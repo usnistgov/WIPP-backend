@@ -10,6 +10,15 @@ MONGO_HOST=$1
 MONGO_PORT=$2
 SHARED_PVC=$3
 
+if [[ -n ${KEYCLOAK_AUTH_URL} ]]; then
+  echo "Missing Keycloak auth server URL env var."
+  exit 1
+fi
+
+if [[ -n ${KEYCLOAK_SSL_REQUIRED} ]]; then
+  KEYCLOAK_SSL_REQUIRED="external"
+fi
+
 sed -i \
   -e 's/@mongo_host@/'"${MONGO_HOST}"'/' \
   -e 's/@mongo_port@/'"${MONGO_PORT}"'/' \
