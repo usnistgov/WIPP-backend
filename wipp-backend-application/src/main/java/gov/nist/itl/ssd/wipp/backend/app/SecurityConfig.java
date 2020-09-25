@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
@@ -84,6 +85,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 		
 		http
 			.csrf().disable() 
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
 			// restrict Create/Update/Delete operations to authenticated users
 			.authorizeRequests()
 				.antMatchers(HttpMethod.POST).authenticated()
