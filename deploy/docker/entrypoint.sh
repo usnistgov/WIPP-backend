@@ -19,12 +19,17 @@ if [[ -z $KEYCLOAK_SSL_REQUIRED ]]; then
   KEYCLOAK_SSL_REQUIRED="external"
 fi
 
+if [[ -z $KEYCLOAK_DISABLE_TRUST_MANAGER ]]; then
+  KEYCLOAK_DISABLE_TRUST_MANAGER="false"
+fi
+
 sed -i \
   -e 's/@mongo_host@/'"${MONGO_HOST}"'/' \
   -e 's/@mongo_port@/'"${MONGO_PORT}"'/' \
   -e 's/@shared_pvc@/'"${SHARED_PVC}"'/' \
   -e 's|@keycloak_auth_url@|'"${KEYCLOAK_AUTH_URL}"'|' \
   -e 's|@keycloak_ssl_required@|'"${KEYCLOAK_SSL_REQUIRED}"'|' \
+  -e 's|@keycloak_disable_trust_manager@|'"${KEYCLOAK_DISABLE_TRUST_MANAGER}"'|' \
   -e 's|@workflow_nodeSelector@|'"${NODE_SELECTOR}"'|' \
   -e 's|@workflow_tolerations@|'"${TOLERATIONS}"'|' \
   /opt/wipp/config/application.properties

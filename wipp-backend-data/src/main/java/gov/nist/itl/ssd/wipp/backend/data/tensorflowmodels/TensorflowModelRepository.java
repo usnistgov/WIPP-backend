@@ -28,10 +28,6 @@ public interface TensorflowModelRepository extends PrincipalFilteredRepository<T
 
 	@Override
 	@RestResource(exported = false)
-	<S extends TensorflowModel> S save(S s);
-	
-	@Override
-	@RestResource(exported = false)
 	void delete(TensorflowModel t);
 	
 	// not exported
