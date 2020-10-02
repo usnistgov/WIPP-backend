@@ -6,7 +6,7 @@ EXPOSE 8080
 ARG BACKEND_NAME="wipp-backend-application"
 ARG EXEC_DIR="/opt/wipp"
 ARG DATA_DIR="/data/WIPP-plugins"
-ARG ARGO_VERSION="v2.3.0"
+ARG ARGO_VERSION="v2.4.2"
 ARG APM_VERSION="1.9.0"
 
 COPY deploy/docker/VERSION /VERSION
