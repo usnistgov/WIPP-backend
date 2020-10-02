@@ -22,7 +22,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -207,7 +207,7 @@ public class WorkflowConverter {
 
         container.setImage("byrnedo/alpine-curl:latest");
 
-        String url = ControllerLinkBuilder.linkTo(
+        String url = WebMvcLinkBuilder.linkTo(
                 WorkflowExitController.class, workflow.getId())
                 .withRel("exit").getHref();
         LOGGER.log(Level.INFO, "workflow url: " + url);

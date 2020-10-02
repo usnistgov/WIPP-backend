@@ -9,10 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
-
-import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-import io.swagger.annotations.Api;
+package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,51 +30,52 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+
 /**
- *
- * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
- */
+*
+* @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+*/
 @Controller
-@Api(tags="TensorflowModel Entity")
-@RequestMapping(CoreConfig.BASE_URI + "/tensorflowModels/{tensorflowModelId}/download")
-public class TensorflowModelDownloadController {
+@RequestMapping(CoreConfig.BASE_URI + "/genericDatas/{genericDataId}/download")
+public class GenericDataDownloadController {
 
 	@Autowired
 	CoreConfig config;
 
 	@Autowired
-	TensorflowModelRepository tensorflowModelRepository;
+	GenericDataRepository genericDataRepository;
 
 	@RequestMapping(
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/zip")
 	public void get(
-			@PathVariable("tensorflowModelId") String tensorflowModelId,
+			@PathVariable("genericDataId") String genericDataId,
 			HttpServletResponse response) throws IOException {
 		
-        TensorflowModel tm = null;
-		Optional<TensorflowModel> optTm = tensorflowModelRepository.findById(tensorflowModelId);
+		GenericData genericData = null;
+		Optional<GenericData> optGenericData = genericDataRepository.findById(genericDataId);
 		
-		if (!optTm.isPresent()) {
+		if (!optGenericData.isPresent()) {
 			throw new ResourceNotFoundException(
-					"Tensorflow model " + tensorflowModelId + " not found.");
-		} else { // TrainedModel is present
-            tm = optTm.get();
+					"Generic Data " + genericDataId + " not found.");
+		} else { // generic data is present
+			genericData = optGenericData.get();
         }
 
-		// get tensorflow model folder
-		File tensorflowModelStorageFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
-		if (! tensorflowModelStorageFolder.exists()) {
+		// get generic data folder
+		File genericDataStorageFolder = new File(config.getGenericDatasFolder(), genericData.getId());
+		if (! genericDataStorageFolder.exists()) {
 			throw new ResourceNotFoundException(
-					"Tensorflow model " + tensorflowModelId + " " + tm.getName() + " not found.");
+					"Generic data " + genericDataId + " " + genericData.getName() + " not found.");
 		}
 
 		response.setHeader("Content-disposition",
-				"attachment;filename=" + "TensorflowModel-" + tm.getName() + ".zip");
+				"attachment;filename=" + "GenericData-" + genericData.getName() + ".zip");
 
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
-		addToZip("", zos, tensorflowModelStorageFolder);
+		addToZip("", zos, genericDataStorageFolder);
 		zos.finish();
 	}
 
@@ -96,6 +94,5 @@ public class TensorflowModelDownloadController {
 			}
 		}
 	}
-
-
+	
 }

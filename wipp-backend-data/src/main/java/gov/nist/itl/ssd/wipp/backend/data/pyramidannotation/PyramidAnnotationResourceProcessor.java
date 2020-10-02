@@ -18,25 +18,25 @@ import org.springframework.stereotype.Component;
 import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelper;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAnnotationTimeSliceController;
 
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @Component
-public class PyramidAnnotationResourceProcessor implements ResourceProcessor<Resource<PyramidAnnotation>> {
+public class PyramidAnnotationResourceProcessor implements RepresentationModelProcessor<EntityModel<PyramidAnnotation>> {
 
     @Autowired
     private PaginationParameterTemplatesHelper assembler;
 
     @Override
-    public Resource<PyramidAnnotation> process(
-            Resource<PyramidAnnotation> resource) {
+    public EntityModel<PyramidAnnotation> process(
+            EntityModel<PyramidAnnotation> resource) {
     	PyramidAnnotation annotation = resource.getContent();
 
-        Link link = ControllerLinkBuilder.linkTo(
+        Link link = WebMvcLinkBuilder.linkTo(
                 PyramidAnnotationTimeSliceController.class, annotation.getId())
                 .withRel("timeSlices");
         resource.add(assembler.appendPaginationParameterTemplates(link));

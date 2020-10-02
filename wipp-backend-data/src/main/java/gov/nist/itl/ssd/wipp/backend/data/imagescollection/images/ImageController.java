@@ -17,7 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,11 +34,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.TemplateVariables;
 import org.springframework.hateoas.UriTemplate;
@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  */
 @RestController
-//@Api(tags="ImagesCollection Entity")
+@Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/images")
 @ExposesResourceFor(Image.class)
 public class ImageController {
@@ -77,13 +77,13 @@ public class ImageController {
     private PaginationParameterTemplatesHelper paginationParameterTemplatesHelper;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public HttpEntity<PagedResources<Resource<Image>>> getFilesPage(
+    public HttpEntity<PagedModel<EntityModel<Image>>> getFilesPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PageableDefault Pageable pageable,
             PagedResourcesAssembler<Image> assembler) {
         Page<Image> files = imageRepository.findByImagesCollection(
                 imagesCollectionId, pageable);
-        PagedResources<Resource<Image>> resources = assembler.toResource(files);
+        PagedModel<EntityModel<Image>> resources = assembler.toModel(files);
 
         resources.forEach(
                 resource -> processResource(imagesCollectionId, resource));
@@ -163,31 +163,31 @@ public class ImageController {
     }
 
     @RequestMapping(value = "filterByFileNameRegex", method = RequestMethod.GET)
-    public HttpEntity<PagedResources<Resource<Image>>> getFilesMatchingRegexPage(
+    public HttpEntity<PagedModel<EntityModel<Image>>> getFilesMatchingRegexPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @RequestParam(value="regex") String regex,
             @PageableDefault Pageable pageable,
             PagedResourcesAssembler<Image> assembler) {
         Page<Image> files = imageRepository.findByImagesCollectionAndFileNameRegex(
                 imagesCollectionId, regex, pageable);
-        PagedResources<Resource<Image>> resources = assembler.toResource(files);
+        PagedModel<EntityModel<Image>> resources = assembler.toModel(files);
         resources.forEach(
                 resource -> processResource(imagesCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
     protected void processResource(String imagesCollectionId,
-            Resource<Image> resource) {
+            EntityModel<Image> resource) {
         Image file = resource.getContent();
 
-        Link link = entityLinks.linkForSingleResource(
+        Link link = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollectionId)
                 .slash("images")
                 .slash(file.getFileName())
                 .withSelfRel();
         resource.add(link);
 
-        link = entityLinks.linkForSingleResource(
+        link = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollectionId)
                 .slash("images")
                 .slash(file.getFileName())
@@ -198,10 +198,10 @@ public class ImageController {
     }
 
     protected void processCollectionResource(String imagesCollectionId,
-    		PagedResources<Resource<Image>> resources,
+    		PagedModel<EntityModel<Image>> resources,
             PagedResourcesAssembler<Image> assembler) {
 
-    	Link imagesFilterLink = entityLinks.linkForSingleResource(
+    	Link imagesFilterLink = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollectionId)
                 .slash("images")
                 .slash("filterByFileNameRegex")

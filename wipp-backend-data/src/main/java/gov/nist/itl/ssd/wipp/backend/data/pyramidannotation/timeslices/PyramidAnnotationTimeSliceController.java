@@ -35,12 +35,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.server.LinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,13 +56,13 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotation;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationConfig;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationRepository;
-//import io.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @RestController
-//@Api(tags="PyramidAnnotation Entity")
+@Api(tags="PyramidAnnotation Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramidAnnotations/{pyramidAnnotationId}/timeSlices")
 @ExposesResourceFor(PyramidAnnotationTimeSlice.class)
 public class PyramidAnnotationTimeSliceController {
@@ -80,7 +80,7 @@ public class PyramidAnnotationTimeSliceController {
 	private EntityLinks entityLinks;
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public HttpEntity<PagedResources<Resource<PyramidAnnotationTimeSlice>>>
+	public HttpEntity<PagedModel<EntityModel<PyramidAnnotationTimeSlice>>>
 	getTimeSlicesPage(
 			@PathVariable("pyramidAnnotationId") String pyramidAnnotationId,
 			@PageableDefault Pageable pageable,
@@ -92,7 +92,7 @@ public class PyramidAnnotationTimeSliceController {
 		for (PyramidAnnotationTimeSlice pats : page) {
 			processResource(pyramidAnnotationId, pats);
 		}
-		return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
+		return new ResponseEntity<>(assembler.toModel(page), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)

@@ -16,7 +16,7 @@ import java.util.List;
 import org.springframework.data.annotation.AccessType;
 import org.springframework.data.annotation.AccessType.Type;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Workaround for https://jira.spring.io/browse/DATAREST-1363
@@ -24,11 +24,11 @@ import org.springframework.hateoas.ResourceSupport;
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-public abstract class CustomResourceSupport extends ResourceSupport {
+public abstract class CustomResourceSupport extends RepresentationModel {
 
     @AccessType(Type.PROPERTY)
     public void setLinks(List<Link> links) {
-        List<Link> actual = super.getLinks();
+        List<Link> actual = super.getLinks().toList();
         actual.clear();
         actual.addAll(links);
     }

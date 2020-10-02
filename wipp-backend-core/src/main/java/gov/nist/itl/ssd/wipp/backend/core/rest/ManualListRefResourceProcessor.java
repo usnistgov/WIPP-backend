@@ -11,20 +11,13 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualListRef;
-import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.hateoas.*;
-import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.hateoas.hal.HalConfiguration;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +30,7 @@ import java.util.stream.Stream;
  */
 @Component
 public class ManualListRefResourceProcessor
-        implements ResourceProcessor<Resource<?>> {
+        implements RepresentationModelProcessor<EntityModel<?>> {
 
     @Autowired
     private EntityLinks entityLinks;
@@ -46,7 +39,7 @@ public class ManualListRefResourceProcessor
             ManualListRefResourceProcessor.class.getName());
 
     @Override
-    public Resource<?> process(Resource<?> resource) {
+    public EntityModel<?> process(EntityModel<?> resource) {
         Class clazz = resource.getContent().getClass();
         Stream<Field> ownFields = Arrays.stream(clazz.getDeclaredFields());
 
@@ -67,7 +60,7 @@ public class ManualListRefResourceProcessor
                     Object fieldValues = field.get(resource.getContent());
                     if (fieldValues != null) {
                         for(Object fieldValue: (List<?>) fieldValues) {
-                            Link link = entityLinks.linkToSingleResource(
+                            Link link = entityLinks.linkToItemResource(
                                 manualListRef.value(),
                                 fieldValue
                             );

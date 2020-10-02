@@ -76,6 +76,9 @@ public class CoreConfig {
     
     @Value("${storage.notebooks}")
     private String notebooksFolder;
+    
+    @Value("${storage.generic.datas}")
+    private String genericDatasFolder;
 
     @Value("${storage.notebooks.tmp}")
     private String notebooksTmpFolder;
@@ -127,7 +130,7 @@ public class CoreConfig {
 		return workflowsFolder;
 	}
 
-    public String getStitchingFolder() {
+	public String getStitchingFolder() {
         return stitchingFolder;
     }
     
@@ -157,6 +160,10 @@ public class CoreConfig {
 
 	public String getNotebooksTmpFolder() {
 		return notebooksTmpFolder;
+	}
+	
+    public String getGenericDatasFolder() {
+		return genericDatasFolder;
 	}
 
     public String getWorkflowBinary() {
