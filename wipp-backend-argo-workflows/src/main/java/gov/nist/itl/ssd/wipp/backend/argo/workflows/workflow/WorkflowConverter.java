@@ -308,7 +308,6 @@ public class WorkflowConverter {
         argoWorkflowSpec.setTolerations(this.generateTolerations());
         argoWorkflowSpec.setTemplates(this.generateSpecTemplates());
         argoWorkflowSpec.setVolumes(this.generateSpecVolumes());
-        argoWorkflowSpec.setSecurityContext(new ArgoSecurityContext());
 
         return argoWorkflowSpec;
     }

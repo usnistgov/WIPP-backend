@@ -16,7 +16,6 @@ public class ArgoWorkflowSpec {
     private List<Map<String, String>> tolerations;
     private List<ArgoAbstractTemplate> templates;
     private List<ArgoVolume> volumes;
-    private ArgoSecurityContext securityContext;
 
     public String getEntrypoint() {
         return entrypoint;
@@ -57,12 +56,4 @@ public class ArgoWorkflowSpec {
     public void setVolumes(List<ArgoVolume> volumes) {
         this.volumes = volumes;
     }
-
-	public ArgoSecurityContext getSecurityContext() {
-		return securityContext;
-	}
-
-	public void setSecurityContext(ArgoSecurityContext securityContext) {
-		this.securityContext = securityContext;
-	}
 }
