@@ -308,6 +308,7 @@ public class WorkflowConverter {
         argoWorkflowSpec.setTolerations(this.generateTolerations());
         argoWorkflowSpec.setTemplates(this.generateSpecTemplates());
         argoWorkflowSpec.setVolumes(this.generateSpecVolumes());
+        argoWorkflowSpec.setSecurityContext(new ArgoSecurityContext());
 
         return argoWorkflowSpec;
     }
@@ -347,7 +348,7 @@ public class WorkflowConverter {
      * @return the sub path of the data volume to mount 
      */
     private String getOutputMountSubPath(String jobId){
-		return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
-				.replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
+        return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
+                .replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
     }
 }

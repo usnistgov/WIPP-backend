@@ -17,8 +17,10 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
  */
 public interface ImagesCollectionRepositoryCustom {
 
+	// not exported
     void updateImagesCaches(String imagesCollectionId);
 
+    // not exported
     void updateMetadataFilesCaches(String imagesCollectionId);
 
 }

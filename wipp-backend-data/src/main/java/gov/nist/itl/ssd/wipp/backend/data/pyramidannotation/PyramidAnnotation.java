@@ -40,6 +40,8 @@ public class PyramidAnnotation {
     
 	private String name;
 	
+	private String owner;
+	
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
     
@@ -53,6 +55,8 @@ public class PyramidAnnotation {
     @Indexed
     @ManualRef(Pyramid.class)
     private String pyramid;
+    
+    private boolean publiclyShared;
     
     public PyramidAnnotation() {
     }
@@ -81,7 +85,15 @@ public class PyramidAnnotation {
         return name;
     }
     
-    public String getId() {
+    public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public String getId() {
         return id;
     }
 
@@ -89,7 +101,11 @@ public class PyramidAnnotation {
         return creationDate;
     }
 
-    public List<PyramidAnnotationTimeSlice> getTimeSlices() {
+    public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public List<PyramidAnnotationTimeSlice> getTimeSlices() {
         // For backward compatibility
         if (timeSlices == null) {
             return Arrays.asList(new PyramidAnnotationTimeSlice(1));
@@ -113,5 +129,13 @@ public class PyramidAnnotation {
     @JsonIgnore
 	public String getPyramid() {
 		return pyramid;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
 	}
 }

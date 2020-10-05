@@ -35,12 +35,16 @@ public class TensorflowModel extends Data {
 
 	private String name;
 
+	private String owner;
+
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date creationDate;
 	
     @Indexed(unique = true, sparse = true)
     @ManualRef(Job.class)
     private String sourceJob;
+
+	private boolean publiclyShared;
 
 	public TensorflowModel(){
 	}
@@ -77,5 +81,20 @@ public class TensorflowModel extends Data {
     public String getSourceJob() {
         return sourceJob;
     }
-    
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
+	}
 }

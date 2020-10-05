@@ -40,6 +40,7 @@ public class CsvCollectionResourceProcessor implements RepresentationModelProces
 		
         Link downloadLink = linkTo(CsvCollectionDownloadController.class,
         		csvCollection.getId())
+        		.slash("request")
                 .withRel("download");
         resource.add(downloadLink);
 

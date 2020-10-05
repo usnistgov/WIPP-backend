@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import java.io.File;
+import java.util.Optional;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("pyramidDataHandler")
 public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
@@ -41,6 +43,10 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
     @Override
     public void importData(Job job, String outputName) throws JobExecutionException {
         Pyramid outputPyramid = new Pyramid(job, outputName);
+        // Set pyramid owner to job owner
+        outputPyramid.setOwner(job.getOwner());
+        // Set pyramid to private
+        outputPyramid.setPubliclyShared(false);
         pyramidRepository.save(outputPyramid);
 
         File pyramidFolder = new File(config.getPyramidsFolder(), outputPyramid.getId());
@@ -56,6 +62,7 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
         setOutputId(job, outputName, outputPyramid.getId());
     }
 
+    @Override
     public String exportDataAsParam(String value) {
         String pyramidId = value;
         File inputPyramidFolder = new File(config.getPyramidsFolder(), pyramidId);
@@ -63,4 +70,15 @@ public class PyramidDataHandler extends BaseDataHandler implements DataHandler{
         return pyramidPath;
     }
 
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<Pyramid> optPyramid = pyramidRepository.findById(value);
+        if(optPyramid.isPresent()) {
+        	Pyramid pyramid = optPyramid.get();
+            if (!pyramid.isPubliclyShared()) {
+            	pyramid.setPubliclyShared(true);
+            	pyramidRepository.save(pyramid);
+            }
+        }
+    }
 }

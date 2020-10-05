@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  *
  * @author Antoine Vandecreme
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Controller
 @Api(tags="ImagesCollection Entity")
@@ -52,6 +55,8 @@ public class ImagesCollectionCopyController {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false))")
     @RequestMapping(
             value = "",
             method = RequestMethod.POST)
@@ -74,6 +79,7 @@ public class ImagesCollectionCopyController {
         }
 
         ImagesCollection copy = new ImagesCollection(name);
+        copy.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         copy = imagesCollectionRepository.save(copy);
 
         try {

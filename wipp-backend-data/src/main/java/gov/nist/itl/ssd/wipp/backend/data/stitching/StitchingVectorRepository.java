@@ -11,9 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -21,21 +19,16 @@ import org.springframework.data.rest.core.annotation.RestResource;
 /**
 *
 * @author Antoine Vandecreme
+* @author Mylene Simon <mylene.simon at nist.gov>
 */
 @RepositoryRestResource
-public interface StitchingVectorRepository  extends MongoRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
+public interface StitchingVectorRepository extends PrincipalFilteredRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
 
 	@Override
 	@RestResource(exported = false)
-	<S extends StitchingVector> S save(S s);
+	void delete(StitchingVector s);
 
-	@Override
-	@RestResource(exported = false)
-	void delete(StitchingVector t);
-
-	Page<StitchingVector> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
-
+	// not exported
 	long countByName(@Param("name") String name);
 
 }

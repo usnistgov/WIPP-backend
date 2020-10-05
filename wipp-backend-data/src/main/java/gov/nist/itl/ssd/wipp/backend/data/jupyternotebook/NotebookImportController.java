@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +41,7 @@ public class NotebookImportController {
 	private NotebookRepository notebookRepository;
 	
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("isAuthenticated()")
     public Notebook importNb(
     		@RequestParam("folderName") String folderName,
             @RequestParam("name") String name,

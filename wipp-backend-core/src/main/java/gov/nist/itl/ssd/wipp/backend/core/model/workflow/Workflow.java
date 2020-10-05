@@ -18,6 +18,8 @@ public class Workflow {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -33,6 +35,17 @@ public class Workflow {
     private String generatedName;
 	
     private String errorMessage;
+    
+    private boolean publiclyShared;
+    
+    public Workflow() {
+    	
+    }
+    
+    public Workflow(String name) {
+    	this.name = name;
+    	this.creationDate = new Date();
+    }
 
     /**
 	 * @return the id
@@ -139,5 +152,19 @@ public class Workflow {
 		this.errorMessage = errorMessage;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
 
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
+	}
 }

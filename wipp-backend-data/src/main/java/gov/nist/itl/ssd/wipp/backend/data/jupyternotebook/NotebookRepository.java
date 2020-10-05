@@ -11,18 +11,18 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.jupyternotebook;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
+
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RepositoryRestResource
-public interface NotebookRepository extends MongoRepository<Notebook, String>{
+public interface NotebookRepository extends PrincipalFilteredRepository<Notebook, String>{
 	@Override
 	@RestResource(exported = false)
 	<S extends Notebook> S save(S s);
@@ -30,9 +30,7 @@ public interface NotebookRepository extends MongoRepository<Notebook, String>{
 	@Override
 	@RestResource(exported = false)
 	void delete(Notebook t);
-
-	Page<Notebook> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
 	
+	@RestResource(exported = false)
 	Notebook findOneByName(@Param("name") String name);
 }

@@ -30,6 +30,7 @@ import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +41,7 @@ import java.util.Optional;
 /**
  *
  * @author Samia Benjida <samia.benjida at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="CsvCollection Entity")
@@ -60,6 +62,7 @@ public class CsvController {
     private CsvHandler csvHandler;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, false)")
     public HttpEntity<PagedModel<EntityModel<Csv>>> getFilesPage(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PageableDefault Pageable pageable,
@@ -74,6 +77,8 @@ public class CsvController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteAllFiles(
             @PathVariable("csvCollectionId") String csvCollectionId) {
         Optional<CsvCollection> tc =csvCollectionRepository.findById(
@@ -88,6 +93,8 @@ public class CsvController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteFile(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PathVariable("fileName") String fileName) {

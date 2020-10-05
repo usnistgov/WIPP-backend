@@ -34,5 +34,10 @@ public class DefaultDataHandler implements DataHandler {
     public String exportDataAsParam(String value) {
         return value;
     }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	// nothing to be done for non-wipp data
+    }
 
 }

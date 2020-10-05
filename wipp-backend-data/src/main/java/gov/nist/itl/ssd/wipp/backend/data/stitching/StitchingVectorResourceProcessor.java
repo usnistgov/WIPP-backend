@@ -49,6 +49,7 @@ public class StitchingVectorResourceProcessor
                 vector.getId()).exists()) {
             link = WebMvcLinkBuilder.linkTo(
                     StitchingVectorStatisticsController.class, vector.getId())
+                    .slash("request")
                     .withRel("statistics");
             resource.add(link);
         }

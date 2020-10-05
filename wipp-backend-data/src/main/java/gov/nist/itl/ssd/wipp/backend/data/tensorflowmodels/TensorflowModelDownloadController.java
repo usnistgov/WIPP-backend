@@ -12,7 +12,14 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
+import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import io.swagger.annotations.Api;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,14 +35,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
+ * Tensorflow Models download controller
  *
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Controller
 @Api(tags="TensorflowModel Entity")
@@ -47,15 +59,56 @@ public class TensorflowModelDownloadController {
 
 	@Autowired
 	TensorflowModelRepository tensorflowModelRepository;
+	
+	@Autowired
+    private DataDownloadTokenRepository dataDownloadTokenRepository;
 
+	@RequestMapping(
+            value = "request",
+            method = RequestMethod.GET,
+            produces = "application/json")
+	@PreAuthorize("hasRole('admin') or @tensorflowModelSecurity.checkAuthorize(#tensorflowModelId, false)")
+    public DownloadUrl requestDownload(
+            @PathVariable("tensorflowModelId") String tensorflowModelId) {
+    	
+    	// Check existence of images collection
+    	Optional<TensorflowModel> tm = tensorflowModelRepository.findById(
+    			tensorflowModelId);
+        if (!tm.isPresent()) {
+            throw new ResourceNotFoundException(
+                    "Tensorflow model " + tensorflowModelId + " not found.");
+        }
+        
+        // Generate download token
+        DataDownloadToken downloadToken = new DataDownloadToken(tensorflowModelId);
+        dataDownloadTokenRepository.save(downloadToken);
+        
+        // Generate and send unique download URL
+        String tokenParam = "?token=" + downloadToken.getToken();
+        String downloadLink = linkTo(TensorflowModelDownloadController.class,
+        		tensorflowModelId).toString() + tokenParam;
+        return new DownloadUrl(downloadLink);
+    }
+	
 	@RequestMapping(
 			value = "",
 			method = RequestMethod.GET,
 			produces = "application/zip")
 	public void get(
 			@PathVariable("tensorflowModelId") String tensorflowModelId,
+			@RequestParam("token") String token,
 			HttpServletResponse response) throws IOException {
 		
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+    	
+		// Check validity of download token
+    	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
+    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(tensorflowModelId)) {
+    		throw new ForbiddenException("Invalid download token.");
+    	}
+    	
+    	// Check existence of Tensorflow Model
         TensorflowModel tm = null;
 		Optional<TensorflowModel> optTm = tensorflowModelRepository.findById(tensorflowModelId);
 		
@@ -79,6 +132,9 @@ public class TensorflowModelDownloadController {
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 		addToZip("", zos, tensorflowModelStorageFolder);
 		zos.finish();
+		
+		// Clear security context after system operations
+		SecurityContextHolder.clearContext();
 	}
 
 	//Recursive method to handle sub-folders

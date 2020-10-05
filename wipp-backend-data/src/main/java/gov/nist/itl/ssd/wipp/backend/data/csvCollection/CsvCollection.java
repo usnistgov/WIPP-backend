@@ -35,6 +35,8 @@ public class CsvCollection {
 
 	private String name;
 
+	private String owner;
+
 	private boolean locked;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -55,6 +57,9 @@ public class CsvCollection {
 	@Indexed(unique = true, sparse = true)
 	@ManualRef(Job.class)
 	private String sourceJob;
+
+	private boolean publiclyShared;
+
 
 	public CsvCollection() {
 	}
@@ -94,6 +99,23 @@ public class CsvCollection {
 	public String getSourceJob() {
 		return sourceJob;
 	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
+	}
+
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;

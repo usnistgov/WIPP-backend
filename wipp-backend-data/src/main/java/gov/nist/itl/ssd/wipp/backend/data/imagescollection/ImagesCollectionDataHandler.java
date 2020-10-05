@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author Samia Benjida <samia.benjida at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("collectionDataHandler")
 public class ImagesCollectionDataHandler extends BaseDataHandler implements DataHandler {
@@ -51,6 +52,10 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     @Override
     public void importData(Job job, String outputName) throws IOException {
         ImagesCollection outputImagesCollection = new ImagesCollection(job, outputName);
+        // Set collection owner to job owner
+        outputImagesCollection.setOwner(job.getOwner());
+        // Set collection to private
+        outputImagesCollection.setPubliclyShared(false);
         outputImagesCollection = imagesCollectionRepository.save(
                 outputImagesCollection);
 
@@ -82,7 +87,6 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
     public String exportDataAsParam(String value) {
         String imagesCollectionId = value;
         String imagesCollectionPath;
-
         // check if the input of the job is the output of another job and if so return the associated path
         String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
         Pattern pattern = Pattern.compile(regex);
@@ -106,8 +110,20 @@ public class ImagesCollectionDataHandler extends BaseDataHandler implements Data
             imagesCollectionPath = inputImagesFolder.getAbsolutePath();
 
         }
-        imagesCollectionPath = imagesCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
+        imagesCollectionPath = imagesCollectionPath.replace("\\","/").replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return imagesCollectionPath;
+    }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<ImagesCollection> optImagesCollection = imagesCollectionRepository.findById(value);
+        if(optImagesCollection.isPresent()) {
+        	ImagesCollection imagesCollections = optImagesCollection.get();
+            if (!imagesCollections.isPubliclyShared()) {
+            	imagesCollections.setPubliclyShared(true);
+            	imagesCollectionRepository.save(imagesCollections);
+            }
+        }
     }
 
     private void importFolder(FileHandler fileHandler, File file, String id) throws IOException {

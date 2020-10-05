@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("tensorflowModelDataHandler")
 
@@ -41,7 +43,10 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		TensorflowModel tm = new TensorflowModel(job, outputName);
 		tensorflowModelRepository.save(tm);
-
+		// Set owner to job owner
+        tm.setOwner(job.getOwner());
+        // Set TM to private
+        tm.setPubliclyShared(false);
 
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
@@ -56,6 +61,7 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 		setOutputId(job, outputName, tm.getId());
 	}
 	
+	@Override
     public String exportDataAsParam(String value) {
         String tensorflowModelId = value;
         String tensorflowModelPath;
@@ -78,6 +84,18 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
         tensorflowModelPath = tensorflowModelPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return tensorflowModelPath;
 
+    }
+	
+	@Override
+    public void setDataToPublic(String value) {
+    	Optional<TensorflowModel> optTensorflowModel = tensorflowModelRepository.findById(value);
+        if(optTensorflowModel.isPresent()) {
+        	TensorflowModel tensorflowModel = optTensorflowModel.get();
+            if (!tensorflowModel.isPubliclyShared()) {
+            	tensorflowModel.setPubliclyShared(true);
+            	tensorflowModelRepository.save(tensorflowModel);
+            }
+        }
     }
 
 }

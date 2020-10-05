@@ -14,7 +14,6 @@ package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 
 import java.util.Date;
@@ -38,6 +37,8 @@ public class Pyramid {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -45,7 +46,14 @@ public class Pyramid {
     @ManualRef(Job.class)
     private String job;
 
+    private boolean publiclyShared;
+
     public Pyramid() {
+    }
+    
+    public Pyramid(String name) {
+    	this.name = name;
+    	this.creationDate = new Date();
     }
 
     public Pyramid(Job job) {
@@ -76,4 +84,19 @@ public class Pyramid {
         return job;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public boolean isPubliclyShared() {
+        return publiclyShared;
+    }
+
+    public void setPubliclyShared(boolean publiclyShared) {
+        this.publiclyShared = publiclyShared;
+    }
 }

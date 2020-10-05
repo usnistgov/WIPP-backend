@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import java.io.File;
+import java.util.Optional;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("tensorboardLogsDataHandler")
 public class TensorboardLogsDataHandler extends BaseDataHandler implements DataHandler{
@@ -28,6 +30,10 @@ public class TensorboardLogsDataHandler extends BaseDataHandler implements DataH
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		
 		TensorboardLogs tl = new TensorboardLogs(job, outputName);
+		// Set owner to job owner
+		tl.setOwner(job.getOwner());
+		// Set TL to private
+		tl.setPubliclyShared(false);
 		tensorboardLogsRepository.save(tl);
 		
 		File tensorboardLogsFolder = new File(config.getTensorboardLogsFolder(), tl.getName());
@@ -49,5 +55,17 @@ public class TensorboardLogsDataHandler extends BaseDataHandler implements DataH
 		String tensorboardLogsPath = inputTensorboardLogs.getAbsolutePath();
 		return tensorboardLogsPath;
 	}
+	
+	@Override
+    public void setDataToPublic(String value) {
+    	Optional<TensorboardLogs> optTensorboardLogs = tensorboardLogsRepository.findById(value);
+        if(optTensorboardLogs.isPresent()) {
+        	TensorboardLogs tensorboardLogs = optTensorboardLogs.get();
+            if (!tensorboardLogs.isPubliclyShared()) {
+            	tensorboardLogs.setPubliclyShared(true);
+            	tensorboardLogsRepository.save(tensorboardLogs);
+            }
+        }
+    }
 	
 }

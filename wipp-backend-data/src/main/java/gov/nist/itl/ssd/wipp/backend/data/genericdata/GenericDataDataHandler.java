@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi@nist.gov>
+* @author Mylene Simon <mylene.simon at nist.gov>
 */
 @Component("genericDataDataHandler")
 public class GenericDataDataHandler extends BaseDataHandler implements DataHandler{
@@ -44,6 +46,10 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		GenericData genericData = new GenericData(job, outputName);
+		// Set genericData owner to job owner
+		genericData.setOwner(job.getOwner());
+		// Set genericData to private
+		genericData.setPubliclyShared(false);
 		genericDataRepository.save(genericData);
 
 		File genericDataFolder = new File(config.getGenericDatasFolder(), genericData.getId());
@@ -106,7 +112,7 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
             String outputName = m.group(2);
             genericDataPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
         }
-        // else return the path of the tensorflow model
+        // else return the path of the generic data
         else {
             File genericDataFolder = new File(config.getGenericDatasFolder(), genericDataId);
             genericDataPath = genericDataFolder.getAbsolutePath();
@@ -115,6 +121,18 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
         genericDataPath = genericDataPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return genericDataPath;
 
+    }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<GenericData> optGenericData = genericDataRepository.findById(value);
+        if(optGenericData.isPresent()) {
+        	GenericData genericData = optGenericData.get();
+            if (!genericData.isPubliclyShared()) {
+            	genericData.setPubliclyShared(true);
+            	genericDataRepository.save(genericData);
+            }
+        }
     }
 	
 }

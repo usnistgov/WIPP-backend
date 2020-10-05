@@ -29,7 +29,7 @@ public class TensorflowModelResourceProcessor implements RepresentationModelProc
 		TensorflowModel tm = resource.getContent();
 		
         Link downloadLink = linkTo(TensorflowModelDownloadController.class,
-                tm.getId())
+                tm.getId()).slash("request")
                 .withRel("download");
         resource.add(downloadLink);
         

@@ -11,6 +11,8 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.visualization;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,15 +30,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
+import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.Pyramid;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.PyramidRepository;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSlice;
@@ -67,14 +77,55 @@ public class VisualizationDownloadController {
 	@Autowired
     private PyramidTimeSliceRepository pyramidTimeSliceRepository;
 	
+	@Autowired
+    private DataDownloadTokenRepository dataDownloadTokenRepository;
+	
+	@RequestMapping(
+            value = "request",
+            method = RequestMethod.GET,
+            produces = "application/json")
+	@PreAuthorize("hasRole('admin') or @visualizationSecurity.checkAuthorize(#visualizationId, false)")
+    public DownloadUrl requestDownload(
+            @PathVariable("visualizationId") String visualizationId) {
+    	
+    	// Check existence of visualization
+    	Optional<Visualization> tc = visualizationRepository.findById(
+    			visualizationId);
+        if (!tc.isPresent()) {
+            throw new ResourceNotFoundException(
+                    "Visualization " + visualizationId + " not found.");
+        }
+        
+        // Generate download token
+        DataDownloadToken downloadToken = new DataDownloadToken(visualizationId);
+        dataDownloadTokenRepository.save(downloadToken);
+        
+        // Generate and send unique download URL
+        String tokenParam = "?token=" + downloadToken.getToken();
+        String downloadLink = linkTo(VisualizationDownloadController.class,
+        		visualizationId).toString() + tokenParam;
+        return new DownloadUrl(downloadLink);
+    }
+	
 	@RequestMapping(
             value = "",
             method = RequestMethod.GET,
             produces = "application/zip")
     public void get(
             @PathVariable("visualizationId") String visualizationId,
+            @RequestParam("token") String token,
             HttpServletResponse response) throws IOException {
         
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+    	
+    	// Check validity of download token
+    	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
+    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(visualizationId)) {
+    		throw new ForbiddenException("Invalid download token.");
+    	}
+    	
+    	// Check existence of visualization
 		Visualization visualization = null;
 		Optional<Visualization> optionalVisualization = visualizationRepository.findById(visualizationId);
 		
@@ -116,6 +167,9 @@ public class VisualizationDownloadController {
 	        zos.putNextEntry(new ZipEntry("/visualization/README.txt"));
 	        printWriter.write(generateREADME());
         }
+        
+        // Clear security context after system operations
+        SecurityContextHolder.clearContext();
         
     }
 	

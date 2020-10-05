@@ -42,7 +42,6 @@ public class ImagesCollectionResourceProcessor
     public EntityModel<ImagesCollection> process(
             EntityModel<ImagesCollection> resource) {
         ImagesCollection imagesCollection = resource.getContent();
-
         Link imagesLink = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollection.getId())
                 .slash("images")
@@ -58,6 +57,7 @@ public class ImagesCollectionResourceProcessor
 
         Link downloadLink = linkTo(ImagesCollectionDownloadController.class,
                 imagesCollection.getId())
+        		.slash("request")
                 .withRel("download");
         resource.add(downloadLink);
 

@@ -39,6 +39,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  *
  * @author Antoine Vandecreme
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="Pyramid Entity")
@@ -61,6 +63,7 @@ public class PyramidTimeSliceController {
 	    private EntityLinks entityLinks;
 
 	    @RequestMapping(value = "", method = RequestMethod.GET)
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
 	    public HttpEntity<PagedModel<EntityModel<PyramidTimeSlice>>>
 	            getTimeSlicesPage(
 	                    @PathVariable("pyramidId") String pyramidId,
@@ -76,6 +79,7 @@ public class PyramidTimeSliceController {
 	    }
 
 	    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
 	    public HttpEntity<PyramidTimeSlice> getTimeSlice(
 	            @PathVariable("pyramidId") String pyramidId,
 	            @PathVariable("timeSliceId") String timeSliceId) {

@@ -26,8 +26,9 @@ public interface MetadataFileRepository
         extends MongoRepository<MetadataFile, String>,
         MetadataFileRepositoryCustom {
 
-    List<MetadataFile> findByImagesCollection(String imagesCollection);
+	List<MetadataFile> findByImagesCollection(String imagesCollection);
 
     Page<MetadataFile> findByImagesCollection(
             String imagesCollection, Pageable p);
+
 }

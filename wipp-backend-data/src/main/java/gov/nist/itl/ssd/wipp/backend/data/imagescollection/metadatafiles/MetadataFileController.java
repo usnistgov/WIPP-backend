@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +41,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,6 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="ImagesCollection Entity")
@@ -69,6 +71,7 @@ public class MetadataFileController {
     private EntityLinks entityLinks;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public HttpEntity<PagedModel<EntityModel<MetadataFile>>> getFilesPage(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PageableDefault Pageable pageable,
@@ -83,6 +86,8 @@ public class MetadataFileController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void deleteAllFiles(
             @PathVariable("imagesCollectionId") String imagesCollectionId) {
     	Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
@@ -97,6 +102,7 @@ public class MetadataFileController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.HEAD)
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public void headFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName,
@@ -109,11 +115,13 @@ public class MetadataFileController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
     public void getFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName,
             HttpServletResponse response) throws IOException {
         File file = metadataFileHandler.getFile(imagesCollectionId, fileName);
+
         response.setContentLengthLong(file.length());
         try (InputStream fis = new FileInputStream(file)) {
             IOUtils.copyLarge(fis, response.getOutputStream());
@@ -124,6 +132,8 @@ public class MetadataFileController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void deleteFile(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName) {

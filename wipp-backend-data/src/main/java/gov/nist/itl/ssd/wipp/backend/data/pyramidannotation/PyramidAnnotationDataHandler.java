@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.timeslices.PyramidAn
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("pyramidAnnotationDataHandler")
 public class PyramidAnnotationDataHandler extends BaseDataHandler implements DataHandler {
@@ -100,6 +102,18 @@ public class PyramidAnnotationDataHandler extends BaseDataHandler implements Dat
         pyramidAnnotationPath = pyramidAnnotationPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return pyramidAnnotationPath;
 	}
+	
+	@Override
+    public void setDataToPublic(String value) {
+    	Optional<PyramidAnnotation> optPyramidAnnotation = pyramidAnnotationRepository.findById(value);
+        if(optPyramidAnnotation.isPresent()) {
+        	PyramidAnnotation pyramidAnnotation = optPyramidAnnotation.get();
+            if (!pyramidAnnotation.isPubliclyShared()) {
+            	pyramidAnnotation.setPubliclyShared(true);
+            	pyramidAnnotationRepository.save(pyramidAnnotation);
+            }
+        }
+    }
 	
     private PyramidAnnotationTimeSlice createTimeSlice(String filename) {
         int timeSlice = Integer.valueOf(

@@ -20,8 +20,6 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepos
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 public abstract class FileUploadController extends FlowjsController {
 
@@ -52,6 +52,8 @@ public abstract class FileUploadController extends FlowjsController {
                 "flowChunkNumber", "flowTotalChunks", "flowChunkSize",
                 "flowTotalSize", "flowIdentifier", "flowFilename",
                 "flowRelativePath"})
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void isChunckUploaded(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletRequest request, HttpServletResponse response)
@@ -68,6 +70,8 @@ public abstract class FileUploadController extends FlowjsController {
                 "flowChunkNumber", "flowTotalChunks", "flowChunkSize",
                 "flowTotalSize", "flowIdentifier", "flowFilename",
                 "flowRelativePath"})
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
     public void uploadChunck(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             HttpServletRequest request,

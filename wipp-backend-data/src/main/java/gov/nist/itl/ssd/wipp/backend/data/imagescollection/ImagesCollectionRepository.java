@@ -11,31 +11,47 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-/**
- *
- * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
- */
 @RepositoryRestResource
 public interface ImagesCollectionRepository
-        extends MongoRepository<ImagesCollection, String>,
+        extends PrincipalFilteredRepository<ImagesCollection, String>,
         ImagesCollectionRepositoryCustom {
 
+	/*
+	 * Filter collection resources access by object name depending on user
+	 */
+	@Query(" { '$and' : ["
+			+ "{'$or':["
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'publiclyShared':true}"
+			+ "]} , "
+			+ "{'name' : {$eq : ?0}}"
+			+ "]}")
     Page<ImagesCollection> findByName(@Param("name") String name, Pageable p);
-
-    Page<ImagesCollection> findByNameContainingIgnoreCase(
-            @Param("name") String name, Pageable p);
-
+	
+	/*
+	 * Filter collection resources access by name, number of images and depending on user
+	 */
+	@Query(" { '$and' : ["
+    		+ "{'$or':["
+    		+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+    		+ "	{'publiclyShared':true}"
+    		+ "]} , "
+    		+ "{'name' : {$regex : '?0', $options: 'i'}}, {'numberOfImages' : {$eq : ?1}}"
+    		+ "]}")
     Page<ImagesCollection> findByNameContainingIgnoreCaseAndNumberOfImages(
             @Param("name") String name,
             @Param("numberOfImages") Integer numberOfImages,
             Pageable p);
 
+    // Not exported
     long countByName(@Param("name") String name);
 
 }
