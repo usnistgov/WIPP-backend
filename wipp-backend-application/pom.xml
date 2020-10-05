@@ -63,7 +63,7 @@
 			</activation>
 			<properties>
 				<mongodb.host>localhost</mongodb.host>
-				<mongodb.database>wipp-plugins-keycloak</mongodb.database>
+				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
