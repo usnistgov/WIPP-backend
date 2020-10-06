@@ -13,9 +13,9 @@ package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSliceController;
@@ -27,7 +27,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelpe
  */
 @Component
 public class StitchingVectorResourceProcessor
-        implements ResourceProcessor<Resource<StitchingVector>> {
+        implements RepresentationModelProcessor<EntityModel<StitchingVector>> {
 
     @Autowired
     private StitchingVectorRepository stitchingVectorRepository;
@@ -36,19 +36,20 @@ public class StitchingVectorResourceProcessor
     private PaginationParameterTemplatesHelper assembler;
 
     @Override
-    public Resource<StitchingVector> process(
-            Resource<StitchingVector> resource) {
+    public EntityModel<StitchingVector> process(
+            EntityModel<StitchingVector> resource) {
         StitchingVector vector = resource.getContent();
 
-        Link link = ControllerLinkBuilder.linkTo(
+        Link link = WebMvcLinkBuilder.linkTo(
                 StitchingVectorTimeSliceController.class, vector.getId())
                 .withRel("timeSlices");
         resource.add(assembler.appendPaginationParameterTemplates(link));
 
         if (stitchingVectorRepository.getStatisticsFile(
                 vector.getId()).exists()) {
-            link = ControllerLinkBuilder.linkTo(
+            link = WebMvcLinkBuilder.linkTo(
                     StitchingVectorStatisticsController.class, vector.getId())
+                    .slash("request")
                     .withRel("statistics");
             resource.add(link);
         }

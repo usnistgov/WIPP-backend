@@ -21,4 +21,6 @@ public interface DataHandler {
     public void importData(Job job, String outputName) throws Exception;
 
     public String exportDataAsParam(String value);
+    
+    public void setDataToPublic(String value);
 }

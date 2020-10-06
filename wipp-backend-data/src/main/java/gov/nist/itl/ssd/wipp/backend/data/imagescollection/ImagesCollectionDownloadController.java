@@ -12,6 +12,11 @@
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
+import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepository;
@@ -19,6 +24,8 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.Metadat
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileRepository;
 import io.swagger.annotations.Api;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,16 +39,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * Images Collections download controller
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
-@Controller
+@RestController
 @Api(tags="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/download")
 public class ImagesCollectionDownloadController {
@@ -60,6 +72,34 @@ public class ImagesCollectionDownloadController {
 
     @Autowired
     private MetadataFileHandler metadataFileHandler;
+    
+    @Autowired
+    private DataDownloadTokenRepository dataDownloadTokenRepository;
+    
+    @RequestMapping(
+            value = "request",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
+    public DownloadUrl requestDownload(
+            @PathVariable("imagesCollectionId") String imagesCollectionId) {
+    	
+		// Check existence of images collection
+		Optional<ImagesCollection> tc = imagesCollectionRepository.findById(imagesCollectionId);
+		if (!tc.isPresent()) {
+			throw new ResourceNotFoundException("Images collection " + imagesCollectionId + " not found.");
+		}
+
+		// Generate download token
+		DataDownloadToken downloadToken = new DataDownloadToken(imagesCollectionId);
+		dataDownloadTokenRepository.save(downloadToken);
+
+		// Generate and send unique download URL
+		String tokenParam = "?token=" + downloadToken.getToken();
+		String downloadLink = linkTo(ImagesCollectionDownloadController.class, imagesCollectionId).toString()
+				+ tokenParam;
+		return new DownloadUrl(downloadLink);
+    }
 
     @RequestMapping(
             value = "",
@@ -67,7 +107,19 @@ public class ImagesCollectionDownloadController {
             produces = "application/zip")
     public void get(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
+            @RequestParam("token") String token,
             HttpServletResponse response) throws IOException {
+    	
+    	// Load security context for system operations
+    	SecurityUtils.runAsSystem();
+    	
+    	// Check validity of download token
+    	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
+    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(imagesCollectionId)) {
+    		throw new ForbiddenException("Invalid download token.");
+    	}
+    	
+    	// Check existence of images collection
     	Optional<ImagesCollection> tc = imagesCollectionRepository.findById(
                 imagesCollectionId);
         if (!tc.isPresent()) {
@@ -75,6 +127,7 @@ public class ImagesCollectionDownloadController {
                     "Images collection " + imagesCollectionId + " not found.");
         }
 
+        // Zip collection and send zip file
         response.setHeader("Content-disposition",
                 "attachment;filename=" + tc.get().getName() + ".zip");
 
@@ -100,6 +153,9 @@ public class ImagesCollectionDownloadController {
             }
         }
         zos.finish();
+        
+     // Clear security context after system operations
+        SecurityContextHolder.clearContext();
     }
-
+    
 }

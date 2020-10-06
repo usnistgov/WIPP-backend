@@ -57,6 +57,10 @@ spec:
               value: wipp-backend
             - name: ELASTIC_APM_APPLICATION_PACKAGES
               value: gov.nist.itl.ssd.wipp.backend
+            - name: NODE_SELECTOR
+              value: NODE_SELECTOR_VALUE
+            - name: TOLERATIONS
+              value: TOLERATIONS_VALUE
           volumeMounts:
             - mountPath: /data/WIPP-plugins
               name: data
@@ -67,5 +71,3 @@ spec:
           persistentVolumeClaim:
             claimName: WIPP_PVC_NAME_VALUE
       restartPolicy: Always
-      imagePullSecrets:
-        - name: labshare-docker

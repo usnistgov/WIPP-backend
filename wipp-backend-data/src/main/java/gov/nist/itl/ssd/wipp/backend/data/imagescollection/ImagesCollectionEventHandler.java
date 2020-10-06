@@ -20,27 +20,24 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.Metadat
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.core.annotation.HandleAfterDelete;
-import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
-import org.springframework.data.rest.core.annotation.HandleBeforeDelete;
-import org.springframework.data.rest.core.annotation.HandleBeforeSave;
-import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component
-@RepositoryEventHandler(ImagesCollection.class)
+@RepositoryEventHandler
 public class ImagesCollectionEventHandler {
 	
 	private static final Logger LOGGER = Logger.getLogger(ImagesCollectionEventHandler.class.getName());
@@ -60,11 +57,19 @@ public class ImagesCollectionEventHandler {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
+    @PreAuthorize("isAuthenticated()")
     @HandleBeforeCreate
     public void handleBeforeCreate(ImagesCollection imagesCollection) {
+    	// Assert imagesCollection name is unique
         imagesCollectionLogic.assertCollectionNameUnique(
                 imagesCollection.getName());
+        
+        // Set creation date to current date
         imagesCollection.setCreationDate(new Date());
+
+        // Set the owner to the connected user
+        imagesCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
+
         
         // Default import method is UPLOADED
         if (imagesCollection.getImportMethod() == null) {
@@ -79,8 +84,10 @@ public class ImagesCollectionEventHandler {
     }
 
     @HandleBeforeSave
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #imagesCollection.owner == principal.name)")
     public void handleBeforeSave(ImagesCollection imagesCollection) {
-    	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
+    	// Assert collection exists
+        Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
     	if (!result.isPresent()) {
         	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
@@ -88,36 +95,58 @@ public class ImagesCollectionEventHandler {
 
         ImagesCollection oldTc = result.get();
 
+    	// A public collection cannot become private
+    	if (oldTc.isPubliclyShared() && !imagesCollection.isPubliclyShared()){
+            throw new ClientException("Can not set a public collection to private.");
+        }
+    	
+    	// An unlocked collection cannot become public
+    	if (!oldTc.isPubliclyShared() && imagesCollection.isPubliclyShared() && !oldTc.isLocked()){
+            throw new ClientException("Can not set an unlocked collection to public, please lock collection first.");
+        }
+    	
+    	// Owner cannot be changed
+        if (!Objects.equals(
+        		imagesCollection.getOwner(),
+                oldTc.getOwner())) {
+            throw new ClientException("Can not change owner.");
+        }
 
+    	// Creation date cannot be changed
         if (!Objects.equals(
                 imagesCollection.getCreationDate(),
                 oldTc.getCreationDate())) {
             throw new ClientException("Can not change creation date.");
         }
 
+        // Import method cannot be changed
         if (!Objects.equals(
                 imagesCollection.getImportMethod(),
                 oldTc.getImportMethod())) {
             throw new ClientException("Can not change import method.");
         }
         
+        // Source catalog cannot be changed
         if (!Objects.equals(
                 imagesCollection.getSourceCatalog(),
                 oldTc.getSourceCatalog())) {
             throw new ClientException("Can not change source catalog.");
         }
         
+        // Source job cannot be changed
         if (!Objects.equals(
                 imagesCollection.getSourceJob(),
                 oldTc.getSourceJob())) {
             throw new ClientException("Can not change source job.");
         }
 
+        // Assert collection name is unique
         if (!Objects.equals(imagesCollection.getName(), oldTc.getName())) {
             imagesCollectionLogic.assertCollectionNameUnique(
                     imagesCollection.getName());
         }
 
+        // Cannot unlock locked collection
         if (imagesCollection.isLocked() != oldTc.isLocked()) {
             if (!imagesCollection.isLocked()) {
                 throw new ClientException("Can not unlock images collection.");
@@ -128,7 +157,9 @@ public class ImagesCollectionEventHandler {
     }
 
     @HandleBeforeDelete
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #imagesCollection.owner == principal.name)")
     public void handleBeforeDelete(ImagesCollection imagesCollection) {
+    	// Assert collection exists
     	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
                 imagesCollection.getId());
     	if (!result.isPresent()) {
@@ -136,11 +167,14 @@ public class ImagesCollectionEventHandler {
         }
 
         ImagesCollection oldTc = result.get();
+        
+        // Locked collection cannot be deleted
         imagesCollectionLogic.assertCollectionNotLocked(oldTc);
     }
 
     @HandleAfterDelete
     public void handleAfterDelete(ImagesCollection imagesCollection) {
+    	// Delete all images and metadataFiles from deleted collection
     	imageRepository.deleteAll(imagesCollection.getId(), false);
     	metadataFileRepository.deleteAll(imagesCollection.getId(), false);
     	File imagesCollectionFolder = new File (config.getImagesCollectionsFolder(), imagesCollection.getId());

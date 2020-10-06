@@ -13,10 +13,11 @@ package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import org.springframework.stereotype.Component;
 
@@ -29,15 +30,15 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSliceCon
 * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
 */
 @Component
-public class PyramidResourceProcessor implements ResourceProcessor<Resource<Pyramid>>{
+public class PyramidResourceProcessor implements RepresentationModelProcessor<EntityModel<Pyramid>>{
 	
 	@Autowired
     private PaginationParameterTemplatesHelper assembler;
 
     @Override
-    public Resource<Pyramid> process(Resource<Pyramid> resource) {
+    public EntityModel<Pyramid> process(EntityModel<Pyramid> resource) {
         Pyramid pyramid = resource.getContent();
-        String selfUri = resource.getId().getHref();
+        String selfUri = resource.getLink(IanaLinkRelations.SELF).get().getHref();
         String pyramidBaseUri = CoreConfig.BASE_URI + "/pyramids/"
                 + pyramid.getId();
 
@@ -54,6 +55,7 @@ public class PyramidResourceProcessor implements ResourceProcessor<Resource<Pyra
 
         Link fetchingLink = linkTo(PyramidFetchingController.class,
                 resource.getContent().getId())
+                .slash("request")
                 .withRel("fetching");
         resource.add(fetchingLink);
 

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
+import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;

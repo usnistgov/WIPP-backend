@@ -12,7 +12,6 @@
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
-
 import java.io.File;
 import java.util.List;
 
@@ -21,12 +20,15 @@ import java.util.List;
 * @author Antoine Vandecreme
 */
 public interface StitchingVectorRepositoryCustom {
-	
-    void setTimeSlices(String stitchingVectorId,
+
+    // not exported
+	void setTimeSlices(String stitchingVectorId,
             List<StitchingVectorTimeSlice> timeSlices);
 
+    // not exported
     List<StitchingVectorTimeSlice> getTimeSlices(String stitchingVectorId);
 
+    // not exported
     File getStatisticsFile(String stitchingVectorId);
 
 }

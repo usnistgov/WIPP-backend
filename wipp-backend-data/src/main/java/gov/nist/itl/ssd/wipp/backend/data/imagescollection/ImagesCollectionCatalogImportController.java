@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,6 +54,8 @@ public class ImagesCollectionCatalogImportController {
 	private ImageConversionService imageConversionService;
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
+	@PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, true))")
 	public void importFromCatalog(
 			@PathVariable("imagesCollectionId") String imagesCollectionId) throws IOException {
 

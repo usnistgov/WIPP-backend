@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +33,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="StitchingVector Entity")
@@ -47,6 +50,7 @@ public class StitchingVectorUploadController {
     private StitchingVectorLogic stitchingVectorLogic;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
+    @PreAuthorize("isAuthenticated()")
     public StitchingVector upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
@@ -69,6 +73,8 @@ public class StitchingVectorUploadController {
                 new StitchingVectorTimeSlice(1, message));
         StitchingVector stitchingVector = new StitchingVector(name,
                 tilesPattern, timeSlices);
+        // Set the owner to the connected user
+        stitchingVector.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         stitchingVector = stitchingVectorRepository.save(stitchingVector);
         File stitchingVectorFolder = new File(
                 config.getStitchingFolder(),

@@ -30,15 +30,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.server.LinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  *
  * @author Antoine Vandecreme
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="Pyramid Entity")
@@ -61,7 +63,8 @@ public class PyramidTimeSliceController {
 	    private EntityLinks entityLinks;
 
 	    @RequestMapping(value = "", method = RequestMethod.GET)
-	    public HttpEntity<PagedResources<Resource<PyramidTimeSlice>>>
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
+	    public HttpEntity<PagedModel<EntityModel<PyramidTimeSlice>>>
 	            getTimeSlicesPage(
 	                    @PathVariable("pyramidId") String pyramidId,
 	                    @PageableDefault Pageable pageable,
@@ -72,10 +75,11 @@ public class PyramidTimeSliceController {
 	        for (PyramidTimeSlice pts : page) {
 	            processResource(pyramidId, pts);
 	        }
-	        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
+	        return new ResponseEntity<>(assembler.toModel(page), HttpStatus.OK);
 	    }
 
 	    @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
 	    public HttpEntity<PyramidTimeSlice> getTimeSlice(
 	            @PathVariable("pyramidId") String pyramidId,
 	            @PathVariable("timeSliceId") String timeSliceId) {

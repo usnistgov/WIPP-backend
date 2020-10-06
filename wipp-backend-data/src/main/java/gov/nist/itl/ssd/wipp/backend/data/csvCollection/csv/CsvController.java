@@ -25,9 +25,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +41,7 @@ import java.util.Optional;
 /**
  *
  * @author Samia Benjida <samia.benjida at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="CsvCollection Entity")
@@ -58,20 +62,23 @@ public class CsvController {
     private CsvHandler csvHandler;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public HttpEntity<PagedResources<Resource<Csv>>> getFilesPage(
+    @PreAuthorize("hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, false)")
+    public HttpEntity<PagedModel<EntityModel<Csv>>> getFilesPage(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PageableDefault Pageable pageable,
             PagedResourcesAssembler<Csv> assembler) {
         Page<Csv> files = csvRepository.findByCsvCollection(
                 csvCollectionId, pageable);
-        PagedResources<Resource<Csv>> resources
-                = assembler.toResource(files);
+        PagedModel<EntityModel<Csv>> resources
+                = assembler.toModel(files);
         resources.forEach(
                 resource -> processResource(csvCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteAllFiles(
             @PathVariable("csvCollectionId") String csvCollectionId) {
         Optional<CsvCollection> tc =csvCollectionRepository.findById(
@@ -86,6 +93,8 @@ public class CsvController {
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
+    @PreAuthorize("isAuthenticated() and "
+    		+ "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteFile(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PathVariable("fileName") String fileName) {
@@ -101,9 +110,9 @@ public class CsvController {
     }
 
     protected void processResource(String csvCollectionId,
-                                   Resource<Csv> resource) {
+                                   EntityModel<Csv> resource) {
         Csv file = resource.getContent();
-        Link link = entityLinks.linkForSingleResource(
+        Link link = entityLinks.linkForItemResource(
                 CsvCollection.class, csvCollectionId)
                 .slash("csv")
                 .slash(file.getFileName())

@@ -11,12 +11,15 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
+import org.springframework.data.repository.query.Param;
+
 /**
  *
  * @author Samia Benjida  <samia.benjida at nist.gov>
  */
 public interface CsvCollectionRepositoryCustom {
-
-    void updateCsvCaches(String csvCollectionId);
+    
+	// not exported
+    void updateCsvCaches(@Param("csvCollectionId") String csvCollectionId);
 
 }

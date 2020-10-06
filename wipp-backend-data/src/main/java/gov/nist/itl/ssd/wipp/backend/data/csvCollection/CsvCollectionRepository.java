@@ -13,23 +13,32 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  * @author Samia Benjida <samia.benjida at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RepositoryRestResource
-public interface CsvCollectionRepository
-		extends MongoRepository<CsvCollection, String>,
-		CsvCollectionRepositoryCustom{
+public interface CsvCollectionRepository extends PrincipalFilteredRepository<CsvCollection, String>, CsvCollectionRepositoryCustom {
 
-	Page<CsvCollection> findByName(@Param("name") String name, Pageable p);
+	/*
+	 * Filter collection resources access by object name depending on user
+	 */
+	@Query(" { '$and' : ["
+			+ "{'$or':["
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'publiclyShared':true}"
+			+ "]} , "
+			+ "{'name' : {$eq : ?0}}"
+			+ "]}")
+    Page<CsvCollection> findByName(@Param("name") String name, Pageable p);
 
-	Page<CsvCollection> findByNameContainingIgnoreCase(
-			@Param("name") String name, Pageable p);
-
+	// not exported
 	long countByName(@Param("name") String name);
 }

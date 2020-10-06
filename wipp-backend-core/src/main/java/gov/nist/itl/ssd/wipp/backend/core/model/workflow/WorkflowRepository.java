@@ -3,10 +3,10 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 
 
 /**
@@ -14,7 +14,12 @@ import org.springframework.data.repository.query.Param;
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  *
  */
-public interface WorkflowRepository extends MongoRepository<Workflow, String> {
-
-	Page<Workflow> findByNameContainingIgnoreCase(@Param("name") String name, Pageable p);
+public interface WorkflowRepository extends PrincipalFilteredRepository<Workflow, String> {
+	
+	@Override
+    @RestResource(exported = false)
+    void delete(Workflow w);
+	
+	// Not exported
+    long countByName(@Param("name") String name);
 }

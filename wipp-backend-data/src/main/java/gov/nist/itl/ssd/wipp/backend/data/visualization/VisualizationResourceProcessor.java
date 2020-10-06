@@ -12,10 +12,10 @@
 package gov.nist.itl.ssd.wipp.backend.data.visualization;
 
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import org.springframework.stereotype.Component;
 
@@ -25,13 +25,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class VisualizationResourceProcessor
-        implements ResourceProcessor<Resource<Visualization>> {
+        implements RepresentationModelProcessor<EntityModel<Visualization>> {
 
     @Override
-    public Resource<Visualization> process(Resource<Visualization> resource) {
+    public EntityModel<Visualization> process(EntityModel<Visualization> resource) {
 
         Link downloadLink = linkTo(VisualizationDownloadController.class,
-                resource.getContent().getId())
+                resource.getContent().getId()).slash("request")
                 .withRel("download");
         resource.add(downloadLink);
 

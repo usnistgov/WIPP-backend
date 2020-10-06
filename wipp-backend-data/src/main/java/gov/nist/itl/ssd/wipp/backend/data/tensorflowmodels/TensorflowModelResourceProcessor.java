@@ -11,10 +11,10 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,14 +22,14 @@ import org.springframework.stereotype.Component;
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Component
-public class TensorflowModelResourceProcessor implements ResourceProcessor<Resource<TensorflowModel>> {
+public class TensorflowModelResourceProcessor implements RepresentationModelProcessor<EntityModel<TensorflowModel>> {
 
 	@Override
-	public Resource<TensorflowModel> process(Resource<TensorflowModel> resource) {
+	public EntityModel<TensorflowModel> process(EntityModel<TensorflowModel> resource) {
 		TensorflowModel tm = resource.getContent();
 		
         Link downloadLink = linkTo(TensorflowModelDownloadController.class,
-                tm.getId())
+                tm.getId()).slash("request")
                 .withRel("download");
         resource.add(downloadLink);
         

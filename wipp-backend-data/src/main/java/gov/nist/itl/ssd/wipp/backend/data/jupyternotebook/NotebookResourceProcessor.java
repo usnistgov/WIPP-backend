@@ -11,11 +11,11 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.jupyternotebook;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,10 +23,10 @@ import org.springframework.stereotype.Component;
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Component
-public class NotebookResourceProcessor implements ResourceProcessor<Resource<Notebook>>{
+public class NotebookResourceProcessor implements RepresentationModelProcessor<EntityModel<Notebook>>{
 	
 	@Override
-	public Resource<Notebook> process(Resource<Notebook> resource) {
+	public EntityModel<Notebook> process(EntityModel<Notebook> resource) {
 		Notebook notebook = resource.getContent();
         
         Link fileLink = linkTo(NotebookGetFileController.class,

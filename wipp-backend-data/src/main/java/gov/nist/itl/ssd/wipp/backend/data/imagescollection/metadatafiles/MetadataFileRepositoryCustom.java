@@ -19,7 +19,7 @@ import org.springframework.data.repository.query.Param;
  */
 public interface MetadataFileRepositoryCustom {
 
-    void deleteByImagesCollection(
+	void deleteByImagesCollection(
             @Param("imagesCollection") String imagesCollection);
 
     void deleteByImagesCollectionAndFileName(

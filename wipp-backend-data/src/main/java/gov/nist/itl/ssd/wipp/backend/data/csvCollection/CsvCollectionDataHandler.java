@@ -13,6 +13,7 @@ package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Component("csvCollectionDataHandler")
 public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHandler{
@@ -36,16 +38,21 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
     @Autowired
     CoreConfig config;
 
-    @Autowired
-    private CsvCollectionRepository csvCollectionRepository;
+	@Autowired
+	private CsvCollectionRepository csvCollectionRepository;
 
     @Autowired
     private CsvHandler csvHandler;
 
-    @Override
-    public void importData(Job job, String outputName) throws JobExecutionException, IOException {
-        CsvCollection csvCollection = new CsvCollection(job, outputName);
-        csvCollectionRepository.save(csvCollection);
+	@Override
+	public void importData(Job job, String outputName) throws JobExecutionException {
+		CsvCollection csvCollection = new CsvCollection(job, outputName);
+        // Set collection owner to job owner
+        csvCollection.setOwner(job.getOwner());
+        // Set collection to private
+        csvCollection.setPubliclyShared(false);
+		csvCollectionRepository.save(csvCollection);
+
         try {
             File jobOutputTempFolder = getJobOutputTempFolder(job.getId(), outputName);
             csvHandler.importFolder(csvCollection.getId(), jobOutputTempFolder);
@@ -54,8 +61,9 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
             csvCollectionRepository.delete(csvCollection);
             throw new JobExecutionException("Cannot move CSV collection to final destination.");
         }
-        setOutputId(job, outputName, csvCollection.getId());
-    }
+
+		setOutputId(job, outputName, csvCollection.getId());
+	}
 
     public String exportDataAsParam(String value) {
         String csvCollectionId = value;
@@ -72,12 +80,34 @@ public class CsvCollectionDataHandler  extends BaseDataHandler implements DataHa
         }
         // else return the path of the csv collection
         else {
+            Optional<CsvCollection> optCsvCollection = csvCollectionRepository.findById(csvCollectionId);
+            if(optCsvCollection.isPresent()) {
+                CsvCollection csvCollection = optCsvCollection.get();
+                if (!csvCollection.isLocked()) {
+                    csvCollection.setLocked(true);
+                    csvCollectionRepository.save(csvCollection);
+                }
+            }
+
             File csvCollectionFolder = new File(config.getCsvCollectionsFolder(), csvCollectionId);
             csvCollectionPath = csvCollectionFolder.getAbsolutePath();
 
         }
         csvCollectionPath = csvCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
         return csvCollectionPath;
+
+    }
+    
+    @Override
+    public void setDataToPublic(String value) {
+    	Optional<CsvCollection> optCsvCollection = csvCollectionRepository.findById(value);
+        if(optCsvCollection.isPresent()) {
+            CsvCollection csvCollection = optCsvCollection.get();
+            if (!csvCollection.isPubliclyShared()) {
+                csvCollection.setPubliclyShared(true);
+                csvCollectionRepository.save(csvCollection);
+            }
+        }
     }
 
 }

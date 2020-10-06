@@ -4,7 +4,7 @@
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-application</artifactId>
 	<name>wipp-backend-app</name>
-	<version>3.0.0-beta2</version>
+	<version>3.0.0</version>
 
 	<packaging>war</packaging>
 
@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.7.RELEASE</version>
+		<version>2.2.9.RELEASE</version>
 		<relativePath />
 	</parent>
 
@@ -73,10 +73,12 @@
 				<storage.collections.upload.tmp>${user.home}/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
 				<storage.stitching>${user.home}/WIPP-plugins/stitching</storage.stitching>
 				<storage.pyramids>${user.home}/WIPP-plugins/pyramids</storage.pyramids>
+				<storage.pyramid.annotations>${user.home}/WIPP-plugins/pyramid-annotations</storage.pyramid.annotations>
 				<storage.tensorflow>${user.home}/WIPP-plugins/tensorflow-models</storage.tensorflow>
 				<storage.tensorboard>${user.home}/WIPP-plugins/tensorboard-logs</storage.tensorboard>
 				<storage.csv.collections>${user.home}/WIPP-plugins/csv-collections</storage.csv.collections>
 				<storage.csvCollections.upload.tmp>${user.home}/WIPP-plugins/temp/csvCollections</storage.csvCollections.upload.tmp>
+				<storage.generic.datas>${user.home}/WIPP-plugins/generic-data</storage.generic.datas>
 				<storage.notebooks>${user.home}/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>${user.home}/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
@@ -99,10 +101,12 @@
 				<storage.collections.upload.tmp>/data/WIPP-plugins/temp/collections</storage.collections.upload.tmp>
 				<storage.stitching>/data/WIPP-plugins/stitching</storage.stitching>
 				<storage.pyramids>/data/WIPP-plugins/pyramids</storage.pyramids>
+				<storage.pyramid.annotations>/data/WIPP-plugins/pyramid-annotations</storage.pyramid.annotations>
 				<storage.tensorflow>/data/WIPP-plugins/tensorflow-models</storage.tensorflow>
 				<storage.tensorboard>/data/WIPP-plugins/tensorboard-logs</storage.tensorboard>
 				<storage.csv.collections>/data/WIPP-plugins/csv-collections</storage.csv.collections>
 				<storage.csvCollections.upload.tmp>/data/WIPP-plugins/temp/csvCollections</storage.csvCollections.upload.tmp>
+				<storage.generic.datas>/data/WIPP-plugins/generic-data</storage.generic.datas>
 				<storage.notebooks>/data/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>/data/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
@@ -110,7 +114,6 @@
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
 		</profile>
-
 	</profiles>
 
 	<dependencies>
@@ -123,6 +126,22 @@
 			<groupId>gov.nist.itl.ssd.wipp</groupId>
 			<artifactId>wipp-backend-argo-workflows</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>           
+		</dependency>
+		<dependency>
+		    <groupId>de.flapdoodle.embed</groupId>
+		    <artifactId>de.flapdoodle.embed.mongo</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	

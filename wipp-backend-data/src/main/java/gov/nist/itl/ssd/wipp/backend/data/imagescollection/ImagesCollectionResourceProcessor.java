@@ -14,12 +14,12 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.rest.PaginationParameterTemplatesHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ImagesCollectionResourceProcessor
-        implements ResourceProcessor<Resource<ImagesCollection>> {
+        implements RepresentationModelProcessor<EntityModel<ImagesCollection>> {
 
     @Autowired
     private PaginationParameterTemplatesHelper assembler;
@@ -39,17 +39,16 @@ public class ImagesCollectionResourceProcessor
     private EntityLinks entityLinks;
 
     @Override
-    public Resource<ImagesCollection> process(
-            Resource<ImagesCollection> resource) {
+    public EntityModel<ImagesCollection> process(
+            EntityModel<ImagesCollection> resource) {
         ImagesCollection imagesCollection = resource.getContent();
-
-        Link imagesLink = entityLinks.linkForSingleResource(
+        Link imagesLink = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollection.getId())
                 .slash("images")
                 .withRel("images");
         resource.add(assembler.appendPaginationParameterTemplates(imagesLink));
 
-        Link metadataFileLink = entityLinks.linkForSingleResource(
+        Link metadataFileLink = entityLinks.linkForItemResource(
                 ImagesCollection.class, imagesCollection.getId())
                 .slash("metadataFiles")
                 .withRel("metadataFiles");
@@ -58,6 +57,7 @@ public class ImagesCollectionResourceProcessor
 
         Link downloadLink = linkTo(ImagesCollectionDownloadController.class,
                 imagesCollection.getId())
+        		.slash("request")
                 .withRel("download");
         resource.add(downloadLink);
 

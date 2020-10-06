@@ -11,29 +11,20 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 /**
 *
 * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+* @author Mylene Simon <mylene.simon at nist.gov>
 */
 @RepositoryRestResource
-public interface PyramidRepository extends MongoRepository<Pyramid, String>{
-
-	@Override
-    @RestResource(exported = false)
-    <S extends Pyramid> S save(S s);
+public interface PyramidRepository extends PrincipalFilteredRepository<Pyramid, String> {
 
     @Override
     @RestResource(exported = false)
     void delete(Pyramid t);
-
-    Page<Pyramid> findByNameContainingIgnoreCase(@Param("name") String name,
-            Pageable p);
 
 }

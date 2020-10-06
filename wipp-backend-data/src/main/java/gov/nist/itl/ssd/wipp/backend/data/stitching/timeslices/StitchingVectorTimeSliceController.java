@@ -11,6 +11,8 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,42 +21,51 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.server.LinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
 import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
+import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
 
 /**
  *
  * @author Antoine Vandecreme
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
 @Api(tags="StitchingVector Entity")
@@ -67,12 +78,16 @@ public class StitchingVectorTimeSliceController {
 
     @Autowired
     private StitchingVectorTimeSliceRepository stitchingVectorTimeSliceRepository;
+    
+    @Autowired
+    private DataDownloadTokenRepository dataDownloadTokenRepository;
 
     @Autowired
     private EntityLinks entityLinks;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public HttpEntity<PagedResources<Resource<StitchingVectorTimeSlice>>>
+	@PreAuthorize("hasRole('admin') or @stitchingVectorSecurity.checkAuthorize(#stitchingVectorId, false)")
+    public HttpEntity<PagedModel<EntityModel<StitchingVectorTimeSlice>>>
             getTimeSlicesPage(
                     @PathVariable("stitchingVectorId") String stitchingVectorId,
                     @PageableDefault Pageable pageable,
@@ -84,10 +99,11 @@ public class StitchingVectorTimeSliceController {
         for (StitchingVectorTimeSlice svts : page) {
             processResource(stitchingVectorId, svts);
         }
-        return new ResponseEntity<>(assembler.toResource(page), HttpStatus.OK);
+        return new ResponseEntity<>(assembler.toModel(page), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{timeSliceId}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('admin') or @stitchingVectorSecurity.checkAuthorize(#stitchingVectorId, false)")
     public HttpEntity<StitchingVectorTimeSlice> getTimeSlice(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId) {
@@ -100,6 +116,35 @@ public class StitchingVectorTimeSliceController {
         processResource(stitchingVectorId, svts);
         return new ResponseEntity<>(svts, HttpStatus.OK);
     }
+    
+    @RequestMapping(
+            value = "/{timeSliceId}/globalPositions/request",
+            method = RequestMethod.GET,
+            produces = "application/json")
+	@PreAuthorize("hasRole('admin') or @stitchingVectorSecurity.checkAuthorize(#stitchingVectorId, false)")
+    public DownloadUrl requestDownload(
+            @PathVariable("stitchingVectorId") String stitchingVectorId,
+            @PathVariable("timeSliceId") int timeSliceId) {
+    	
+    	// Check existence of images collection
+    	StitchingVectorTimeSlice ts = stitchingVectorTimeSliceRepository.findOne(stitchingVectorId,
+    			timeSliceId);
+        if (ts == null) {
+            throw new ResourceNotFoundException(
+                    "Images collection " + stitchingVectorId + " not found.");
+        }
+        
+        // Generate download token
+        DataDownloadToken downloadToken = new DataDownloadToken(stitchingVectorId);
+        dataDownloadTokenRepository.save(downloadToken);
+        
+        // Generate and send unique download URL
+        String tokenParam = "?token=" + downloadToken.getToken();
+        String timeSliceGlobalPositions = "/" + timeSliceId + "/globalPositions";
+        String downloadLink = linkTo(StitchingVectorTimeSliceController.class,
+        		stitchingVectorId).toString() + timeSliceGlobalPositions + tokenParam;
+        return new DownloadUrl(downloadLink);
+    }
 
     @RequestMapping(
             value = "/{timeSliceId}/globalPositions",
@@ -107,7 +152,16 @@ public class StitchingVectorTimeSliceController {
     public void getGlobalPositions(
             @PathVariable("stitchingVectorId") String stitchingVectorId,
             @PathVariable("timeSliceId") int timeSliceId,
+            @RequestParam("token")String token,
             HttpServletResponse response) throws IOException {
+    	
+    	// Check validity of download token
+    	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
+    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(stitchingVectorId)) {
+    		throw new ForbiddenException("Invalid download token.");
+    	}
+    	
+    	// Check existence of stitching file
         File stitchingFile = stitchingVectorTimeSliceRepository
                 .getGlobalPositionsFile(stitchingVectorId, timeSliceId);
         if (!stitchingFile.exists()) {
@@ -137,7 +191,7 @@ public class StitchingVectorTimeSliceController {
         // Global positions
         lb = entityLinks.linkFor(StitchingVectorTimeSlice.class,
                 stitchingVectorId);
-        link = lb.slash(svts.getSliceNumber()).slash("globalPositions")
+        link = lb.slash(svts.getSliceNumber()).slash("globalPositions").slash("request")
                 .withRel("globalPositions");
         svts.add(link);
     }

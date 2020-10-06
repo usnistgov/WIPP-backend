@@ -12,6 +12,15 @@ Requirements for development environment setup.
 ### Database
 * MongoDB 3.6
 
+### Identity and Access Management
+* Keycloak 11.0.2
+* Default dev configuration expects Keycloak at `http://localhost:8081/auth` (see 
+`wipp-backend-application/src/main/resources/application.properties`. Sample 
+Docker run command:
+`docker run -p 8081:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak:11.0.2` (see https://www.keycloak.org/getting-started/getting-started-docker)
+* Import WIPP realm available in folder `docs/auth-acl`
+* RBAC-ACLs descriptions available in file `docs/auth-acl/acl.md`
+
 ### Kubernetes cluster
 * For development purposes, a single-node cluster can be easily installed using [Minikube](https://github.com/kubernetes/minikube) or [Docker for Mac on macOS](https://docs.docker.com/docker-for-mac/#kubernetes)
 * We are using [Argo workflows](https://argoproj.github.io/argo/) to manage workflows on a Kubernetes cluster, please install the Argo UI and Controller using the following commands:
@@ -52,6 +61,11 @@ mvn clean package -P prod
 docker build --no-cache . -t wipp_backend
 ```
 For a Docker deployment of WIPP on a Kubernetes cluster, scripts and configuration files are available in the [WIPP repository](https://github.com/usnistgov/WIPP/tree/master/deployment).
+
+## Deployment
+1. Create a `.env` file in the root of the repository, using `sample-env` as an example.
+1. Configure `kubectl` with a `kubeconfig` pointing to the correct Kubernetes cluster. Optionally, pass the location of the `kubeconfig` file in the `.env`. This value defaults to the standard `kubeconfig` location. 
+1. Run the script using: `./deploy.sh`.
 
 ### Application Performance Monitoring (APM)
 The Elastic APM Java agent is integrated into the Docker image as an optional setting. The Elastic APM agent will push metrics to an APM server, which feeds into Elasticsearch and Kibana. Configuration of the Elastic APM Java Agent to connect to the APM server is controlled via environment variables. These variables are optional if Elastic APM is not needed.

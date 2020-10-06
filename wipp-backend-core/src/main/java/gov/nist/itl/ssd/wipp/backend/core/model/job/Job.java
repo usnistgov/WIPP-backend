@@ -38,6 +38,8 @@ public class Job {
 
     private String name;
 
+    private String owner;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date creationDate;
 
@@ -67,6 +69,8 @@ public class Job {
     private String wippWorkflow;
 
     private String wippVersion;
+    
+    private boolean publiclyShared;
 
     public String getId() {
         return id;
@@ -171,9 +175,28 @@ public class Job {
     public Map<String, String> getOutputParameters() {
         return outputParameters;
     }
+    
+    public String getOutputParameter(String key) {
+        return this.outputParameters.get(key);
+    }
 
     public void setOutputParameters(Map<String, String> outputParameters) {
         this.outputParameters = outputParameters;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
+	}
 }

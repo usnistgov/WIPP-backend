@@ -24,18 +24,19 @@ import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,6 @@ public class WorkflowExitController {
     @Autowired
     private DataHandlerService dataHandlerService;
 
-
     @RequestMapping(
             value = "",
             method = RequestMethod.POST,
@@ -73,6 +73,9 @@ public class WorkflowExitController {
             @PathVariable("workflowId") String workflowId,
             @RequestBody String status
     ) {
+    	
+		// Load security context for system operations
+    	SecurityUtils.runAsSystem();
 
         // Retrieve Workflow object
         Optional<Workflow> wippWorkflow = workflowRepository.findById(
@@ -84,6 +87,12 @@ public class WorkflowExitController {
         }
 
         Workflow workflow = wippWorkflow.get();
+        
+        // Only statuses from running or submitted workflows can be updated
+        if (workflow.getStatus() != WorkflowStatus.SUBMITTED && 
+        		workflow.getStatus() != WorkflowStatus.RUNNING) {
+            throw new ClientException("Workflow status cannot be updated if current status is not SUBMITTED or RUNNING");
+        }
 
         // Check validity of status
         WorkflowStatus wfStatus;
@@ -137,6 +146,9 @@ public class WorkflowExitController {
         workflow.setEndTime(new Date());
         workflow.setStatus(wfStatus);
         workflowRepository.save(workflow);
+        
+        // Clear security context after system operations
+        SecurityContextHolder.clearContext();
 
         return new ResponseEntity<>(workflow, HttpStatus.OK);
     }

@@ -1,6 +1,8 @@
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -17,6 +19,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import loci.formats.ome.OMEXMLMetadata;
@@ -27,21 +30,28 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.isg.pyramidio.DeepZoomImageReader;
 import gov.nist.isg.pyramidio.stitching.MistStitchedImageReader;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
+import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
+import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.utils.FilenameConverter;
 import gov.nist.itl.ssd.wipp.backend.core.utils.IdentityFilenameConverter;
 import gov.nist.itl.ssd.wipp.backend.core.utils.PatternFilenameConverter;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
@@ -57,8 +67,9 @@ import io.swagger.annotations.Api;
  * Inspired by ProbingSamplingResource in RestletDeepZoom project
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
-@Controller
+@RestController
 @Api(tags="Pyramid Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramids/{pyramidId}/fetching")
 public class PyramidFetchingController {
@@ -86,7 +97,48 @@ public class PyramidFetchingController {
 
 	    @Autowired
 	    private ImageHandler tileRepository;
+	    
+	    @Autowired
+	    private DataDownloadTokenRepository dataDownloadTokenRepository;
 
+	    @RequestMapping(
+	            value = "request",
+	            method = RequestMethod.GET,
+	            produces = "application/json")
+		@PreAuthorize("hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidId, false)")
+	    public DownloadUrl request(@PathVariable("pyramidId") String pyramidId,
+	            @RequestParam("x") int x,
+	            @RequestParam("y") int y,
+	            @RequestParam("width") int width,
+	            @RequestParam("height") int height,
+	            @RequestParam("zoom") double zoom,
+	            @RequestParam(
+	                    value = "frames",
+	                    defaultValue = "") String frames,
+	            @RequestParam(
+	                    value = "framesOffset",
+	                    defaultValue = "0") int framesOffset,
+	            HttpServletResponse response, 
+	            HttpServletRequest request) throws IOException {
+
+	        Optional<Pyramid> optionalPyramid = pyramidRepository.findById(pyramidId);
+
+	        if (!optionalPyramid.isPresent()) {
+	            throw new ResourceNotFoundException(
+	                    "Can not find pyramid " + pyramidId);
+	        }
+	        
+	        // Generate download token
+			DataDownloadToken downloadToken = new DataDownloadToken(pyramidId);
+			dataDownloadTokenRepository.save(downloadToken);
+
+			// Generate and send unique download URL
+			String queryString = request.getQueryString();
+			String params = "?" + (queryString == null ? "" : queryString + "&") + "token=" + downloadToken.getToken();
+			String downloadLink = linkTo(PyramidFetchingController.class, pyramidId) + params;
+			return new DownloadUrl(downloadLink);
+	    }
+	    
 	    @RequestMapping(
 	            value = "",
 	            method = RequestMethod.GET,
@@ -103,8 +155,20 @@ public class PyramidFetchingController {
 	            @RequestParam(
 	                    value = "framesOffset",
 	                    defaultValue = "0") int framesOffset,
+	            @RequestParam("token") String token,
 	            HttpServletResponse response) throws IOException {
 
+	    	// Load security context for system operations
+	    	SecurityUtils.runAsSystem();
+	    	
+	    	// Check validity of download token
+	    	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
+	    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(pyramidId)) {
+	    		System.out.println("Invalid download token.");
+	    		throw new ForbiddenException("Invalid download token.");
+	    	}
+	    	System.out.println("Continue download");
+	    	// Check existence of pyramid
 	        Pyramid pyramid = null;
 	        Optional<Pyramid> optionalPyramid = pyramidRepository.findById(pyramidId);
 
@@ -148,6 +212,9 @@ public class PyramidFetchingController {
 	        try (PrintWriter printWriter = new PrintWriter(zos)) {
 	            printWriter.print(provenance);
 	        }
+	        
+	        // Clear security context after system operations
+	        SecurityContextHolder.clearContext();
 	    }
 
 	    private void fillStreamFromTilesCollection(Pyramid pyramid, Rectangle region,

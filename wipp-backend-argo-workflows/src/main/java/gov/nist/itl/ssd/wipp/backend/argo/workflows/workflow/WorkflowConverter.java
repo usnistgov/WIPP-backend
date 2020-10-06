@@ -22,7 +22,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -207,7 +207,7 @@ public class WorkflowConverter {
 
         container.setImage("byrnedo/alpine-curl:latest");
 
-        String url = ControllerLinkBuilder.linkTo(
+        String url = WebMvcLinkBuilder.linkTo(
                 WorkflowExitController.class, workflow.getId())
                 .withRel("exit").getHref();
         LOGGER.log(Level.INFO, "workflow url: " + url);
@@ -224,6 +224,51 @@ public class WorkflowConverter {
         container.setArgs(args);
 
         return container;
+    }
+    /**
+     * Get and parse nodeSelector labels for all jobs within workflow. 
+     * Can be overridden by nodeSelector in container template.
+     * Expects nodeSelector to be formatted as key-value pairs split by semi-colons (eg. "key1:value1;key2:value2;").
+     * @return nodeSelector labels as a Map
+     */
+    private Map<String, String> generateNodeSelector() {
+        Map<String, String> nodeSelector = new HashMap<>();
+        String[] labels = coreConfig.getWorkflowNodeSelector().split(";");
+
+        for(String label : labels) {
+            String[] temp = label.split(":");
+            if(temp.length == 2) {
+                nodeSelector.put(temp[0], temp[1]);
+            }
+        }
+        return nodeSelector;
+    }
+
+    /**
+     * Get and parse node tolerations for all jobs within workflow.
+     * Expects tolerations to be formatted as key-operator-value-effect groups split by semi-colons (eg. "key1:operator1:value1:effect1;").
+     * Operator options are limited to "Equal" and "Exists", effect options are limited to "NoSchedule", "PreferNoSchedule", and "NoExecute".
+     * Optional parameters can be skipped with appropriate colon placeholders (eg. "key1:operator1::").
+     * @return tolerations labels as a List of Maps per rule
+     */
+    private List<Map<String, String>> generateTolerations() {
+        final String[] mapKeys = {"key", "operator", "value", "effect"};
+        List<Map<String, String>> tolerations = new ArrayList<>();
+        String[] labels = coreConfig.getWorkflowTolerations().split(";");
+
+        for(String label : labels) {
+            String[] temp = label.split(":", -1);
+            Map<String, String> rule = new HashMap<>();
+            if(temp.length == 4) {
+                for(int i=0; i < mapKeys.length; i++) {
+                    if(!temp[i].isEmpty()) {
+                        rule.put(mapKeys[i], temp[i]);
+                    }
+                }
+                tolerations.add(rule);
+            }
+        }
+        return tolerations;
     }
 
     private List<ArgoAbstractTemplate> generateSpecTemplates() {
@@ -259,6 +304,8 @@ public class WorkflowConverter {
     private ArgoWorkflowSpec generateSpec() {
         ArgoWorkflowSpec argoWorkflowSpec = new ArgoWorkflowSpec();
 
+        argoWorkflowSpec.setNodeSelector(this.generateNodeSelector());
+        argoWorkflowSpec.setTolerations(this.generateTolerations());
         argoWorkflowSpec.setTemplates(this.generateSpecTemplates());
         argoWorkflowSpec.setVolumes(this.generateSpecVolumes());
 
@@ -282,7 +329,6 @@ public class WorkflowConverter {
 
         File workflowFile = new File(workflowFilePath);
         mapper.writeValue(workflowFile, argoWorkflow);
-        
     }
 
     /**
@@ -301,7 +347,7 @@ public class WorkflowConverter {
      * @return the sub path of the data volume to mount 
      */
     private String getOutputMountSubPath(String jobId){
-		return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
-				.replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
+        return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
+                .replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
     }
 }

@@ -11,26 +11,21 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.visualization;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
+import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RepositoryRestResource
 public interface VisualizationRepository
-        extends MongoRepository<Visualization, String> {
+        extends PrincipalFilteredRepository<Visualization, String> {
 
     @Override
     @RestResource(exported = false)
     void delete(Visualization t);
-
-    Page<Visualization> findByNameContainingIgnoreCase(
-            @Param("name") String name, Pageable p);
 
 }

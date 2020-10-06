@@ -10,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-import gov.nist.itl.ssd.wipp.backend.data.tensorflowmodels.TensorflowModel;
 
 /**
 *
@@ -23,6 +22,8 @@ public class TensorboardLogs {
     @Id
     private String id;
 
+	private String owner;
+
     @Indexed(unique = true)
     private String name;
 
@@ -32,6 +33,8 @@ public class TensorboardLogs {
     @Indexed(unique = true, sparse = true)
     @ManualRef(Job.class)
     private String sourceJob;
+
+	private boolean publiclyShared;
     
     public TensorboardLogs(){	
     }
@@ -61,5 +64,21 @@ public class TensorboardLogs {
 
 	public String getSourceJob() {
 		return sourceJob;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isPubliclyShared() {
+		return publiclyShared;
+	}
+
+	public void setPubliclyShared(boolean publiclyShared) {
+		this.publiclyShared = publiclyShared;
 	}
 }

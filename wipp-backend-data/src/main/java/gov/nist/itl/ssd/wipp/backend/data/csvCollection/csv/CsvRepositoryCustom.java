@@ -19,7 +19,7 @@ import org.springframework.data.repository.query.Param;
  */
 public interface CsvRepositoryCustom {
 
-    void deleteByCsvCollection(
+	void deleteByCsvCollection(
             @Param("csvCollection") String csvCollection);
 
     void deleteByCsvCollectionAndFileName(

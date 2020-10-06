@@ -14,6 +14,8 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +58,7 @@ public class WorkflowSubmitController {
     
     private static final Logger LOGGER = Logger.getLogger(WorkflowSubmitController.class.getName());
 
+    @PreAuthorize("isAuthenticated() and @workflowSecurity.checkAuthorize(#workflowId, true)")
     @RequestMapping(
         value = "",
         method = RequestMethod.POST,
@@ -152,7 +155,7 @@ public class WorkflowSubmitController {
 			throws IOException, InterruptedException, RuntimeException {
         // Build Argo command
     	List<String> builderCommands = new ArrayList<>();
-        Collections.addAll(builderCommands, config.getWorflowBinary().split(" "));
+        Collections.addAll(builderCommands, config.getWorkflowBinary().split(" "));
         builderCommands.add("submit");
         builderCommands.add("--output");
         builderCommands.add("name");
