@@ -4,7 +4,7 @@
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-application</artifactId>
 	<name>wipp-backend-app</name>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.0</version>
 
 	<packaging>war</packaging>
 
