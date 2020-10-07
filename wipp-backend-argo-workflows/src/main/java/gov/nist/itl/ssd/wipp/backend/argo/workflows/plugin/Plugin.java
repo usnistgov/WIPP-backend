@@ -17,6 +17,7 @@ public class Plugin extends Computation {
     private String title;
     private String description;
     private String author;
+    private String category;
     private String institution;
     private String repository;
     private String website;
@@ -49,7 +50,15 @@ public class Plugin extends Computation {
     public void setAuthor(String author) {
         this.author = author;
     }
-    
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getInstitution() {
 		return institution;
 	}
