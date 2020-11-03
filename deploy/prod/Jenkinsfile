@@ -20,7 +20,7 @@ pipeline {
         stage('Deploy to AWS Prod') {
             steps {
                 configFileProvider([configFile(fileId: 'env-ci', targetLocation: '.env')]) {
-                    withAWS(credentials:'aws-jenkins-eks-polus') {
+                    withAWS(credentials:'aws-prod-deploy') {
                         sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
                         sh "./deploy.sh"
                     }
