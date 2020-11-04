@@ -64,4 +64,4 @@ spec:
       - backend:
           serviceName: wipp-tensorboard
           servicePort: 6006
-        path: /
+        path: /*
