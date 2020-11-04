@@ -1,0 +1,80 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+  name: wipp-mongodb-ingress
+spec:
+  rules:
+  - host: MONGO_HOST_NAME_VALUE
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: ssl-redirect
+          servicePort: use-annotation
+      - backend:
+          serviceName: wipp-mongo
+          servicePort: 27017
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+  name: wipp-backend-ingress
+spec:
+  rules:
+  - host: BACKEND_HOST_NAME_VALUE
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: ssl-redirect
+          servicePort: use-annotation
+      - backend:
+          serviceName: wipp-backend
+          servicePort: 8080
+        path: /
+---
+# MongoDB Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: wipp-mongo
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    app: mongodb
+---
+# WIPP-Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: wipp-backend
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: wipp-backend
