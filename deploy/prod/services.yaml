@@ -20,7 +20,7 @@ spec:
       - backend:
           serviceName: wipp-mongo
           servicePort: 27017
-        path: /
+        path: /*
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -44,7 +44,7 @@ spec:
       - backend:
           serviceName: wipp-backend
           servicePort: 8080
-        path: /
+        path: /*
 ---
 # MongoDB Service
 apiVersion: v1
