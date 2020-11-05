@@ -29,33 +29,3 @@ spec:
         persistentVolumeClaim:
           claimName: WIPP_PVC_NAME_VALUE
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wipp-tensorboard
-spec:
-  type: NodePort
-  ports:
-  - name: "6006"
-    port: 6006
-    targetPort: 6006
-  selector:
-    app: wipp-tensorboard
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-  name: wipp-tensorboard
-spec:
-  rules:
-  - host: TENSORBOARD_HOST_NAME_VALUE
-    http:
-      paths:
-      - backend:
-          serviceName: wipp-tensorboard
-          servicePort: 6006
-        path: /

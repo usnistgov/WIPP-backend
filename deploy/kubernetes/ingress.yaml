@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: wipp-mongodb-ingress
+spec:
+  rules:
+  - host: MONGO_HOST_NAME_VALUE
+    http:
+      paths:
+      - backend:
+          serviceName: wipp-mongo
+          servicePort: 27017
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: wipp-backend-ingress
+spec:
+  rules:
+  - host: BACKEND_HOST_NAME_VALUE
+    http:
+      paths:
+      - backend:
+          serviceName: wipp-backend
+          servicePort: 8080
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: wipp-tensorboard
+spec:
+  rules:
+  - host: TENSORBOARD_HOST_NAME_VALUE
+    http:
+      paths:
+      - backend:
+          serviceName: wipp-tensorboard
+          servicePort: 6006
+        path: /

@@ -22,13 +22,12 @@ rm deploy/kubernetes/backend-deployment.yaml.bak
 
 sed -i.bak \
     -e "s|BACKEND_HOST_NAME_VALUE|${BACKEND_HOST_NAME}|g" \
-    -e "s|MONGO_HOST_NAME_VALUE|${MONGO_HOST_NAME}|g" \
-    deploy/kubernetes/services.yaml
-rm deploy/kubernetes/services.yaml.bak
+    -e "s|TENSORBOARD_HOST_NAME_VALUE|${TENSORBOARD_HOST_NAME}|g" \
+    deploy/kubernetes/ingress.yaml
+rm deploy/kubernetes/ingress.yaml.bak
 
 sed -i.bak \
     -e "s/WIPP_PVC_NAME_VALUE/${WIPP_PVC_NAME}/g" \
-    -e "s|TENSORBOARD_HOST_NAME_VALUE|${TENSORBOARD_HOST_NAME}|g" \
     deploy/kubernetes/tensorboard-deployment.yaml
 rm deploy/kubernetes/tensorboard-deployment.yaml.bak
 
@@ -37,3 +36,4 @@ kubectl apply --kubeconfig=${KUBECONFIG} -f deploy/kubernetes/mongo-deployment.y
 kubectl apply --kubeconfig=${KUBECONFIG} -f deploy/kubernetes/services.yaml
 kubectl apply --kubeconfig=${KUBECONFIG} -f deploy/kubernetes/backend-deployment.yaml
 kubectl apply --kubeconfig=${KUBECONFIG} -f deploy/kubernetes/tensorboard-deployment.yaml
+kubectl apply --kubeconfig=${KUBECONFIG} -f deploy/kubernetes/ingress.yaml
