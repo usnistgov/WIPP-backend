@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wipp-tensorboard
+spec:
+  selector:
+    matchLabels:
+      app: wipp-tensorboard
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wipp-tensorboard
+    spec:
+      containers:
+      - image: tensorflow/tensorflow:2.0.0b1-py3
+        name: wipp-tensorboard
+        command: ["tensorboard"]
+        args: ["--logdir=/data/WIPP-plugins/tensorboard-logs"]
+        volumeMounts:
+        - mountPath: /data/WIPP-plugins
+          name: data
+          readOnly: true
+        ports:
+        - containerPort: 6006
+        resources: {}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: WIPP_PVC_NAME_VALUE
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wipp-tensorboard
+spec:
+  type: NodePort
+  ports:
+  - name: "6006"
+    port: 6006
+    targetPort: 6006
+  selector:
+    app: wipp-tensorboard
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+  name: wipp-tensorboard
+spec:
+  rules:
+  - host: TENSORBOARD_HOST_NAME_VALUE
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: ssl-redirect
+          servicePort: use-annotation
+      - backend:
+          serviceName: wipp-tensorboard
+          servicePort: 6006
+        path: /*
