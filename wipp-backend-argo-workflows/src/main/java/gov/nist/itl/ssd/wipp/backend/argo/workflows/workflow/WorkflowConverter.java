@@ -221,6 +221,7 @@ public class WorkflowConverter {
         args.add("{{workflow.status}}");
         args.add(url);
         args.add("-v");
+        args.add("-k");
         container.setArgs(args);
 
         return container;
