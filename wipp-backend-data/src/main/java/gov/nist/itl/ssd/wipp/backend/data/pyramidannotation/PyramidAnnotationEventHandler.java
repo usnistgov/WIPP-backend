@@ -41,7 +41,7 @@ public class PyramidAnnotationEventHandler {
 	@Autowired
     CoreConfig config;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or @pyramidSecurity.checkAuthorize(#pyramidAnnotation.pyramid, true))")
     @HandleBeforeCreate
     public void handleBeforeCreate(PyramidAnnotation pyramidAnnotation) {
     	// Set creation date to current date
