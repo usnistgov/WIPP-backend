@@ -22,7 +22,7 @@ pipeline {
                 configFileProvider([configFile(fileId: 'env-nci', targetLocation: '.env')]) {
                     withAWS(credentials:'nci-polus-deploy') {
                         sh "aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}"
-                        sh "cp -f deploy/prod/*.yaml deploy/kubernetes"
+                        sh "cp -f deploy/prod-nci/*.yaml deploy/kubernetes"
                         sh "./deploy.sh"
                     }
                 }
