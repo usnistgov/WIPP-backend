@@ -42,11 +42,11 @@ public class TensorflowModelDataHandler extends BaseDataHandler implements DataH
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		TensorflowModel tm = new TensorflowModel(job, outputName);
-		tensorflowModelRepository.save(tm);
 		// Set owner to job owner
         tm.setOwner(job.getOwner());
         // Set TM to private
         tm.setPubliclyShared(false);
+        tensorflowModelRepository.save(tm);
 
 		File trainedModelFolder = new File(config.getTensorflowModelsFolder(), tm.getId());
 		trainedModelFolder.mkdirs();
