@@ -23,6 +23,10 @@ if [[ -z $KEYCLOAK_DISABLE_TRUST_MANAGER ]]; then
   KEYCLOAK_DISABLE_TRUST_MANAGER="false"
 fi
 
+if [[ -z $OME_CONVERTER_THREADS ]]; then
+  OME_CONVERTER_THREADS="6"
+fi
+
 sed -i \
   -e 's/@mongo_host@/'"${MONGO_HOST}"'/' \
   -e 's/@mongo_port@/'"${MONGO_PORT}"'/' \
@@ -32,6 +36,7 @@ sed -i \
   -e 's|@keycloak_disable_trust_manager@|'"${KEYCLOAK_DISABLE_TRUST_MANAGER}"'|' \
   -e 's|@workflow_nodeSelector@|'"${NODE_SELECTOR}"'|' \
   -e 's|@workflow_tolerations@|'"${TOLERATIONS}"'|' \
+  -e 's|@ome_converter_threads@|'"${OME_CONVERTER_THREADS}"'|' \
   /opt/wipp/config/application.properties
 
 if [[ -n ${ELASTIC_APM_SERVER_URLS} && -n ${ELASTIC_APM_SERVICE_NAME} ]]; then

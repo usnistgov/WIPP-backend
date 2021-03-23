@@ -38,7 +38,7 @@ spec:
   selector:
     matchLabels:
       app: wipp-backend
-  replicas: 1
+  replicas: 4
   template:
     metadata:
       labels:
@@ -61,6 +61,8 @@ spec:
               value: NODE_SELECTOR_VALUE
             - name: TOLERATIONS
               value: TOLERATIONS_VALUE
+            - name: OME_CONVERTER_THREADS
+              value: OME_CONVERTER_THREADS_VALUE
           volumeMounts:
             - mountPath: /data/WIPP-plugins
               name: data
