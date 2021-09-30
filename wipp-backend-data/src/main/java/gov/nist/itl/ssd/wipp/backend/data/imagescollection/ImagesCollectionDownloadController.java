@@ -23,10 +23,12 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepositor
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFile;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileRepository;
+import gov.nist.itl.ssd.wipp.backend.data.utils.zip.ZipUtils;
 import io.swagger.annotations.Api;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -128,25 +130,23 @@ public class ImagesCollectionDownloadController {
         }
 
         // Zip collection and send zip file
+        String imgCollName = tc.get().getName();
         response.setHeader("Content-disposition",
-                "attachment;filename=" + tc.get().getName() + ".zip");
+                "attachment;filename=" + imgCollName + ".zip");
 
         ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
         List<Image> images = imageRepository.findByImagesCollection(
                 imagesCollectionId);
         for (Image image : images) {
-            zos.putNextEntry(new ZipEntry("images/" + image.getFileName()));
-            try (InputStream is = imageHandler.getInputStream(
-                    imagesCollectionId, image.getFileName())) {
-                IOUtils.copyLarge(is, zos);
-            }
+            File imageFile = imageHandler.getFile(imagesCollectionId, image.getFileName());
+            ZipUtils.addToZip(imgCollName + "/images", zos, imageFile);
         }
 
         List<MetadataFile> metadataFiles = metadataFileRepository
                 .findByImagesCollection(imagesCollectionId);
         for (MetadataFile metadataFile : metadataFiles) {
             zos.putNextEntry(new ZipEntry(
-                    "metadata/" + metadataFile.getFileName()));
+            		imgCollName + "/metadata/" + metadataFile.getFileName()));
             try (InputStream is = metadataFileHandler.getInputStream(
                     imagesCollectionId, metadataFile.getFileName())) {
                 IOUtils.copyLarge(is, zos);

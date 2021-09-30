@@ -41,6 +41,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
+import gov.nist.itl.ssd.wipp.backend.data.utils.zip.ZipUtils;
 
 /**
 *
@@ -126,27 +127,11 @@ public class GenericDataDownloadController {
 				"attachment;filename=" + "GenericData-" + genericData.getName() + ".zip");
 
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
-		addToZip("", zos, genericDataStorageFolder);
+		ZipUtils.addToZip("", zos, genericDataStorageFolder);
 		zos.finish();
 		
 		// Clear security context after system operations
 		SecurityContextHolder.clearContext();
-	}
-
-	//Recursive method to handle sub-folders
-	public static void addToZip(String path, ZipOutputStream myZip, File f) throws FileNotFoundException, IOException{
-		if(f.isDirectory()){
-			for(File subF : f.listFiles()){
-				addToZip(path + File.separator + f.getName() , myZip, subF);
-			}
-		}
-		else {
-			ZipEntry e = new ZipEntry(path + File.separator + f.getName());
-			myZip.putNextEntry(e);
-			try (InputStream is = new FileInputStream(f.getAbsolutePath())) {
-				IOUtils.copyLarge(is, myZip);
-			}
-		}
-	}
+	}	
 	
 }

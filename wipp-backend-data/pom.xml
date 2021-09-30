@@ -14,16 +14,23 @@
 	<repositories>
 
 		<repository>
-			<id>ome.external</id>
-			<url>http://artifacts.openmicroscopy.org/artifactory/ome.external</url>
+			<id>ome</id>
+			<name>OME Artifactory</name>
+			<url>https://artifacts.openmicroscopy.org/artifactory/maven/</url>
 		</repository>
 		<repository>
-			<id>ome.releases</id>
-			<url>http://artifacts.openmicroscopy.org/artifactory/ome.releases</url>
+			<id>jzarr-snapshots</id>
+			<url>https://repo.glencoesoftware.com/repository/jzarr-snapshots</url>
 		</repository>
 		<repository>
-			<id>ome.snapshots</id>
-			<url>http://artifacts.openmicroscopy.org/artifactory/ome.snapshots</url>
+			<id>unidata-releases</id>
+			<name>Unidata UCAR Repository</name>
+			<url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</url>
+		</repository>
+		<repository>
+			<id>unidata-all</id>
+			<name>Unidata All</name>
+			<url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
 		</repository>
 	</repositories>
 
@@ -38,10 +45,40 @@
 		<dependency>
 			<groupId>ome</groupId>
 			<artifactId>formats-gpl</artifactId>
-			<version>6.2.0</version>
+			<version>6.7.0</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>edu.ucar</groupId>
+					<artifactId>cdm</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>com.bc.zarr</groupId>
+			<artifactId>jzarr</artifactId>
+			<version>0.3.3-gs-SNAPSHOT</version>
+		</dependency>
+	    
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>cdm-core</artifactId>
+			<version>5.3.3</version>
+		</dependency>
+        
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>netcdfAll</artifactId>
+			<version>5.3.3</version>
+ 		</dependency>
+        
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+        
 		<dependency>
 			<groupId>gov.nist.itl.ssd.wipp</groupId>
 			<artifactId>wipp-backend-core</artifactId>
@@ -52,12 +89,6 @@
 			<groupId>gov.nist.isg</groupId>
 			<artifactId>pyramidio</artifactId>
 			<version>1.1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
 		</dependency>
 
 	</dependencies>

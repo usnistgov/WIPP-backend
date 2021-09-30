@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 
@@ -31,8 +32,8 @@ public abstract class FileUploadBase {
 	protected static long getPathSize(Path path) {
 		long size = 0;
 		try {
-			size = Files.size(path);
-		} catch (IOException O_o) {
+			size = FileUtils.sizeOf(path.toFile());
+		} catch (UnsupportedOperationException O_o) {
 			// Safely ignore, the size will just be 0.
 		}
 		return size;

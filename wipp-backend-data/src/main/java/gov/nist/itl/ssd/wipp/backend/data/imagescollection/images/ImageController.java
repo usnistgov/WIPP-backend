@@ -22,6 +22,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionDownloadController;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
+import gov.nist.itl.ssd.wipp.backend.data.utils.zip.ZipUtils;
 import io.swagger.annotations.Api;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -31,7 +32,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -166,12 +169,22 @@ public class ImageController {
     	checkDownloadTokenValidity(token, imagesCollectionId);
     	// Send file
         File file = imageHandler.getFile(imagesCollectionId, fileName);
-        response.setContentLengthLong(file.length());
-        response.setHeader("Content-disposition",
-                "attachment;filename=" + fileName);
-        try (InputStream fis = new FileInputStream(file)) {
-            IOUtils.copyLarge(fis, response.getOutputStream());
-            response.flushBuffer();
+        // If image is a directory (eg. Zarr format), send it zipped, else send file directly
+        try {
+	        if (file.isDirectory()) {
+	        	response.setHeader("Content-disposition",
+	                    "attachment;filename=" + fileName + ".zip");
+	        	ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
+	            ZipUtils.addToZip("", zos, file);
+	            zos.finish();
+	        } else {
+	        	response.setContentLengthLong(file.length());
+	            response.setHeader("Content-disposition",
+	                    "attachment;filename=" + fileName);
+	            InputStream fis = new FileInputStream(file);
+	                IOUtils.copyLarge(fis, response.getOutputStream());
+	                response.flushBuffer();
+	        }
         } catch (FileNotFoundException ex) {
             throw new NotFoundException("File does not exist.", ex);
         }

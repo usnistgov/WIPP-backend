@@ -23,12 +23,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
-//import gov.nist.itl.ssd.fes.job.Job;
-
 /**
  *
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
- * Adapted by Mohamed Ouladi <mohamed.ouladi@nist.gov>
+ * @author Mohamed Ouladi <mohamed.ouladi@nist.gov>
+ * @author Mylene Simon <mylene.simon@nist.gov>
  */
 @IdExposed
 @Document
@@ -51,6 +50,8 @@ public class ImagesCollection extends Data {
     private String sourceCatalog;
     
     private ImagesCollectionImportMethod importMethod;
+    
+    private ImagesCollectionFormat format;
 
     private boolean locked;
 
@@ -81,14 +82,20 @@ public class ImagesCollection extends Data {
     }
 
     public ImagesCollection(String name) {
-        this(name, false, ImagesCollectionImportMethod.UPLOADED);
+        this(name, false, ImagesCollectionImportMethod.UPLOADED, ImagesCollectionFormat.OMETIFF);
     }
     
-    public ImagesCollection(String name, boolean locked, ImagesCollectionImportMethod importMethod){
+    public ImagesCollection(String name, ImagesCollectionFormat format) {
+        this(name, false, ImagesCollectionImportMethod.UPLOADED, format);
+    }
+    
+    public ImagesCollection(String name, boolean locked, ImagesCollectionImportMethod importMethod, 
+    		ImagesCollectionFormat format){
         this.name = name;
         this.locked = locked;
         this.creationDate = new Date();	
         this.importMethod = importMethod;
+        this.format = format;
     }
 
     public ImagesCollection(Job job, String outputName) {
@@ -203,6 +210,16 @@ public class ImagesCollection extends Data {
 		this.importMethod = importMethod;
 	}
 	
-    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG}
+	public ImagesCollectionFormat getFormat() {
+		return format;
+	}
+
+	public void setFormat(ImagesCollectionFormat format) {
+		this.format = format;
+	}
+
+	public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG}
+    
+	public enum ImagesCollectionFormat {OMETIFF, OMEZARR, RAW}
 
 }

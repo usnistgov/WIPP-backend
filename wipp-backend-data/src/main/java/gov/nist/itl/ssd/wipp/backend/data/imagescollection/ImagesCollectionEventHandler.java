@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection.ImagesCollectionFormat;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection.ImagesCollectionImportMethod;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
@@ -74,6 +75,11 @@ public class ImagesCollectionEventHandler {
         // Default import method is UPLOADED
         if (imagesCollection.getImportMethod() == null) {
         	imagesCollection.setImportMethod(ImagesCollectionImportMethod.UPLOADED);
+        }
+        
+        // Default conversion format is OMETIFF
+        if (imagesCollection.getFormat() == null) {
+        	imagesCollection.setFormat(ImagesCollectionFormat.OMETIFF);
         }
         
         // Collections from Catalog are locked by default

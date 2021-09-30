@@ -27,8 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection.ImagesCollectionFormat;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.utils.tiledtiffs.TiledOmeTiffConverter;
+import gov.nist.itl.ssd.wipp.backend.data.utils.zarr.OmeZarrConverter;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadBase;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
@@ -73,6 +76,8 @@ public class ImageConversionService extends FileUploadBase{
 	
 	public void submitImageToExtractor(Image image) {
 		String collectionId = image.getImagesCollection();
+		ImagesCollection imgCollection = imagesCollectionRepository.findById(collectionId).orElse(null);
+		ImagesCollectionFormat targetFormat = imgCollection.getFormat() != null ? imgCollection.getFormat() : ImagesCollectionFormat.OMETIFF;
 		File tempUploadDir = getTempUploadDir(collectionId);
 		File uploadDir = getUploadDir(collectionId);
 		uploadDir.mkdirs();
@@ -80,29 +85,55 @@ public class ImageConversionService extends FileUploadBase{
 		String imgName = image.getFileName();
 		Path tempPath = new File(tempUploadDir, image.getOriginalFileName()).toPath();
 		String outputFileName;
-		boolean isOmeTiff = imgName.endsWith(".ome.tif");
+		boolean isOmeFormat = imgName.endsWith(".ome.tif") 
+				|| imgName.endsWith(".ome.tiff")
+				|| imgName.endsWith(".ome.tf2")
+				|| imgName.endsWith(".ome.tf8")
+				|| imgName.endsWith(".ome.btf")
+				|| imgName.endsWith(".ome.xml")
+				|| imgName.endsWith(".ome.zarr");
 		
-		// handle ome tiff images file names
-		if(!isOmeTiff){
-			outputFileName = FilenameUtils.getBaseName(imgName) + ".ome.tif";
+		String outputFileNameOmeExtension = targetFormat.equals(ImagesCollectionFormat.OMEZARR) ? ".zarr"
+				: ".tif";
+		
+		if(!targetFormat.equals(ImagesCollectionFormat.RAW)) {
+			// handle ome images file names
+			if(!isOmeFormat){
+				outputFileName = FilenameUtils.getBaseName(imgName) + ".ome" + outputFileNameOmeExtension;
+			} else {
+				outputFileName = FilenameUtils.getBaseName(imgName) + outputFileNameOmeExtension;;
+			}
 		} else {
 			outputFileName = imgName;
 		}
-		
+			
 		Path outputPath = new File(uploadDir, outputFileName).toPath();
 
 		omeConverterExecutor.submit(() -> doSubmit(
-				collectionId, image, outputFileName, tempPath, outputPath));
+				collectionId, image, targetFormat, outputFileName, tempPath, outputPath));
 	}
 
-	public void doSubmit(String collectionId, Image image, String outputFileName,
+	public void doSubmit(String collectionId, Image image, ImagesCollectionFormat format, String outputFileName,
 			Path tempPath, Path outputPath) {
 		try {
 			LOG.log(Level.INFO,
 					"Starting extracting image {0} of collection {1}",
 					new Object[]{image.getFileName(), collectionId});
-			convertToTiledOmeTiff(tempPath, outputPath);
-			Files.delete(tempPath);
+			
+			switch(format) {
+				case OMETIFF:
+					convertToTiledOmeTiff(tempPath, outputPath);
+					Files.delete(tempPath);
+					break;
+				case OMEZARR:
+					convertToOmeZarr(tempPath, outputPath);
+					Files.delete(tempPath);
+					break;	
+				case RAW:
+					moveWithoutConverting(tempPath, outputPath);
+					break;	
+			}
+			
 			image.setFileName(outputFileName);
 			image.setFileSize(getPathSize(outputPath));
 			image.setImporting(false);
@@ -138,6 +169,34 @@ public class ImageConversionService extends FileUploadBase{
 	    }
 	    finally {
 	    	tiledOmeTiffConverter.cleanup();
+	    }
+	}
+	
+	// TODO: refactor
+	public static void convertToOmeZarr(Path inputFile, Path outputFile) throws DependencyException, FormatException, IOException, ServiceException {
+		OmeZarrConverter omeZarrConverter = new OmeZarrConverter(
+				inputFile.toString(),
+				outputFile.toString(), 
+				CoreConfig.TILE_SIZE, 
+				CoreConfig.TILE_SIZE);
+		try {
+			omeZarrConverter.init();
+			omeZarrConverter.readWriteTiles();
+	    }
+	    catch(Exception e) {
+	      throw new IOException("Cannot convert image to OME ZARR.", e);
+	    }
+	    finally {
+	    	omeZarrConverter.cleanup();
+	    }
+	}
+	
+	public static void moveWithoutConverting(Path inputFile, Path outputFile) throws DependencyException, FormatException, IOException, ServiceException {
+		try {
+			Files.move(inputFile, outputFile);
+	    }
+	    catch(Exception e) {
+	      throw new IOException("Cannot move image to final destination.", e);
 	    }
 	}
 }
