@@ -133,13 +133,11 @@ public class ImageController {
     public DownloadUrl requestImageDownload(
             @PathVariable("imagesCollectionId") String imagesCollectionId,
             @PathVariable("fileName") String fileName) {
-    	System.out.println("enter request download");
         // Generate and send unique download URL
         String tokenParam = generateDownloadTokenParam(imagesCollectionId);
         String imagePath = "/" + fileName;
         String downloadLink = linkTo(ImageController.class,
         		imagesCollectionId).toString() + imagePath + tokenParam;
-        System.out.println(downloadLink);
         return new DownloadUrl(downloadLink);
     }
 
