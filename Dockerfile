@@ -23,6 +23,9 @@ RUN wget https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/${APM_V
 RUN wget https://github.com/argoproj/argo-workflows/releases/download/${ARGO_VERSION}/argo-linux-amd64 && \
     chmod +x argo-linux-amd64 && \
     mv argo-linux-amd64 /usr/local/bin/argo
+    
+# Install blosc for Zarr compression
+RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing blosc
 
 # Copy WIPP backend application exec WAR
 COPY ${BACKEND_NAME}/target/${BACKEND_NAME}-*-exec.war ${EXEC_DIR}/wipp-backend.war
