@@ -24,9 +24,11 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection.ImagesCollectionFormat;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
@@ -65,8 +67,9 @@ public class ImageConversionService extends FileUploadBase{
 				appConfig.getOmeConverterThreads());
 
 		// Resume any interrupted conversion
-		imageRepository.findByImporting(true)
-		.forEach(this::submitImageToExtractor);
+    	SecurityUtils.runAsSystem();
+		imageRepository.findByImporting(true).forEach(this::submitImageToExtractor);
+		SecurityContextHolder.clearContext();
 	}
 
 	@Override
