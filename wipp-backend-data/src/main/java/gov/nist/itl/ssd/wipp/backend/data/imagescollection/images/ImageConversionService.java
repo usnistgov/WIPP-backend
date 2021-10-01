@@ -80,6 +80,13 @@ public class ImageConversionService extends FileUploadBase{
 	public void submitImageToExtractor(Image image) {
 		String collectionId = image.getImagesCollection();
 		ImagesCollection imgCollection = imagesCollectionRepository.findById(collectionId).orElse(null);
+		// if images collection not found, image should be deleted to avoid inconsistent state
+		if (imgCollection == null) {
+			LOG.warning("Images Collection not found for image " + image.getFileName() 
+				+ " while attempting to convert, deleting.");
+			imageRepository.delete(image);
+			return;
+		}
 		ImagesCollectionFormat targetFormat = imgCollection.getFormat() != null ? imgCollection.getFormat() : ImagesCollectionFormat.OMETIFF;
 		File tempUploadDir = getTempUploadDir(collectionId);
 		File uploadDir = getUploadDir(collectionId);

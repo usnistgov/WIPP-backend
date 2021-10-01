@@ -177,8 +177,8 @@ public class ImagesCollectionEventHandler {
     @HandleAfterDelete
     public void handleAfterDelete(ImagesCollection imagesCollection) {
     	// Delete all images and metadataFiles from deleted collection
-    	imageRepository.deleteAll(imagesCollection.getId(), false);
-    	metadataFileRepository.deleteAll(imagesCollection.getId(), false);
+    	imageRepository.deleteAll(imagesCollection.getId());
+    	metadataFileRepository.deleteAll(imagesCollection.getId());
     	File imagesCollectionFolder = new File (config.getImagesCollectionsFolder(), imagesCollection.getId());
     	try {
     		FileUtils.deleteDirectory(imagesCollectionFolder);
