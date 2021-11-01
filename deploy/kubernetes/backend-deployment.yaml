@@ -61,11 +61,18 @@ spec:
               value: NODE_SELECTOR_VALUE
             - name: TOLERATIONS
               value: TOLERATIONS_VALUE
+            - name: OME_CONVERTER_THREADS
+              value: OME_CONVERTER_THREADS_VALUE
           volumeMounts:
             - mountPath: /data/WIPP-plugins
               name: data
           ports:
             - containerPort: 8080
+          resources:
+            limits:
+              cpu: 2
+            requests:
+              cpu: 1
       volumes:
         - name: data
           persistentVolumeClaim:

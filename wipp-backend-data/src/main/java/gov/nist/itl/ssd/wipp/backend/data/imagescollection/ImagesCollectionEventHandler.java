@@ -157,7 +157,8 @@ public class ImagesCollectionEventHandler {
     }
 
     @HandleBeforeDelete
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #imagesCollection.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or "
+    		+ "(#imagesCollection.owner == principal.name and #imagesCollection.publiclyShared == false))")
     public void handleBeforeDelete(ImagesCollection imagesCollection) {
     	// Assert collection exists
     	Optional<ImagesCollection> result = imagesCollectionRepository.findById(
@@ -165,11 +166,6 @@ public class ImagesCollectionEventHandler {
     	if (!result.isPresent()) {
         	throw new NotFoundException("Image collection with id " + imagesCollection.getId() + " not found");
         }
-
-        ImagesCollection oldTc = result.get();
-        
-        // Locked collection cannot be deleted
-        imagesCollectionLogic.assertCollectionNotLocked(oldTc);
     }
 
     @HandleAfterDelete
@@ -181,7 +177,18 @@ public class ImagesCollectionEventHandler {
     	try {
     		FileUtils.deleteDirectory(imagesCollectionFolder);
     	} catch (IOException e) {
-    		LOGGER.log(Level.WARNING, "Was not able to delete the image collection folder " + imagesCollectionFolder);
+    		LOGGER.log(Level.WARNING, 
+    				"Was not able to delete the image collection folder " + imagesCollectionFolder);
+    	}	
+    	// Delete temporary upload folder if any
+    	File imagesCollectionTempFolder = new File (config.getCollectionsUploadTmpFolder(), imagesCollection.getId());
+    	try {
+    		if (imagesCollectionTempFolder.exists()) {
+    			FileUtils.deleteDirectory(imagesCollectionTempFolder);
+    		}
+    	} catch (IOException e) {
+    		LOGGER.log(Level.WARNING, 
+    				"Was not able to delete the image collection upload folder " + imagesCollectionTempFolder);
     	}	
     }
 
