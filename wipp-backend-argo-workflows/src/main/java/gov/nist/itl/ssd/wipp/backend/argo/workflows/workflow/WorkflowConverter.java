@@ -16,6 +16,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginIO;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.*;
+import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.slurmjob.ArgoTemplatePluginSlurmJob;
+import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.slurmjob.ArgoTemplatePluginSlurmJobSpec;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
@@ -110,7 +112,7 @@ public class WorkflowConverter {
         return container;
     }
 
-    private ArgoTemplatePlugin generateTemplatePlugin(Plugin plugin, List<String> parameters, String jobId) {
+    private ArgoTemplatePlugin generateTemplatePluginArgo(Plugin plugin, List<String> parameters, String jobId) {
         ArgoTemplatePlugin argoTemplatePlugin = new ArgoTemplatePlugin();
         argoTemplatePlugin.setName(plugin.getIdentifier() + "-" + jobId);
 
@@ -139,6 +141,49 @@ public class WorkflowConverter {
                 )
         );
         return argoTemplatePlugin;
+    }
+    
+    private ArgoTemplatePluginSlurmResource generateTemplatePluginSlurmResource(
+            String containerId,
+            List<String> parameters,
+            String jobId
+    ) {
+    	ArgoTemplatePluginSlurmResource argoTemplatePluginSlurmResource = new ArgoTemplatePluginSlurmResource();
+    	
+    	// Generate SlurmJob spec (sbatch script)
+    	ArgoTemplatePluginSlurmJobSpec argoTemplatePluginSlurmJobSpec = new ArgoTemplatePluginSlurmJobSpec();
+    	argoTemplatePluginSlurmJobSpec.generateBatch(
+				containerId, parameters, jobId, coreConfig.getSlurmWippDataPath(), this.getSlurmOutputDataPath(jobId),
+				coreConfig.getContainerInputsMountPath(), this.getOutputMountPath(jobId));
+    	
+    	// Generate SlurmJob with spec
+    	ArgoTemplatePluginSlurmJob argoTemplatePluginSlurmJob = new ArgoTemplatePluginSlurmJob();
+    	HashMap<String, String> metadata = new HashMap<>();
+        metadata.put("name", "wipp-" + jobId);
+    	argoTemplatePluginSlurmJob.setMetadata(metadata);
+    	argoTemplatePluginSlurmJob.setSpec(argoTemplatePluginSlurmJobSpec);
+    	
+    	// Set manifest in SlurmResource
+    	argoTemplatePluginSlurmResource.setManifest(argoTemplatePluginSlurmJob);
+    	
+    	return argoTemplatePluginSlurmResource;
+    }
+    
+    private ArgoTemplatePluginSlurm generateTemplatePluginSlurm(Plugin plugin, List<String> parameters, String jobId) {
+        ArgoTemplatePluginSlurm argoTemplatePluginSlurm = new ArgoTemplatePluginSlurm();
+        argoTemplatePluginSlurm.setName(plugin.getIdentifier() + "-" + jobId);
+
+        argoTemplatePluginSlurm.setResource(this.generateTemplatePluginSlurmResource(plugin.getContainerId(), parameters, jobId));
+        
+        return argoTemplatePluginSlurm;
+    }
+    
+    private ArgoAbstractTemplate generateTemplatePlugin(Plugin plugin, List<String> parameters, String jobId) {
+        if(coreConfig.isSlurmEnabled()) {
+        	return this.generateTemplatePluginSlurm(plugin, parameters, jobId);
+        } else {
+        	return this.generateTemplatePluginArgo(plugin, parameters, jobId);
+        }
     }
 
     private ArgoTemplateWorkflowTask generateTemplateWorkflowTask(
@@ -350,5 +395,15 @@ public class WorkflowConverter {
     private String getOutputMountSubPath(String jobId){
         return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
                 .replaceFirst(coreConfig.getStorageRootFolder() + "/", "");
+    }
+    
+    /**
+     * Get output data path in Slurm cluster
+     * @param jobId
+     * @return the path of the job work folder to mount
+     */
+    private String getSlurmOutputDataPath(String jobId){
+    	return new File(coreConfig.getJobsTempFolder(), jobId).getAbsolutePath()
+                .replaceFirst(coreConfig.getStorageRootFolder(), coreConfig.getSlurmWippDataPath());
     }
 }

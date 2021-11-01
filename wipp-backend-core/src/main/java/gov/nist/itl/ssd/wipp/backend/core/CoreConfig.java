@@ -52,6 +52,12 @@ public class CoreConfig {
     
     @Value("${kube.wippdata.pvc}")
     private String wippDataPVCName;
+    
+    @Value("${slurm.enabled}")
+    private boolean slurmEnabled;
+    
+    @Value("${slurm.wippdata.path}")
+    private String slurmWippDataPath;
 
     @Value("${storage.collections}")
     private String imagesCollectionsFolder;
@@ -180,6 +186,14 @@ public class CoreConfig {
 
 	public String getWippDataPVCName() {
 		return wippDataPVCName;
+	}
+
+	public boolean isSlurmEnabled() {
+		return slurmEnabled;
+	}
+
+	public String getSlurmWippDataPath() {
+		return slurmWippDataPath;
 	}
 
 	public String getImagesCollectionsFolder() {
