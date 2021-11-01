@@ -11,7 +11,7 @@ public class ArgoTemplatePluginSlurmResource {
 	private final String action = "create";
     private final String successCondition = "Status.Status == Succeeded";
     private final String failureCondition = "Status.Status == Failed";
-    private ArgoTemplatePluginSlurmJob manifest;
+    private String manifest;
 	
     public String getAction() {
 		return action;
@@ -25,11 +25,11 @@ public class ArgoTemplatePluginSlurmResource {
 		return failureCondition;
 	}
 
-	public ArgoTemplatePluginSlurmJob getManifest() {
+	public String getManifest() {
 		return manifest;
 	}
 
-	public void setManifest(ArgoTemplatePluginSlurmJob manifest) {
+	public void setManifest(String manifest) {
 		this.manifest = manifest;
 	}
     

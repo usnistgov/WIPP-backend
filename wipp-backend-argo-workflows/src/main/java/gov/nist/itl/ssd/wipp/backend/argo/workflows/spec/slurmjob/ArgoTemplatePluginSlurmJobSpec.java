@@ -27,15 +27,14 @@ public class ArgoTemplatePluginSlurmJobSpec {
             containerArgs += (" {{inputs.parameters." + parameter + "}}");
         }
 		// generate batch script
-		String batchScript = "\n"
-				+ "#!/bin/sh\n"
+		String batchScript = "#!/bin/sh\n"
 				+ "#SBATCH --nodes=1\n"
 				+ "#SBATCH --gres=gpu:1\n"
 				+ "#SBATCH --job wipp-" + jobId + "\n"
 				+ "#SBATCH --output wipp-" + jobId + ".out\n"
 				+ "srun singularity run --nv "
-				+ "--bind " + wippSlurmInputDataPath + ":" + containerInputsMountPath + ":ro"
-				+ "--bind " + wippSlurmOutputDataPath + ":" + containerOutputsMountPath + ":rw"
+				+ "--bind " + wippSlurmInputDataPath + ":" + containerInputsMountPath + ":ro "
+				+ "--bind " + wippSlurmOutputDataPath + ":" + containerOutputsMountPath + ":rw "
 				+ "docker://" + containerId + containerArgs;
 		
 		// set batch script

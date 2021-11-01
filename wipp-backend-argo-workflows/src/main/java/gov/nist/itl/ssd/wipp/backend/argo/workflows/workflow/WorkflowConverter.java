@@ -11,8 +11,12 @@
  */
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.workflow;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginIO;
 import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.*;
@@ -72,6 +76,26 @@ public class WorkflowConverter {
         return argoVolumeList;
     }
 
+    private HashMap<String, List<NameValueParam>> generateTemplatePluginInputs(Plugin plugin, List<String> parameters) {
+    	// Add the plugin parameters as required by the image
+        HashMap<String, List<NameValueParam>> argoTemplateInputs = new HashMap<>();
+        List<NameValueParam> argoTemplateArgs = new ArrayList<>();
+
+        // Add the plugin's outputs to the list of parameters coming from the job's configuration
+        for (PluginIO output : plugin.getOutputs()) {
+            parameters.add(output.getName());
+        }
+
+        // Add all the parameters to the Argo plugin template
+        for (String parameter : parameters) {
+            argoTemplateArgs.add(new NameValueParam(parameter));
+        }
+
+        argoTemplateInputs.put("parameters", argoTemplateArgs);
+        
+        return argoTemplateInputs;
+    }
+    
     private ArgoTemplatePluginContainer generateTemplatePluginContainer(
             String containerId,
             List<String> parameters,
@@ -116,22 +140,7 @@ public class WorkflowConverter {
         ArgoTemplatePlugin argoTemplatePlugin = new ArgoTemplatePlugin();
         argoTemplatePlugin.setName(plugin.getIdentifier() + "-" + jobId);
 
-        // Add the plugin parameters as required by the image
-        HashMap<String, List<NameValueParam>> argoTemplateInputs = new HashMap<>();
-        List<NameValueParam> argoTemplateArgs = new ArrayList<>();
-
-        // Add the plugin's outputs to the list of parameters coming from the job's configuration
-        for (PluginIO output : plugin.getOutputs()) {
-            parameters.add(output.getName());
-        }
-
-        // Add all the parameters to the Argo plugin template
-        for (String parameter : parameters) {
-            argoTemplateArgs.add(new NameValueParam(parameter));
-        }
-
-        argoTemplateInputs.put("parameters", argoTemplateArgs);
-        argoTemplatePlugin.setInputs(argoTemplateInputs);
+        argoTemplatePlugin.setInputs(this.generateTemplatePluginInputs(plugin, parameters));
 
         argoTemplatePlugin.setContainer(
                 this.generateTemplatePluginContainer(
@@ -147,7 +156,7 @@ public class WorkflowConverter {
             String containerId,
             List<String> parameters,
             String jobId
-    ) {
+    ) throws JsonProcessingException {
     	ArgoTemplatePluginSlurmResource argoTemplatePluginSlurmResource = new ArgoTemplatePluginSlurmResource();
     	
     	// Generate SlurmJob spec (sbatch script)
@@ -156,29 +165,36 @@ public class WorkflowConverter {
 				containerId, parameters, jobId, coreConfig.getSlurmWippDataPath(), this.getSlurmOutputDataPath(jobId),
 				coreConfig.getContainerInputsMountPath(), this.getOutputMountPath(jobId));
     	
-    	// Generate SlurmJob with spec
+    	// Generate SlurmJob manifest
     	ArgoTemplatePluginSlurmJob argoTemplatePluginSlurmJob = new ArgoTemplatePluginSlurmJob();
     	HashMap<String, String> metadata = new HashMap<>();
         metadata.put("name", "wipp-" + jobId);
     	argoTemplatePluginSlurmJob.setMetadata(metadata);
     	argoTemplatePluginSlurmJob.setSpec(argoTemplatePluginSlurmJobSpec);
+    	YAMLMapper manifestMapper = new YAMLMapper();
+    	manifestMapper.configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true);
+    	String manifest = manifestMapper.writeValueAsString(argoTemplatePluginSlurmJob);
     	
     	// Set manifest in SlurmResource
-    	argoTemplatePluginSlurmResource.setManifest(argoTemplatePluginSlurmJob);
+    	argoTemplatePluginSlurmResource.setManifest(manifest);
     	
     	return argoTemplatePluginSlurmResource;
     }
     
-    private ArgoTemplatePluginSlurm generateTemplatePluginSlurm(Plugin plugin, List<String> parameters, String jobId) {
+    private ArgoTemplatePluginSlurm generateTemplatePluginSlurm(Plugin plugin, List<String> parameters, String jobId) 
+    		throws JsonProcessingException {
         ArgoTemplatePluginSlurm argoTemplatePluginSlurm = new ArgoTemplatePluginSlurm();
         argoTemplatePluginSlurm.setName(plugin.getIdentifier() + "-" + jobId);
+        
+        argoTemplatePluginSlurm.setInputs(this.generateTemplatePluginInputs(plugin, parameters));
 
         argoTemplatePluginSlurm.setResource(this.generateTemplatePluginSlurmResource(plugin.getContainerId(), parameters, jobId));
         
         return argoTemplatePluginSlurm;
     }
     
-    private ArgoAbstractTemplate generateTemplatePlugin(Plugin plugin, List<String> parameters, String jobId) {
+    private ArgoAbstractTemplate generateTemplatePlugin(Plugin plugin, List<String> parameters, String jobId) 
+    		throws JsonProcessingException {
         if(coreConfig.isSlurmEnabled()) {
         	return this.generateTemplatePluginSlurm(plugin, parameters, jobId);
         } else {
@@ -317,7 +333,7 @@ public class WorkflowConverter {
         return tolerations;
     }
 
-    private List<ArgoAbstractTemplate> generateSpecTemplates() {
+    private List<ArgoAbstractTemplate> generateSpecTemplates() throws JsonProcessingException {
         List<ArgoAbstractTemplate> argoTemplates = new ArrayList<>();
         List<ArgoTemplateWorkflowTask> argoTemplateWorkflowTasks = new ArrayList<>();
 
@@ -347,7 +363,7 @@ public class WorkflowConverter {
         return argoTemplates;
     }
 
-    private ArgoWorkflowSpec generateSpec() {
+    private ArgoWorkflowSpec generateSpec() throws JsonProcessingException {
         ArgoWorkflowSpec argoWorkflowSpec = new ArgoWorkflowSpec();
 
         argoWorkflowSpec.setNodeSelector(this.generateNodeSelector());
@@ -365,8 +381,8 @@ public class WorkflowConverter {
         this.jobsDependencies = jobsDependencies;
         this.jobsPlugins = jobsPlugins;
 
-        YAMLFactory yamlFactory = new YAMLFactory();
-        ObjectMapper mapper = new ObjectMapper(yamlFactory);
+        YAMLMapper mapper = new YAMLMapper();
+        mapper.configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true);
 
         ArgoWorkflow argoWorkflow = new ArgoWorkflow();
 

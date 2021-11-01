@@ -67,7 +67,7 @@
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
-				<slurm.wippdata.path>${user.home}/WIPP-plugins</slurm.wippdata.path>
+				<slurm.wippdata.path>${user.home}/WIPP-plugins-slurm</slurm.wippdata.path>
 				<storage.root>${user.home}/WIPP-plugins</storage.root>
 				<storage.workflows>${user.home}/WIPP-plugins/workflows</storage.workflows>
 				<storage.collections>${user.home}/WIPP-plugins/images-upload</storage.collections>
