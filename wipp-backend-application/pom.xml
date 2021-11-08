@@ -79,6 +79,7 @@
 				<storage.csv.collections>${user.home}/WIPP-plugins/csv-collections</storage.csv.collections>
 				<storage.csvCollections.upload.tmp>${user.home}/WIPP-plugins/temp/csvCollections</storage.csvCollections.upload.tmp>
 				<storage.generic.datas>${user.home}/WIPP-plugins/generic-data</storage.generic.datas>
+				<storage.generic.datas.upload.tmp>${user.home}/WIPP-plugins/temp/generic-data</storage.generic.datas.upload.tmp>
 				<storage.notebooks>${user.home}/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>${user.home}/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
@@ -107,6 +108,7 @@
 				<storage.csv.collections>/data/WIPP-plugins/csv-collections</storage.csv.collections>
 				<storage.csvCollections.upload.tmp>/data/WIPP-plugins/temp/csvCollections</storage.csvCollections.upload.tmp>
 				<storage.generic.datas>/data/WIPP-plugins/generic-data</storage.generic.datas>
+				<storage.generic.datas.upload.tmp>/data/WIPP-plugins/temp/generic-data</storage.generic.datas.upload.tmp>
 				<storage.notebooks>/data/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>/data/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>

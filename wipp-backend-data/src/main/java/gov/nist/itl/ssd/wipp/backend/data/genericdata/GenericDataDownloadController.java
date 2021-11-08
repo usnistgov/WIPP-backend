@@ -44,7 +44,7 @@ import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 
 /**
 *
-* @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+* @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @Controller
 @RequestMapping(CoreConfig.BASE_URI + "/genericDatas/{genericDataId}/download")
