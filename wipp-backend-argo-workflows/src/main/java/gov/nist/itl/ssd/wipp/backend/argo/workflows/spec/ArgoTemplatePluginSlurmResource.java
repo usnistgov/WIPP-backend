@@ -1,7 +1,5 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.spec;
 
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.slurmjob.ArgoTemplatePluginSlurmJob;
-
 /**
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
@@ -9,8 +7,8 @@ import gov.nist.itl.ssd.wipp.backend.argo.workflows.spec.slurmjob.ArgoTemplatePl
 public class ArgoTemplatePluginSlurmResource {
 
 	private final String action = "create";
-    private final String successCondition = "Status.Status == Succeeded";
-    private final String failureCondition = "Status.Status == Failed";
+    private final String successCondition = "status.status == Succeeded";
+    private final String failureCondition = "status.status in (Failed, Error)";
     private String manifest;
 	
     public String getAction() {

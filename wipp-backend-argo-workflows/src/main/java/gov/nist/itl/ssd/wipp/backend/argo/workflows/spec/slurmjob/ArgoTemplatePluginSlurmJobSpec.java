@@ -30,7 +30,6 @@ public class ArgoTemplatePluginSlurmJobSpec {
 		String batchScript = "#!/bin/sh\n"
 				+ "#SBATCH --nodes=1\n"
 				+ "#SBATCH --gres=gpu:1\n"
-				+ "#SBATCH --job wipp-" + jobId + "\n"
 				+ "#SBATCH --output wipp-" + jobId + ".out\n"
 				+ "srun singularity run --nv "
 				+ "--bind " + wippSlurmInputDataPath + ":" + containerInputsMountPath + ":ro "
