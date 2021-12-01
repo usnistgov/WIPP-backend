@@ -32,11 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +60,7 @@ import io.swagger.annotations.Api;
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-@Controller
+@RestController
 @Api(tags="Visualization Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/visualizations/{visualizationId}/download")
 public class VisualizationDownloadController {
@@ -233,7 +233,9 @@ public class VisualizationDownloadController {
 	        File omeXmlFile = new File(
 	                new File(config.getPyramidsFolder(), pyramid.getId()),
 	                sliceNumber + ".ome.xml");
-	        addFileToZos(zos, omeXmlFile, "/visualization/pyramids/" + pyramidId + "/" + sliceNumber + ".ome.xml");
+	        if (omeXmlFile.exists()) {
+	        	addFileToZos(zos, omeXmlFile, "/visualization/pyramids/" + pyramidId + "/" + sliceNumber + ".ome.xml");
+	        }
 
 			// add pyramid tiles
 	        File tilesFolder = new File(
