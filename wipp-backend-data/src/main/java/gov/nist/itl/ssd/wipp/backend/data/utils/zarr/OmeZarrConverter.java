@@ -14,19 +14,27 @@ package gov.nist.itl.ssd.wipp.backend.data.utils.zarr;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.bc.zarr.ArrayParams;
 import com.bc.zarr.Compressor;
 import com.bc.zarr.CompressorFactory;
 import com.bc.zarr.DataType;
 import com.bc.zarr.ZarrArray;
+import com.bc.zarr.ZarrGroup;
+import loci.common.Constants;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -46,6 +54,11 @@ import ucar.ma2.InvalidRangeException;
 public class OmeZarrConverter {
 
 	private static final Logger LOG = Logger.getLogger(OmeZarrConverter.class.getName());
+	
+	private static final String OME_NGFF_VERSION = "0.3";
+	private static final String METADATA_FILE = "METADATA.ome.xml";
+	
+	private static final int CHUNK_SIZE_3D = 64;
 
 	private ImageReader reader;
 	private ZarrArray zarrArray;
@@ -82,10 +95,17 @@ public class OmeZarrConverter {
 		outputPath.toFile().delete();
 
 		// set chunk size
-		int[] chunks = new int[] {1, 1, 1, tileSizeY, tileSizeX};
+		int tileSizeZ = 1;
+		if (reader.getSizeZ() > 1) {
+			tileSizeX = tileSizeY = tileSizeZ = CHUNK_SIZE_3D;
+		}
+		int[] chunks = new int[] {1, 1, tileSizeZ, tileSizeY, tileSizeX};
 		
 		// create output zarr array
 		this.create(outputFile, omexml, chunks);
+		
+		// write original metadata
+		this.saveOmeMetadata(outputFile, omexml, service);
 		
 		// write data
 		this.readWriteTiles();
@@ -147,6 +167,10 @@ public class OmeZarrConverter {
 	public void create(String file, MetadataRetrieve meta, int[] chunks) throws IOException {
 	    int seriesCount = meta.getImageCount();
 	    
+	    if (seriesCount > 1) {
+	      LOG.warning("Series are ignored during image conversion.");
+	    }
+	    
 	    ArrayParams params = new ArrayParams();
 	    params.chunks(chunks);
 	    Compressor bloscCompressor = CompressorFactory.create("blosc");
@@ -158,6 +182,7 @@ public class OmeZarrConverter {
 	    }
 
 	    // Dimensions order: TCZYX
+	    String[] zarrDimensions = {"t", "c", "z", "y", "x"};
 		int[] dimensions = new int[] { reader.getSizeT(), reader.getSizeC(), reader.getSizeZ(), reader.getSizeY(),
 				reader.getSizeX() };
 	    int [] shape = dimensions; 
@@ -168,19 +193,40 @@ public class OmeZarrConverter {
 	    DataType zarrPixelType = getZarrPixelType(pixelType);
 	    params.dataType(zarrPixelType);
 	    
-	    // Create attributes
-	    Map<String, Object> attrs;
-	    attrs = new HashMap<>();
-	    String[] zarrDimensions = {"T", "C", "Z", "Y", "X"};
-	    attrs.put("_ARRAY_DIMENSIONS", zarrDimensions); // for xarray compatibility
+	    // Create group attributes
+	    Map<String, Object> grpAttrs = new HashMap<>();	    
+	    List<Map<String, Object>> multiscales = new ArrayList<Map<String, Object>>();
+	    Map<String, Object> multiscale = new HashMap<String, Object>();
+	    multiscale.put("version", OME_NGFF_VERSION);
+	    multiscale.put("name", FilenameUtils.getName(outputFile));
+	    List<Map<String, String>> datasets = new ArrayList<Map<String, String>>();
+	    datasets.add(Collections.singletonMap("path", "0"));
+	    multiscale.put("datasets", datasets);
+	    multiscale.put("axes", zarrDimensions);
+	    multiscales.add(multiscale);
+	    grpAttrs.put("multiscales", multiscales);
+	    
+	    // Create array attributes
+	    Map<String, Object> arrAttrs = new HashMap<>();
+	    arrAttrs.put("_ARRAY_DIMENSIONS", zarrDimensions); // for xarray compatibility
 
-	    if (seriesCount > 1) {
-	      LOG.warning("Series are ignored during image conversion.");
-	    }
+	    // Create Zarr group and array
+	    ZarrGroup root = ZarrGroup.create(outputFile, grpAttrs);
+	    zarrArray = root.createArray("0", params, arrAttrs);
 	    
-	    // Create Zarr array
-	    zarrArray = ZarrArray.create(file, params, attrs);
-	    
+	  }
+	
+	// Write original OME metadata
+	public void saveOmeMetadata(String file, MetadataRetrieve meta, OMEXMLService service)
+			throws IOException, ServiceException {
+		String xml = service.getOMEXML(meta);
+		// write the original OME-XML to a file inside OME sub-folder to be consistent with bioformats2raw
+		Path metadataPath = Paths.get(file, "OME");
+		if (!Files.exists(metadataPath)) {
+			Files.createDirectories(metadataPath);
+		}
+		Path omeXmlFile = metadataPath.resolve(METADATA_FILE);
+		Files.write(omeXmlFile, xml.getBytes(Constants.ENCODING)); 
 	  }
 	
 	// Convert pixel type to Zarr pixel type
