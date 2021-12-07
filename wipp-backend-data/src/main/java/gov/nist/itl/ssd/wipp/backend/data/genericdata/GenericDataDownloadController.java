@@ -41,12 +41,14 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
+import io.swagger.annotations.Api;
 
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Controller
+@Api(tags="GenericData Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/genericDatas/{genericDataId}/download")
 public class GenericDataDownloadController {
 
