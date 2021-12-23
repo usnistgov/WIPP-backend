@@ -20,7 +20,6 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionDownloadController;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
 import io.swagger.annotations.Api;
 
@@ -284,7 +283,7 @@ public class ImageController {
 		TemplateVariable tv = new TemplateVariable("regex",
 				TemplateVariable.VariableType.REQUEST_PARAM);
 
-		UriTemplate uriTemplate = new UriTemplate(imagesFilterLink.getHref(),
+		UriTemplate uriTemplate = UriTemplate.of(imagesFilterLink.getHref(),
 				new TemplateVariables(tv));
 
 		Link link = new Link(uriTemplate, "filterByFileNameRegex");
