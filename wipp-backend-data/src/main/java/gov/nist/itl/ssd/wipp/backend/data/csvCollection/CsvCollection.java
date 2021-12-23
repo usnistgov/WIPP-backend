@@ -24,7 +24,7 @@ import java.util.Date;
 
 /**
  *
- * @author Mohamed Ouladi <mohamed.ouladi@nist.gov>
+ * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
 @IdExposed
 @Document

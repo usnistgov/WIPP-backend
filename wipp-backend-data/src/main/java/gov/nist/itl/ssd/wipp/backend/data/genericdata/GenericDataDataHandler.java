@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,10 +29,11 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
+import gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles.GenericFileHandler;
 
 /**
 *
-* @author Mohamed Ouladi <mohamed.ouladi@nist.gov>
+* @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 * @author Mylene Simon <mylene.simon at nist.gov>
 */
 @Component("genericDataDataHandler")
@@ -42,6 +44,9 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
 
 	@Autowired
 	private GenericDataRepository genericDataRepository;
+	
+    @Autowired
+    private GenericFileHandler genericFileHandler;
 
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
@@ -55,14 +60,14 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
 		File genericDataFolder = new File(config.getGenericDatasFolder(), genericData.getId());
 		genericDataFolder.mkdirs();
 
-		File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
-		boolean success = tempOutputDir.renameTo(genericDataFolder);
-		if (!success) {
+		try {
+			File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
+			genericFileHandler.importFolder(genericData.getId(), tempOutputDir);
+			setOutputId(job, outputName, genericData.getId());
+		} catch (IOException ex) {
 			genericDataRepository.delete(genericData);
 			throw new JobExecutionException("Cannot move generic data to final destination.");
 		}
-
-		setOutputId(job, outputName, genericData.getId());
 		
 		// search for metadata file
 		File[] metadataFiles = genericDataFolder.listFiles(new FilenameFilter() {
