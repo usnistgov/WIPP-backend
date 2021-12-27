@@ -52,6 +52,7 @@ import io.swagger.annotations.Api;
 @RequestMapping(CoreConfig.BASE_URI + "/genericDataCollections/{genericDataCollectionId}/download")
 public class GenericDataCollectionDownloadController {
 
+
 	@Autowired
 	CoreConfig config;
 
