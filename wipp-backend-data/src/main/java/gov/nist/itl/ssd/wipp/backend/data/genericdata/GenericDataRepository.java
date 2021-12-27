@@ -11,20 +11,34 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
 
 /**
 *
-* @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+* @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @RepositoryRestResource
-public interface GenericDataRepository extends PrincipalFilteredRepository<GenericData, String>{
+public interface GenericDataRepository extends PrincipalFilteredRepository<GenericData, String>, GenericDataRepositoryCustom{
+	
+	/*
+	 * Filter collection resources access by object name depending on user
+	 */
+	@Query(" { '$and' : ["
+			+ "{'$or':["
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'publiclyShared':true}"
+			+ "]} , "
+			+ "{'name' : {$eq : ?0}}"
+			+ "]}")
+    Page<GenericData> findByName(@Param("name") String name, Pageable p);
 
-	@Override
-	@RestResource(exported = false)
-	void delete(GenericData t);
+	// not exported
+	long countByName(@Param("name") String name);
 
 }

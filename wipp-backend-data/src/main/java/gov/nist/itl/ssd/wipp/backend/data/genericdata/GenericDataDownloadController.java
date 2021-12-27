@@ -45,7 +45,7 @@ import io.swagger.annotations.Api;
 
 /**
 *
-* @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+* @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @Controller
 @Api(tags="GenericData Entity")
