@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import java.util.Date;
 
@@ -30,7 +30,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
 */
 @IdExposed
 @Document
-public class GenericData {
+public class GenericDataCollection {
 
 	@Id
 	private String id;
@@ -69,22 +69,22 @@ public class GenericData {
 	
     private boolean publiclyShared;
 	
-	public GenericData() {
+	public GenericDataCollection() {
 	}
 
-	public GenericData(String name, boolean locked){
+	public GenericDataCollection(String name, boolean locked){
 		this.name = name;
 		this.creationDate = new Date();
 		this.locked = locked;
 	}
 
-	public GenericData(Job job){
+	public GenericDataCollection(Job job){
 		this.name = job.getName();
 		this.sourceJob = job.getId();
 		this.creationDate = new Date();
 	}
 
-	public GenericData(Job job, String outputName) {
+	public GenericDataCollection(Job job, String outputName) {
 		this.name = job.getName() + "-" + outputName;
 		this.sourceJob = job.getId();
 		this.creationDate = new Date();

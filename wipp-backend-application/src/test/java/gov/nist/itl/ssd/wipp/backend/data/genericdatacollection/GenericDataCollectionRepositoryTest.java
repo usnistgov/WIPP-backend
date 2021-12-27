@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -35,10 +35,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
 import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollection;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 
 /**
- * Collection of tests for {@link GenericDataRepository} exposed methods
+ * Collection of tests for {@link GenericDataCollectionRepository} exposed methods
  * Testing access control on READ operations
  * Uses embedded MongoDB database and mock Keycloak users
  * 
@@ -48,7 +50,7 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
 				properties = { "spring.data.mongodb.port=0" })
-public class GenericDataRepositoryTest {
+public class GenericDataCollectionRepositoryTest {
 
 	@Autowired WebApplicationContext context;
 	@Autowired FilterChainProxy filterChain;
@@ -56,9 +58,9 @@ public class GenericDataRepositoryTest {
 	MockMvc mvc;
 	
 	@Autowired
-	GenericDataRepository genericDataRepository;
+	GenericDataCollectionRepository genericDataCollectionRepository;
 	
-	GenericData publicGenDataA, publicGenDataB, privateGenDataA, privateGenDataB;
+	GenericDataCollection publicGenDataA, publicGenDataB, privateGenDataA, privateGenDataB;
 	
 	@Before
 	public void setUp() {
@@ -68,28 +70,28 @@ public class GenericDataRepositoryTest {
 				.build();
 		
 		// Clear embedded database
-		genericDataRepository.deleteAll();
+		genericDataCollectionRepository.deleteAll();
 		
 		// Create and save publicGenDataA (public: true, owner: user1)
-		publicGenDataA = new GenericData("publicGenDataA");
+		publicGenDataA = new GenericDataCollection("publicGenDataA", false);
 		publicGenDataA.setOwner("user1");
 		publicGenDataA.setPubliclyShared(true);
-		publicGenDataA = genericDataRepository.save(publicGenDataA);
+		publicGenDataA = genericDataCollectionRepository.save(publicGenDataA);
 		// Create and save publicGenDataB (public: true, owner: user2)
-		publicGenDataB = new GenericData("publicGenDataB");
+		publicGenDataB = new GenericDataCollection("publicGenDataB", false);
 		publicGenDataB.setOwner("user2");
 		publicGenDataB.setPubliclyShared(true);
-		publicGenDataB = genericDataRepository.save(publicGenDataB);
+		publicGenDataB = genericDataCollectionRepository.save(publicGenDataB);
 		// Create and save privateGenDataA (public: false, owner: user1)
-		privateGenDataA = new GenericData("privateGenDataA");
+		privateGenDataA = new GenericDataCollection("privateGenDataA", false);
 		privateGenDataA.setOwner("user1");
 		privateGenDataA.setPubliclyShared(false);
-		privateGenDataA = genericDataRepository.save(privateGenDataA);
+		privateGenDataA = genericDataCollectionRepository.save(privateGenDataA);
 		// Create and save privateGenDataB (public: false, owner: user2)
-		privateGenDataB = new GenericData("privateGenDataB");
+		privateGenDataB = new GenericDataCollection("privateGenDataB", false);
 		privateGenDataB.setOwner("user2");
 		privateGenDataB.setPubliclyShared(false);
-		privateGenDataB = genericDataRepository.save(privateGenDataB);
+		privateGenDataB = genericDataCollectionRepository.save(privateGenDataB);
 	}
 	
 	@Test
@@ -97,11 +99,11 @@ public class GenericDataRepositoryTest {
 	public void findById_anonymousCallingShouldReturnOnlyPublicItems() throws Exception {
 		
 		// Anonymous user should be able to read a public collection
-		genericDataRepository.findById(publicGenDataA.getId());
+		genericDataCollectionRepository.findById(publicGenDataA.getId());
 		
 		// Anonymous user should not be able to read a private collection
 		try {
-			genericDataRepository.findById(privateGenDataA.getId());
+			genericDataCollectionRepository.findById(privateGenDataA.getId());
 			fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
@@ -113,14 +115,14 @@ public class GenericDataRepositoryTest {
 	public void findById_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		// Non-admin user1 should be able to read own private collection
-		genericDataRepository.findById(privateGenDataA.getId());
+		genericDataCollectionRepository.findById(privateGenDataA.getId());
 				
 		// Non-admin user1 should be able to read a public collection from user2
-		genericDataRepository.findById(publicGenDataB.getId());
+		genericDataCollectionRepository.findById(publicGenDataB.getId());
 		
 		// Non-admin user1 should not be able to read a private collection from user2
 		try {
-			genericDataRepository.findById(privateGenDataB.getId());
+			genericDataCollectionRepository.findById(privateGenDataB.getId());
 			fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
@@ -132,10 +134,10 @@ public class GenericDataRepositoryTest {
 	public void findById_adminCallingShouldReturnAllItems() throws Exception {
 		
 		// Admin should be able to read a public collection from user1
-		genericDataRepository.findById(publicGenDataA.getId());
+		genericDataCollectionRepository.findById(publicGenDataA.getId());
 		
 		// Admin should be able to read a private collection from user1
-		genericDataRepository.findById(privateGenDataA.getId());
+		genericDataCollectionRepository.findById(privateGenDataA.getId());
 	}
 	
 	@Test
@@ -145,7 +147,7 @@ public class GenericDataRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Anonymous user should get only get list of public collections
-		Page<GenericData> result = genericDataRepository.findAll(pageable);
+		Page<GenericDataCollection> result = genericDataCollectionRepository.findAll(pageable);
 		assertThat(result.getContent(), hasSize(2));
 		result.getContent().forEach(csvGenData -> {
 			assertThat(csvGenData.isPubliclyShared(), is(true));
@@ -159,7 +161,7 @@ public class GenericDataRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Non-admin user1 should only get list of own and public collections
-		Page<GenericData> result = genericDataRepository.findAll(pageable);
+		Page<GenericDataCollection> result = genericDataCollectionRepository.findAll(pageable);
 		assertThat(result.getContent(), hasSize(3));
 		result.getContent().forEach(csvGenData -> {
 			assertThat((csvGenData.isPubliclyShared() || csvGenData.getOwner().equals("user1")), is(true));
@@ -173,7 +175,7 @@ public class GenericDataRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Admin should get list of all collections
-		Page<GenericData> result = genericDataRepository.findAll(pageable);
+		Page<GenericDataCollection> result = genericDataCollectionRepository.findAll(pageable);
 		assertThat(result.getContent(), hasSize(4));
 	}
 	
@@ -184,7 +186,7 @@ public class GenericDataRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Anonymous user should get only get list of public collections matching search criteria
-		Page<GenericData> result = genericDataRepository.findByNameContainingIgnoreCase("gendataA", pageable);
+		Page<GenericDataCollection> result = genericDataCollectionRepository.findByNameContainingIgnoreCase("gendataA", pageable);
 		assertThat(result.getContent(), hasSize(1));
 		result.getContent().forEach(csvGenData -> {
 			assertThat(csvGenData.isPubliclyShared(), is(true));
@@ -198,7 +200,7 @@ public class GenericDataRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Non-admin user1 should only get list of own and public collections matching search criteria
-		Page<GenericData> result = genericDataRepository.findByNameContainingIgnoreCase("gendata", pageable);
+		Page<GenericDataCollection> result = genericDataCollectionRepository.findByNameContainingIgnoreCase("gendata", pageable);
 		assertThat(result.getContent(), hasSize(3));
 		result.getContent().forEach(csvGenData -> {
 			assertThat((csvGenData.isPubliclyShared() || csvGenData.getOwner().equals("user1")), is(true));
@@ -212,9 +214,9 @@ public class GenericDataRepositoryTest {
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// Admin should get list of all collections matching search criteria
-		Page<GenericData> resultGenData = genericDataRepository.findByNameContainingIgnoreCase("gendata", pageable);
+		Page<GenericDataCollection> resultGenData = genericDataCollectionRepository.findByNameContainingIgnoreCase("gendata", pageable);
 		assertThat(resultGenData.getContent(), hasSize(4));
-		Page<GenericData> resultPrivate = genericDataRepository.findByNameContainingIgnoreCase("private", pageable);
+		Page<GenericDataCollection> resultPrivate = genericDataCollectionRepository.findByNameContainingIgnoreCase("private", pageable);
 		assertThat(resultPrivate.getContent(), hasSize(2));
 	}
 	

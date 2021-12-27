@@ -78,10 +78,10 @@ public class CoreConfig {
     private String notebooksFolder;
     
     @Value("${storage.generic.datas}")
-    private String genericDatasFolder;
+    private String genericDataCollectionsFolder;
     
     @Value("${storage.generic.datas.upload.tmp}")
-    private String genericDatasUploadTmpFolder;
+    private String genericDataCollectionsUploadTmpFolder;
 
     @Value("${storage.notebooks.tmp}")
     private String notebooksTmpFolder;
@@ -165,12 +165,12 @@ public class CoreConfig {
 		return notebooksTmpFolder;
 	}
 	
-    public String getGenericDatasFolder() {
-		return genericDatasFolder;
+    public String getGenericDataCollectionsFolder() {
+		return genericDataCollectionsFolder;
 	}
     
-    public String getGenericDatasUploadTmpFolder() {
-		return genericDatasUploadTmpFolder;
+    public String getGenericDataCollectionsUploadTmpFolder() {
+		return genericDataCollectionsUploadTmpFolder;
 	}
 
     public String getWorkflowBinary() {

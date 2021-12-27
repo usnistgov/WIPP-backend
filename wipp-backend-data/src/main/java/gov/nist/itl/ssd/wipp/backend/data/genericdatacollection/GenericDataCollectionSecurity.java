@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import java.util.Optional;
 
@@ -27,28 +27,28 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
  *
  */
 @Service
-public class GenericDataSecurity {
+public class GenericDataCollectionSecurity {
 
 	@Autowired
-    private GenericDataRepository genericDataRepository;
+    private GenericDataCollectionRepository genericDataCollectionRepository;
 
-    public boolean checkAuthorize(String genericDataId, Boolean editMode) {
-        Optional<GenericData> genericData = genericDataRepository.findById(genericDataId);
-        if (genericData.isPresent()){
-            return(checkAuthorize(genericData.get(), editMode));
+    public boolean checkAuthorize(String genericDataCollectionId, Boolean editMode) {
+        Optional<GenericDataCollection> genericDataCollection = genericDataCollectionRepository.findById(genericDataCollectionId);
+        if (genericDataCollection.isPresent()){
+            return(checkAuthorize(genericDataCollection.get(), editMode));
         }
         else {
-            throw new NotFoundException("Generic Data with id " + genericDataId + " not found");
+            throw new NotFoundException("Generic Data collection with id " + genericDataCollectionId + " not found");
         }
     }
 
-    public static boolean checkAuthorize(GenericData genericData, Boolean editMode) {
-        String genericDataOwner = genericData.getOwner();
+    public static boolean checkAuthorize(GenericDataCollection genericDataCollection, Boolean editMode) {
+        String genericDataCollectionOwner = genericDataCollection.getOwner();
         String connectedUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!genericData.isPubliclyShared() && (genericDataOwner == null || !genericDataOwner.equals(connectedUser))) {
+        if (!genericDataCollection.isPubliclyShared() && (genericDataCollectionOwner == null || !genericDataCollectionOwner.equals(connectedUser))) {
             throw new ForbiddenException("You do not have access to these Generic Data");
         }
-        if (genericData.isPubliclyShared() && editMode && (genericDataOwner == null || !genericDataOwner.equals(connectedUser))){
+        if (genericDataCollection.isPubliclyShared() && editMode && (genericDataCollectionOwner == null || !genericDataCollectionOwner.equals(connectedUser))){
             throw new ForbiddenException("You do not have the right to edit these Generic Data");
         }
         return(true);

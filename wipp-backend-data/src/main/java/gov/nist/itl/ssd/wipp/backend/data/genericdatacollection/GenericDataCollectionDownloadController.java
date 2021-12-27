@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -41,20 +41,22 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
+import io.swagger.annotations.Api;
 
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @Controller
-@RequestMapping(CoreConfig.BASE_URI + "/genericDatas/{genericDataId}/download")
-public class GenericDataDownloadController {
+@Api(tags="GenericDataCollection Entity")
+@RequestMapping(CoreConfig.BASE_URI + "/genericDataCollections/{genericDataCollectionId}/download")
+public class GenericDataCollectionDownloadController {
 
 	@Autowired
 	CoreConfig config;
 
 	@Autowired
-	GenericDataRepository genericDataRepository;
+	GenericDataCollectionRepository genericDataCollectionRepository;
 	
 	@Autowired
 	DataDownloadTokenRepository dataDownloadTokenRepository;
@@ -63,26 +65,26 @@ public class GenericDataDownloadController {
             value = "request",
             method = RequestMethod.GET,
             produces = "application/json")
-	@PreAuthorize("hasRole('admin') or @genericDataSecurity.checkAuthorize(#genericDataId, false)")
+	@PreAuthorize("hasRole('admin') or @genericDataCollectionSecurity.checkAuthorize(#genericDataCollectionId, false)")
 	public DownloadUrl requestDownload(
-            @PathVariable("genericDataId") String genericDataId) {
+            @PathVariable("genericDataCollectionId") String genericDataCollectionId) {
     	
     	// Check existence of data
-    	Optional<GenericData> gd = genericDataRepository.findById(
-    			genericDataId);
+    	Optional<GenericDataCollection> gd = genericDataCollectionRepository.findById(
+    			genericDataCollectionId);
         if (!gd.isPresent()) {
             throw new ResourceNotFoundException(
-                    "Generic data " + genericDataId + " not found.");
+                    "Generic data collection " + genericDataCollectionId + " not found.");
         }
         
         // Generate download token
-        DataDownloadToken downloadToken = new DataDownloadToken(genericDataId);
+        DataDownloadToken downloadToken = new DataDownloadToken(genericDataCollectionId);
         dataDownloadTokenRepository.save(downloadToken);
         
         // Generate and send unique download URL
         String tokenParam = "?token=" + downloadToken.getToken();
-        String downloadLink = linkTo(GenericDataDownloadController.class,
-        		genericDataId).toString() + tokenParam;
+        String downloadLink = linkTo(GenericDataCollectionDownloadController.class,
+        		genericDataCollectionId).toString() + tokenParam;
         return new DownloadUrl(downloadLink);
     }
 	
@@ -91,7 +93,7 @@ public class GenericDataDownloadController {
 			method = RequestMethod.GET,
 			produces = "application/zip")
 	public void get(
-			@PathVariable("genericDataId") String genericDataId,
+			@PathVariable("genericDataCollectionId") String genericDataCollectionId,
 			@RequestParam("token")String token,
 			HttpServletResponse response) throws IOException {
 		
@@ -100,30 +102,30 @@ public class GenericDataDownloadController {
 		
     	// Check validity of download token
     	Optional<DataDownloadToken> downloadToken = dataDownloadTokenRepository.findByToken(token);
-    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(genericDataId)) {
+    	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(genericDataCollectionId)) {
     		throw new ForbiddenException("Invalid download token.");
     	}
     	
     	// Check existence of data
-		GenericData genericData = null;
-		Optional<GenericData> optGenericData = genericDataRepository.findById(genericDataId);
+		GenericDataCollection genericDataCollection = null;
+		Optional<GenericDataCollection> optGenericDataCollection = genericDataCollectionRepository.findById(genericDataCollectionId);
 		
-		if (!optGenericData.isPresent()) {
+		if (!optGenericDataCollection.isPresent()) {
 			throw new ResourceNotFoundException(
-					"Generic Data " + genericDataId + " not found.");
-		} else { // generic data is present
-			genericData = optGenericData.get();
+					"Generic Data Collection " + genericDataCollectionId + " not found.");
+		} else { // generic data collection is present
+			genericDataCollection = optGenericDataCollection.get();
         }
 
-		// get generic data folder
-		File genericDataStorageFolder = new File(config.getGenericDatasFolder(), genericData.getId());
+		// get generic data collection folder
+		File genericDataStorageFolder = new File(config.getGenericDataCollectionsFolder(), genericDataCollection.getId());
 		if (! genericDataStorageFolder.exists()) {
 			throw new ResourceNotFoundException(
-					"Generic data " + genericDataId + " " + genericData.getName() + " not found.");
+					"Generic data collection " + genericDataCollectionId + " " + genericDataCollection.getName() + " not found.");
 		}
 
 		response.setHeader("Content-disposition",
-				"attachment;filename=" + "GenericData-" + genericData.getName() + ".zip");
+				"attachment;filename=" + "GenericDataCollection-" + genericDataCollection.getName() + ".zip");
 
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 		addToZip("", zos, genericDataStorageFolder);

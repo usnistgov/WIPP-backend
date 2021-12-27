@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @RepositoryRestResource
-public interface GenericDataRepository extends PrincipalFilteredRepository<GenericData, String>, GenericDataRepositoryCustom{
+public interface GenericDataCollectionRepository extends PrincipalFilteredRepository<GenericDataCollection, String>, GenericDataCollectionRepositoryCustom{
 	
 	/*
 	 * Filter collection resources access by object name depending on user
@@ -36,7 +36,7 @@ public interface GenericDataRepository extends PrincipalFilteredRepository<Gener
 			+ "]} , "
 			+ "{'name' : {$eq : ?0}}"
 			+ "]}")
-    Page<GenericData> findByName(@Param("name") String name, Pageable p);
+    Page<GenericDataCollection> findByName(@Param("name") String name, Pageable p);
 
 	// not exported
 	long countByName(@Param("name") String name);

@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.genericfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
-import gov.nist.itl.ssd.wipp.backend.data.genericdata.GenericData;
-import gov.nist.itl.ssd.wipp.backend.data.genericdata.GenericDataRepository;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollection;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowjsController;
 import io.swagger.annotations.Api;
@@ -32,8 +32,8 @@ import io.swagger.annotations.Api;
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @RestController
-@Api(tags="GenericData Entity")
-@RequestMapping(CoreConfig.BASE_URI + "/genericDatas/{genericDataId}/genericFile")
+@Api(tags="GenericDataCollection Entity")
+@RequestMapping(CoreConfig.BASE_URI + "/genericDataCollections/{genericDataCollectionId}/genericFile")
 public class GenericFileUploadController extends FlowjsController {
 
 	 private static final Logger LOG = Logger.getLogger(GenericFileUploadController.class.getName());
@@ -42,7 +42,7 @@ public class GenericFileUploadController extends FlowjsController {
 	    private GenericFileRepository genericFileRepository;
 
 	    @Autowired
-	    private GenericDataRepository genericDataRepository;
+	    private GenericDataCollectionRepository genericDataCollectionRepository;
 
 	    @Autowired
 	    private CoreConfig config;
@@ -55,12 +55,12 @@ public class GenericFileUploadController extends FlowjsController {
 	                    "flowTotalSize", "flowIdentifier", "flowFilename",
 	                    "flowRelativePath"})
 	    public void isChunckUploaded(
-	            @PathVariable("genericDataId") String genericDataId,
+	            @PathVariable("genericDataCollectionId") String genericDataCollectionId,
 	            HttpServletRequest request, HttpServletResponse response)
 	            throws IOException {
-	        assertCollectionModifiable(genericDataId);
+	        assertCollectionModifiable(genericDataCollectionId);
 	        super.isChunckUploaded(request, response,
-	                new GenericDataFileParameters(genericDataId));
+	                new GenericDataFileParameters(genericDataCollectionId));
 	    }
 
 	    @RequestMapping(
@@ -71,19 +71,19 @@ public class GenericFileUploadController extends FlowjsController {
 	                    "flowTotalSize", "flowIdentifier", "flowFilename",
 	                    "flowRelativePath"})
 	    public void uploadChunck(
-	            @PathVariable("genericDataId") String genericDataId,
+	            @PathVariable("genericDataCollectionId") String genericDataCollectionId,
 	            HttpServletRequest request,
 	            HttpServletResponse response) throws IOException {
-	        assertCollectionModifiable(genericDataId);
+	        assertCollectionModifiable(genericDataCollectionId);
 	        super.uploadChunck(request, response,
-	                new GenericDataFileParameters(genericDataId));
+	                new GenericDataFileParameters(genericDataCollectionId));
 	    }
 
-	    private void assertCollectionModifiable(String genericDataId) {
-	        Optional<GenericData> oldTc = genericDataRepository.findById(
-	        		genericDataId);
+	    private void assertCollectionModifiable(String genericDataCollectionId) {
+	        Optional<GenericDataCollection> oldTc = genericDataCollectionRepository.findById(
+	        		genericDataCollectionId);
 	        if (! oldTc.isPresent()) {
-	            throw new ClientException("Collection " + genericDataId
+	            throw new ClientException("Collection " + genericDataCollectionId
 	                    + " does not exist.");
 	        }
 	        if (oldTc.get().isLocked()) {
@@ -109,8 +109,8 @@ public class GenericFileUploadController extends FlowjsController {
 	        return null;
 	    }
 
-	    protected File getUploadDir(String genericDataId) {
-	        return new File(config.getGenericDatasFolder(), genericDataId);
+	    protected File getUploadDir(String genericDataCollectionId) {
+	        return new File(config.getGenericDataCollectionsFolder(), genericDataCollectionId);
 	    }
 
 	    @Override
@@ -118,8 +118,8 @@ public class GenericFileUploadController extends FlowjsController {
 	        return getTempUploadDir(getCollectionId(flowFile));
 	    }
 
-	    protected File getTempUploadDir(String genericDataId) {
-	        return new File(config.getGenericDatasUploadTmpFolder(), genericDataId);
+	    protected File getTempUploadDir(String genericDataCollectionId) {
+	        return new File(config.getGenericDataCollectionsUploadTmpFolder(), genericDataCollectionId);
 	    }
 
 	    @Override
@@ -129,7 +129,7 @@ public class GenericFileUploadController extends FlowjsController {
 	        String fileName = flowFile.getFlowFilename();
 
 	        try {
-	            GenericData genericData = genericDataRepository.findById(collectionId).get();
+	            GenericDataCollection genericDataCollection = genericDataCollectionRepository.findById(collectionId).get();
 	        } catch (NoSuchElementException e) {
 	            LOG.log(Level.WARNING, "Error finding collection " + collectionId
 	                            + " when uploading file " + fileName,
@@ -150,7 +150,7 @@ public class GenericFileUploadController extends FlowjsController {
 	        GenericFile genericFile  = new GenericFile(collectionId, fileName, flowFile.getFlowFilename(),
 	                getPathSize(tempPath), true);
 	        genericFileRepository.save(genericFile);
-	        genericDataRepository.updateGenericFilesCaches(collectionId);
+	        genericDataCollectionRepository.updateGenericFilesCaches(collectionId);
 	        Path outputPath = new File(uploadDir, fileName).toPath();
 	        Files.copy(tempPath, outputPath);
 	        Files.delete(tempPath);
@@ -158,7 +158,7 @@ public class GenericFileUploadController extends FlowjsController {
 	        genericFile.setFileSize(getPathSize(outputPath));
 	        genericFile.setImporting(false);
 	        genericFileRepository.save(genericFile);
-	        genericDataRepository.updateGenericFilesCaches(collectionId);
+	        genericDataCollectionRepository.updateGenericFilesCaches(collectionId);
 	    }
 
 	    protected static String getCollectionId(FlowFile flowFile) {
