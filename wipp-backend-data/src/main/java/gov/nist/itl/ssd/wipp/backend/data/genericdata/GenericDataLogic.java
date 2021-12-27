@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.genericdata;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 
@@ -9,6 +10,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 *
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
+@Component
 public class GenericDataLogic {
 	
     @Autowired

@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
