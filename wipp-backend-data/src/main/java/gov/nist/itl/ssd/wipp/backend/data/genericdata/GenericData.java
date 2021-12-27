@@ -71,6 +71,10 @@ public class GenericData {
 	
 	public GenericData() {
 	}
+	
+	public GenericData(String name){
+		this(name, false);
+	}
 
 	public GenericData(String name, boolean locked){
 		this.name = name;
