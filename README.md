@@ -10,7 +10,7 @@ Requirements for development environment setup.
 * Maven version compatible with Java 8
 
 ### Database
-* MongoDB 3.6
+* MongoDB (Supported versions: 3.6 to 4.4)
 
 ### Identity and Access Management
 * Keycloak 11.0.2

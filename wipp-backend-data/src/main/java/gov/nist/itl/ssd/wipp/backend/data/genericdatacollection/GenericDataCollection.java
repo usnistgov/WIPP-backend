@@ -71,6 +71,10 @@ public class GenericDataCollection {
 	
 	public GenericDataCollection() {
 	}
+	
+	public GenericDataCollection(String name){
+		this(name, false);
+	}
 
 	public GenericDataCollection(String name, boolean locked){
 		this.name = name;

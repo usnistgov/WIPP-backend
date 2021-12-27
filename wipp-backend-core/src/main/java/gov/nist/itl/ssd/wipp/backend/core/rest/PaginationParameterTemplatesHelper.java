@@ -24,7 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  * This helper adds pagination parameters templates to links, since it was removed from
- * method appendPaginationParameterTemplates of classe PageableHandlerMethodArgumentResolver
+ * method appendPaginationParameterTemplates of class PageableHandlerMethodArgumentResolver
  * as of Spring-data 1.11
  * See issue http://stackoverflow.com/questions/34518885/how-to-add-pagination-templates-in-the-links-with-spring-data-1-11
  */
@@ -42,7 +42,7 @@ public class PaginationParameterTemplatesHelper {
  		Assert.notNull(link, "Link must not be null!");
 
 		String uri = link.getHref();
-		UriTemplate uriTemplate = new UriTemplate(uri);
+		UriTemplate uriTemplate = UriTemplate.of(uri);
 		UriComponents uriComponents = UriComponentsBuilder.fromUriString(uri).build();
 		TemplateVariables variables = pageableResolver.getPaginationTemplateVariables(null, uriComponents);
 
