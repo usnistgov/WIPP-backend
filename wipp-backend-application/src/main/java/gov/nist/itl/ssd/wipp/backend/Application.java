@@ -144,8 +144,6 @@ public class Application implements WebMvcConfigurer {
           .paths(PathSelectors.any()) 
           .paths(PathSelectors.regex("/error.*").negate())
           .paths(PathSelectors.regex("/api/profile").negate())
-      	  // workaround to avoid duplicate entries for plugins
-          .paths(PathSelectors.regex("/api/plugins").negate())
           .build() 
           // manually create tags to manage custom descriptions
           .tags(
@@ -163,7 +161,7 @@ public class Application implements WebMvcConfigurer {
               new Tag("Visualization Entity", "REST API for Pyramid Visualizations"),
               new Tag("Workflow Entity", "REST API for Workflows"))
           .apiInfo(apiEndPointsInfo())
-          .enableUrlTemplating(true);
+          .enableUrlTemplating(false);
     }
     
     /**
