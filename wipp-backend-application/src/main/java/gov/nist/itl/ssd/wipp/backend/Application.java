@@ -12,10 +12,14 @@
 package gov.nist.itl.ssd.wipp.backend;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
 import org.springframework.boot.SpringApplication;
@@ -35,12 +39,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerFactory;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.AuthorizationCodeGrantBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.GrantType;
+import springfox.documentation.service.OAuth;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.service.Tag;
+import springfox.documentation.service.TokenEndpoint;
+import springfox.documentation.service.TokenRequestEndpoint;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.SecurityConfiguration;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 
 /**
@@ -55,7 +68,16 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 public class Application implements WebMvcConfigurer {
 	
 	@Autowired
-    private CoreConfig coreConfig;
+	private CoreConfig coreConfig;
+	
+	@Value("${keycloak.auth-server-url}")
+	String keycloakAuthUrl;
+    
+	@Value("${keycloak.resource}")
+	String keycloakClientId;
+    
+	@Value("${keycloak.realm}")
+	String keycloakRealm;
 	
 	public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(
@@ -161,7 +183,9 @@ public class Application implements WebMvcConfigurer {
               new Tag("Visualization Entity", "REST API for Pyramid Visualizations"),
               new Tag("Workflow Entity", "REST API for Workflows"))
           .apiInfo(apiEndPointsInfo())
-          .enableUrlTemplating(false);
+          .enableUrlTemplating(false)
+          .securitySchemes(Arrays.asList(securityScheme()))
+          .securityContexts(Arrays.asList(securityContext()));
     }
     
     /**
@@ -176,5 +200,39 @@ public class Application implements WebMvcConfigurer {
             .version(coreConfig.getWippVersion())
             .build();
     }
+
+    /**
+     * Configure Swagger UI Authorize pop-up display
+     * @return security configuration
+     */
+	@Bean
+	public SecurityConfiguration securityConfiguration() {
+		// A placeholder for the client secret is added here since this client is public 
+		return new SecurityConfiguration(this.keycloakClientId, "secret_placeholder", "WIPP", "wipp-api", "",
+				Collections.emptyMap(), false, false);
+	}
+
+	 /**
+     * Configure Swagger UI security scheme for OAuth2
+     * @return security scheme
+     */
+	private OAuth securityScheme() {
+		String keycloakOidcUrl = this.keycloakAuthUrl + "/realms/" + this.keycloakRealm + "/protocol/openid-connect";
+		List<GrantType> grantTypes = Arrays.asList(new AuthorizationCodeGrantBuilder()
+				.tokenEndpoint(new TokenEndpoint(keycloakOidcUrl + "/token", "KeycloakOAuth2Token"))
+				.tokenRequestEndpoint(new TokenRequestEndpoint(keycloakOidcUrl + "/auth", this.keycloakClientId, ""))
+				.build());
+		return new OAuth("KeycloakOAuth2", Collections.emptyList(), grantTypes);
+	}
+	
+	/**
+     * Configure Swagger UI security context for OAuth2
+     * @return security context
+     */
+	private SecurityContext securityContext() {
+		return SecurityContext.builder()
+				.securityReferences(Arrays.asList(new SecurityReference("KeycloakOAuth2", new AuthorizationScope[0])))
+				.forPaths(PathSelectors.any()).build();
+	}
 
 }
