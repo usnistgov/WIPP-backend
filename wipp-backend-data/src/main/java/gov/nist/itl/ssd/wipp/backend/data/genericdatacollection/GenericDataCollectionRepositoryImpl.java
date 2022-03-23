@@ -60,41 +60,5 @@ public class GenericDataCollectionRepositoryImpl implements GenericDataCollectio
 				GenericDataCollection.class);
 		
 	}
-	
-	
-//	@Id
-//	private String id;
-//
-//	@Indexed(unique=true)
-//	private String name;
-//	
-//	private boolean locked;
-//	
-//	private String owner;
-//	
-//	private String type;
-//	
-//	private String description;
-//	
-//	private String metadata;
-//
-//	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-//	private int numberOfFiles;
-//
-//	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-//	private long fileTotalSize;
-//
-//	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//	private Date creationDate;
-//	
-//	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-//	private int numberOfImportErrors;
-//
-//	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-//	private int numberImportingGenericFiles;
-//
-//	@Indexed(unique = true, sparse = true)
-//	@ManualRef(Job.class)
-//	private String sourceJob;
 
 }
