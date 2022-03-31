@@ -63,6 +63,8 @@ spec:
               value: TOLERATIONS_VALUE
             - name: OME_CONVERTER_THREADS
               value: OME_CONVERTER_THREADS_VALUE
+            - name: KEYCLOAK_AUTH_URL
+              value: KEYCLOAK_AUTH_URL_VALUE
           volumeMounts:
             - mountPath: /data/WIPP-plugins
               name: data

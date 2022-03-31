@@ -9,6 +9,7 @@ NODE_SELECTOR=<node selector in the format "key1:value1;key2:value2;">
 TOLERATIONS=<pod tolerations in the format "key1:operator1:value1:effect1;", optional values can be skipped "key1:operator1::;">
 
 OME_CONVERTER_THREADS=<number of concurrent threads for image conversion, default is 6>
+KEYCLOAK_AUTH_URL=<url to keycloak>
 
 BACKEND_HOST_NAME=<host name>
 MONGO_HOST_NAME=<host name>
