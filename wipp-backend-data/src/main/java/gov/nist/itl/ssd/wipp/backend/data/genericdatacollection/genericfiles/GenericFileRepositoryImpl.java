@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.genericfiles;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,17 +15,17 @@ public class GenericFileRepositoryImpl implements GenericFileRepositoryCustom {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public void deleteByGenericData(String genericData) {
+    public void deleteByGenericDataCollection(String genericDataCollection) {
         mongoTemplate.remove(Query.query(
-                Criteria.where("genericData").is(genericData)),
+                Criteria.where("genericDataCollection").is(genericDataCollection)),
         		GenericFile.class);
     }
 
     @Override
-    public void deleteByGenericDataAndFileName(String genericData,
+    public void deleteByGenericDataCollectionAndFileName(String genericDataCollection,
             String fileName) {
         mongoTemplate.remove(Query.query(
-                Criteria.where("genericData").is(genericData)
+                Criteria.where("genericDataCollection").is(genericDataCollection)
                 .and("fileName").is(fileName)),
         		GenericFile.class);
     }

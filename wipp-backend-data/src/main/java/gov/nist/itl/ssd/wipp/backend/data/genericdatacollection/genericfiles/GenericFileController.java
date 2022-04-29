@@ -1,11 +1,10 @@
-package gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.genericfiles;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
-import gov.nist.itl.ssd.wipp.backend.data.genericdata.GenericData;
-import gov.nist.itl.ssd.wipp.backend.data.genericdata.GenericDataRepository;
-
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollection;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollectionRepository;
 import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ import java.util.Optional;
 */
 @RestController
 @Api(tags="GenericData Entity")
-@RequestMapping(CoreConfig.BASE_URI + "/genericDatas/{genericDataId}/genericFile")
+@RequestMapping(CoreConfig.BASE_URI + "/genericDataCollections/{genericDataCollectionId}/genericFile")
 @ExposesResourceFor(GenericFile.class)
 public class GenericFileController {
 	
@@ -44,64 +43,64 @@ public class GenericFileController {
     private GenericFileRepository genericFileRepository;
 
     @Autowired
-    private GenericDataRepository genericDataRepository;
+    private GenericDataCollectionRepository genericDataCollectionRepository;
 
     @Autowired
     private GenericFileHandler genericFileHandler;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @PreAuthorize("hasRole('admin') or @genericDataSecurity.checkAuthorize(#genericDataId, false)")
+    @PreAuthorize("hasRole('admin') or @genericDataCollectionSecurity.checkAuthorize(#genericDataCollectionId, false)")
     public HttpEntity<PagedModel<EntityModel<GenericFile>>> getFilesPage(
-            @PathVariable("genericDataId") String genericDataId,
+            @PathVariable("genericDataCollectionId") String genericDataCollectionId,
             @PageableDefault Pageable pageable,
             PagedResourcesAssembler<GenericFile> assembler) {
-        Page<GenericFile> files = genericFileRepository.findByGenericData(
-        		genericDataId, pageable);
+        Page<GenericFile> files = genericFileRepository.findByGenericDataCollection(
+        		genericDataCollectionId, pageable);
         PagedModel<EntityModel<GenericFile>> resources
                 = assembler.toModel(files);
         resources.forEach(
-                resource -> processResource(genericDataId, resource));
+                resource -> processResource(genericDataCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     @PreAuthorize("isAuthenticated() and "
-    		+ "(hasRole('admin') or @genericDataSecurity.checkAuthorize(#genericDataId, true))")
+    		+ "(hasRole('admin') or @genericDataCollectionSecurity.checkAuthorize(#genericDataCollectionId, true))")
     public void deleteAllFiles(
-            @PathVariable("genericDataId") String genericDataId) {
-        Optional<GenericData> tc = genericDataRepository.findById(
-        		genericDataId);
+            @PathVariable("genericDataCollectionId") String genericDataCollectionId) {
+        Optional<GenericDataCollection> tc = genericDataCollectionRepository.findById(
+        		genericDataCollectionId);
         if (!tc.isPresent()) {
             throw new NotFoundException("Collection not found");
         }
         if (tc.get().isLocked()) {
             throw new ClientException("Collection locked.");
         }
-        genericFileHandler.deleteAll(genericDataId);
+        genericFileHandler.deleteAll(genericDataCollectionId);
     }
 
     @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.DELETE)
     @PreAuthorize("isAuthenticated() and "
-    		+ "(hasRole('admin') or @genericDataSecurity.checkAuthorize(#genericDataId, true))")
+    		+ "(hasRole('admin') or @genericDataCollectionSecurity.checkAuthorize(#genericDataCollectionId, true))")
     public void deleteFile(
-            @PathVariable("genericDataId") String genericDataId,
+            @PathVariable("genericDataCollectionId") String genericDataCollectionId,
             @PathVariable("fileName") String fileName) {
-        Optional<GenericData> tc = genericDataRepository.findById(
-        		genericDataId);
+        Optional<GenericDataCollection> tc = genericDataCollectionRepository.findById(
+        		genericDataCollectionId);
         if (!tc.isPresent()) {
             throw new NotFoundException("Collection not found");
         }
         if (tc.get().isLocked()) {
             throw new ClientException("Collection locked.");
         }
-        genericFileHandler.delete(genericDataId, fileName);
+        genericFileHandler.delete(genericDataCollectionId, fileName);
     }
 
-    protected void processResource(String genericDataId,
+    protected void processResource(String genericDataCollectionId,
                                    EntityModel<GenericFile> resource) {
         GenericFile file = resource.getContent();
         Link link = entityLinks.linkForItemResource(
-                GenericData.class, genericDataId)
+                GenericDataCollection.class, genericDataCollectionId)
                 .slash("genericFile")
                 .slash(file.getFileName())
                 .withSelfRel();

@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
 @Component
-public class GenericDataResourceProcessor implements RepresentationModelProcessor<EntityModel<GenericData>>{
+public class GenericDataCollectionResourceProcessor implements RepresentationModelProcessor<EntityModel<GenericDataCollection>>{
 	
 	@Autowired
 	private PaginationParameterTemplatesHelper assembler;
@@ -35,17 +35,17 @@ public class GenericDataResourceProcessor implements RepresentationModelProcesso
 	private EntityLinks entityLinks;
 	
 	@Override
-	public EntityModel<GenericData> process(EntityModel<GenericData> resource) {
-		GenericData genericData = resource.getContent();
+	public EntityModel<GenericDataCollection> process(EntityModel<GenericDataCollection> resource) {
+		GenericDataCollection genericDataCollection = resource.getContent();
 		
-        Link downloadLink = linkTo(GenericDataDownloadController.class,
-        		genericData.getId())
+        Link downloadLink = linkTo(GenericDataCollectionDownloadController.class,
+        		genericDataCollection.getId())
         		.slash("request")
                 .withRel("download");
         resource.add(downloadLink);
         
     	Link genericFilesLink = entityLinks.linkForItemResource(
-    			GenericData.class, genericData.getId())
+    			GenericDataCollection.class, genericDataCollection.getId())
     			.slash("genericFile")
     			.withRel("genericFile");
     	resource.add(assembler.appendPaginationParameterTemplates(genericFilesLink));

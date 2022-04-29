@@ -150,7 +150,7 @@ public class Application implements WebMvcConfigurer {
           // manually create tags to manage custom descriptions
           .tags(
               new Tag("CsvCollection Entity", "REST API for CSV Collections"),
-              new Tag("GenericData Entity", "REST API for Generic Data Collections"),
+              new Tag("GenericDataCollection Entity", "REST API for Generic Data Collections"),
               new Tag("ImagesCollection Entity", "REST API for Images Collections"),
               new Tag("Job Entity", "REST API for Jobs"),
               new Tag("Notebook Entity", "REST API for Notebooks"),

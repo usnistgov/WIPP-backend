@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.genericfiles;
 
 import java.util.List;
 
@@ -14,13 +14,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface GenericFileRepository extends MongoRepository<GenericFile, String>, GenericFileRepositoryCustom {
 	
-    List<GenericFile> findByGenericData(String genericData);
+    List<GenericFile> findByGenericDataCollection(String genericDataCollection);
 
-    Page<GenericFile> findByGenericData(String genericData, Pageable p);
+    Page<GenericFile> findByGenericDataCollection(String genericDataCollection, Pageable p);
 
-    List<GenericFile> findByGenericDataAndFileNameRegex(String genericData, String fileName);
+    List<GenericFile> findByGenericDataCollectionAndFileNameRegex(String genericDataCollection, String fileName);
 
-    Page<GenericFile> findByGenericDataAndFileNameRegex(String genericData, String fileName, Pageable p);
+    Page<GenericFile> findByGenericDataCollectionAndFileNameRegex(String genericDataCollection, String fileName, Pageable p);
 
     List<GenericFile> findByImporting(boolean importing);
 

@@ -1,4 +1,4 @@
-package gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.genericfiles;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
-import gov.nist.itl.ssd.wipp.backend.data.genericdata.GenericData;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.GenericDataCollection;
 
 /**
 *
@@ -21,7 +21,7 @@ import gov.nist.itl.ssd.wipp.backend.data.genericdata.GenericData;
 @CompoundIndexes({
 	@CompoundIndex(
 			name = "collection_filename",
-			def = "{'genericData': 1, 'fileName': 1}",
+			def = "{'genericDataCollection': 1, 'fileName': 1}",
 			unique = true)
 })
 public class GenericFile {
@@ -31,8 +31,8 @@ public class GenericFile {
 	private String id;
 
 	@Indexed
-	@ManualRef(GenericData.class)
-	private String genericData;
+	@ManualRef(GenericDataCollection.class)
+	private String genericDataCollection;
 
 	private String fileName;
 
@@ -48,14 +48,14 @@ public class GenericFile {
 	public GenericFile() {
     }
 	
-	public GenericFile(String genericData, String fileName, String originalFileName, long fileSize,
+	public GenericFile(String genericDataCollection, String fileName, String originalFileName, long fileSize,
 			boolean isImporting) {
-		this(genericData, fileName, originalFileName, fileSize, isImporting, null);
+		this(genericDataCollection, fileName, originalFileName, fileSize, isImporting, null);
 	}
 
-	public GenericFile(String genericData, String fileName, String originalFileName, long fileSize,
+	public GenericFile(String genericDataCollection, String fileName, String originalFileName, long fileSize,
 			boolean isImporting, String importError) {
-		this.genericData = genericData;
+		this.genericDataCollection = genericDataCollection;
 		this.fileName = fileName;
 		this.originalFileName = originalFileName;
 		this.fileSize = fileSize;
@@ -68,8 +68,8 @@ public class GenericFile {
     }
     
     @JsonIgnore
-    public String getGenericData() {
-        return genericData;
+    public String getGenericDataCollection() {
+        return genericDataCollection;
     }
 
     public String getFileName() {

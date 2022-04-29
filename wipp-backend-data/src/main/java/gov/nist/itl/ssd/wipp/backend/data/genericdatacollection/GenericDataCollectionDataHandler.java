@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.data.genericdata;
+package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
 import java.io.File;
 import java.io.FileReader;
@@ -29,7 +29,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobExecutionException;
-import gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles.GenericFileHandler;
+import gov.nist.itl.ssd.wipp.backend.data.genericdatacollection.genericfiles.GenericFileHandler;
 
 /**
 *
@@ -37,40 +37,40 @@ import gov.nist.itl.ssd.wipp.backend.data.genericdata.genericfiles.GenericFileHa
 * @author Mylene Simon <mylene.simon at nist.gov>
 */
 @Component("genericDataDataHandler")
-public class GenericDataDataHandler extends BaseDataHandler implements DataHandler{
+public class GenericDataCollectionDataHandler extends BaseDataHandler implements DataHandler{
 
 	@Autowired
 	CoreConfig config;
 
 	@Autowired
-	private GenericDataRepository genericDataRepository;
+	private GenericDataCollectionRepository genericDataCollectionRepository;
 	
     @Autowired
     private GenericFileHandler genericFileHandler;
 
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
-		GenericData genericData = new GenericData(job, outputName);
-		// Set genericData owner to job owner
-		genericData.setOwner(job.getOwner());
-		// Set genericData to private
-		genericData.setPubliclyShared(false);
-		genericDataRepository.save(genericData);
+		GenericDataCollection genericDataCollection = new GenericDataCollection(job, outputName);
+		// Set genericDataCollection owner to job owner
+		genericDataCollection.setOwner(job.getOwner());
+		// Set genericDataCollection to private
+		genericDataCollection.setPubliclyShared(false);
+		genericDataCollectionRepository.save(genericDataCollection);
 
-		File genericDataFolder = new File(config.getGenericDatasFolder(), genericData.getId());
-		genericDataFolder.mkdirs();
+		File genericDataCollectionFolder = new File(config.getGenericDataCollectionsFolder(), genericDataCollection.getId());
+		genericDataCollectionFolder.mkdirs();
 
 		try {
 			File tempOutputDir = getJobOutputTempFolder(job.getId(), outputName);
-			genericFileHandler.importFolder(genericData.getId(), tempOutputDir);
-			setOutputId(job, outputName, genericData.getId());
+			genericFileHandler.importFolder(genericDataCollection.getId(), tempOutputDir);
+			setOutputId(job, outputName, genericDataCollection.getId());
 		} catch (IOException ex) {
-			genericDataRepository.delete(genericData);
-			throw new JobExecutionException("Cannot move generic data to final destination.");
+			genericDataCollectionRepository.delete(genericDataCollection);
+			throw new JobExecutionException("Cannot move generic data collection to final destination.");
 		}
 		
 		// search for metadata file
-		File[] metadataFiles = genericDataFolder.listFiles(new FilenameFilter() {
+		File[] metadataFiles = genericDataCollectionFolder.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		        return name.equals("data-info.json");
 		    }
@@ -91,12 +91,12 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
 		        String description = (String) jo.get("description"); 
 		        String metadata = (String) jo.get("metadata");
 				
-				genericData.setType(type);
-				genericData.setDescription(description);
-				genericData.setMetadata(metadata);
+				genericDataCollection.setType(type);
+				genericDataCollection.setDescription(description);
+				genericDataCollection.setMetadata(metadata);
 				
-				// updating generic data
-				genericDataRepository.save(genericData);
+				// updating generic data collection
+				genericDataCollectionRepository.save(genericDataCollection);
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -105,37 +105,37 @@ public class GenericDataDataHandler extends BaseDataHandler implements DataHandl
 	}
 	
     public String exportDataAsParam(String value) {
-        String genericDataId = value;
-        String genericDataPath;
+        String genericDataCollectionId = value;
+        String genericDataCollectionPath;
 
         // check if the input of the job is the output of another job and if so return the associated path
         String regex = "\\{\\{ (.*)\\.(.*) \\}\\}";
         Pattern pattern = Pattern.compile(regex);
-        Matcher m = pattern.matcher(genericDataId);
+        Matcher m = pattern.matcher(genericDataCollectionId);
         if (m.find()) {
             String jobId = m.group(1);
             String outputName = m.group(2);
-            genericDataPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
+            genericDataCollectionPath = getJobOutputTempFolder(jobId, outputName).getAbsolutePath();
         }
-        // else return the path of the generic data
+        // else return the path of the generic data collection
         else {
-            File genericDataFolder = new File(config.getGenericDatasFolder(), genericDataId);
-            genericDataPath = genericDataFolder.getAbsolutePath();
+            File genericDataCollectionFolder = new File(config.getGenericDataCollectionsFolder(), genericDataCollectionId);
+            genericDataCollectionPath = genericDataCollectionFolder.getAbsolutePath();
 
         }
-        genericDataPath = genericDataPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
-        return genericDataPath;
+        genericDataCollectionPath = genericDataCollectionPath.replaceFirst(config.getStorageRootFolder(),config.getContainerInputsMountPath());
+        return genericDataCollectionPath;
 
     }
     
     @Override
     public void setDataToPublic(String value) {
-    	Optional<GenericData> optGenericData = genericDataRepository.findById(value);
-        if(optGenericData.isPresent()) {
-        	GenericData genericData = optGenericData.get();
-            if (!genericData.isPubliclyShared()) {
-            	genericData.setPubliclyShared(true);
-            	genericDataRepository.save(genericData);
+    	Optional<GenericDataCollection> optGenericDataCollection = genericDataCollectionRepository.findById(value);
+        if(optGenericDataCollection.isPresent()) {
+        	GenericDataCollection genericDataCollection = optGenericDataCollection.get();
+            if (!genericDataCollection.isPubliclyShared()) {
+            	genericDataCollection.setPubliclyShared(true);
+            	genericDataCollectionRepository.save(genericDataCollection);
             }
         }
     }
