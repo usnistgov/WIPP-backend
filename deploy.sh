@@ -18,6 +18,7 @@ sed -i.bak \
     -e "s|NODE_SELECTOR_VALUE|${NODE_SELECTOR}|g" \
     -e "s|TOLERATIONS_VALUE|${TOLERATIONS}|g" \
     -e "s|OME_CONVERTER_THREADS_VALUE|${OME_CONVERTER_THREADS}|g" \
+    -e "s|KEYCLOAK_AUTH_URL_VALUE|${KEYCLOAK_AUTH_URL}|g" \
     deploy/kubernetes/backend-deployment.yaml
 rm deploy/kubernetes/backend-deployment.yaml.bak
 
