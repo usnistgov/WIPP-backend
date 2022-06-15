@@ -72,13 +72,17 @@ public class WorkflowConverter {
 
     private ArgoTemplatePluginContainer generateTemplatePluginContainer(
             String containerId,
+            List<String> command,
             List<String> parameters,
             String jobId
     ) {
         ArgoTemplatePluginContainer container = new ArgoTemplatePluginContainer();
 
         container.setImage(containerId);
-
+        if(command != null) {
+        	container.setCommand(command);
+        }
+        
         // Setup the container arguments
         List<String> argoPluginContainerArgs = new ArrayList<>();
         for (String parameter : parameters) {
@@ -134,6 +138,7 @@ public class WorkflowConverter {
         argoTemplatePlugin.setContainer(
                 this.generateTemplatePluginContainer(
                         plugin.getContainerId(),
+                        plugin.getBaseCommand(),
                         parameters,
                         jobId
                 )
