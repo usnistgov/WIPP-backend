@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class ArgoTemplatePluginContainer {
     private String image;
+    private List<String> command;
     private List<String> args;
     private List<Map<String, Object>> volumeMounts;
 
@@ -14,6 +15,14 @@ public class ArgoTemplatePluginContainer {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public List<String> getCommand() {
+        return command;
+    }
+
+    public void setCommand(List<String> command) {
+        this.command = command;
     }
 
     public List<String> getArgs() {

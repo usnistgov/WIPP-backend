@@ -9,10 +9,13 @@ import java.util.List;
  *
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
+ * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @IdExposed
 public class Plugin extends Computation {
+    
     private String containerId;
+    private List<String> baseCommand;
 
     private String title;
     private String description;
@@ -32,6 +35,14 @@ public class Plugin extends Computation {
 
     public void setContainerId(String containerId) {
         this.containerId = containerId;
+    }
+
+    public List<String> getBaseCommand() {
+        return baseCommand;
+    }
+
+    public void setBaseCommand(List<String> baseCommand) {
+        this.baseCommand = baseCommand;
     }
 
     public String getTitle() {
