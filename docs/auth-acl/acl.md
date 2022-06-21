@@ -3,11 +3,12 @@
 Identity Management in WIPP provided by [Keycloak](https://www.keycloak.org/).
 
 ## WIPP roles
-Currently, three roles are available:
+Currently, four roles are available:
 - *user*: Can create resources, edit its own resources, delete its own unlocked resources, make them public. Can read and use public resources. 
-- *admin*: Can do all of the above on all resources, and register new plugins.
+- *admin*: Can do all of the above on all resources, and register/delete plugins.
+- *developer*: Can do what a regular *user* can do, plus register/delete plugins.
 - *anonymous*: Can read public resources.  
-Roles *user* and *admin* are defined in Keycloak. Role *user* is added by default, *admin* can be added manually to an user from the Keycloak dashboard, see https://www.keycloak.org/docs/latest/server_admin/index.html#user-role-mappings
+Roles *user*, *admin* and *developer* are defined in Keycloak. Role *user* is added by default, *admin* can be added manually to an user from the Keycloak dashboard, see https://www.keycloak.org/docs/latest/server_admin/index.html#user-role-mappings
 
 ## Access Control Lists
 The following table describes which actions a WIPP user can do depending on their role, the resource owner and resource visibility, using the REST API.  
@@ -19,6 +20,9 @@ The following table describes which actions a WIPP user can do depending on thei
   </th>
   <th colspan="5">
     admin
+  </th>
+  <th colspan="5">
+    developer
   </th>
   <th colspan="5">
     user
@@ -43,9 +47,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -79,6 +93,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
@@ -86,6 +105,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
+    <td>N</td>
     <td></td>
     <td>X</td>
     <td>Y</td>
@@ -115,9 +139,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -151,6 +185,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
@@ -158,6 +197,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
+    <td>N</td>
     <td></td>
     <td>X</td>
     <td>Y</td>
@@ -187,9 +231,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -223,12 +277,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
     <td>X</td>
     <td>Y</td>
     <td>Y</td>
+    <td>N</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
     <td>N</td>
     <td></td>
     <td>X</td>
@@ -259,9 +323,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>N</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>N</td>
     <td>Y</td>
     <td>Y</td>
@@ -295,12 +369,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
     <td>X</td>
     <td>Y</td>
     <td>Y</td>
+    <td>N</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
     <td>N</td>
     <td></td>
     <td>X</td>
@@ -331,9 +415,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -367,12 +461,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
     <td>X</td>
     <td>Y</td>
     <td>Y</td>
+    <td>N</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
     <td>N</td>
     <td></td>
     <td>X</td>
@@ -403,9 +507,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -439,12 +553,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
     <td>X</td>
     <td>Y</td>
     <td>Y</td>
+    <td>N</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
     <td>N</td>
     <td></td>
     <td>X</td>
@@ -475,9 +599,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>N</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>N</td>
     <td>Y</td>
     <td>Y</td>
@@ -511,12 +645,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
     <td>X</td>
     <td>Y</td>
     <td>Y</td>
+    <td>N</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
     <td>N</td>
     <td></td>
     <td>X</td>
@@ -547,9 +691,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>N</td>
@@ -583,9 +737,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
     <td>X</td>
     <td>Y</td>
     <td>N</td>
@@ -619,9 +783,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>N</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>N</td>
     <td>Y</td>
     <td>Y</td>
@@ -655,6 +829,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
@@ -673,12 +852,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
-    <td collspan="16"></td>
+    <td collspan="21"></td>
   </tr>
   <tr>
     <td><b>Plugins</b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
     <td><b>C</b></td>
     <td><b>R</b></td>
     <td><b>U</b></td>
@@ -702,6 +891,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>Y</td>
     <td>Y</td>
     <td></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td></td>
     <td>N</td>
     <td>Y</td>
     <td>N</td>
@@ -714,7 +908,7 @@ The following table describes which actions a WIPP user can do depending on thei
     <td></td>
   </tr>
   <tr>
-    <td collspan="16"></td>
+    <td collspan="21"></td>
   </tr>
   <tr>
     <td><b>Workflows</b></td>
@@ -733,9 +927,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>N</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -769,12 +973,22 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
     <td>X</td>
     <td>Y</td>
     <td>Y</td>
+    <td>N</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
     <td>N</td>
     <td></td>
     <td>X</td>
@@ -805,9 +1019,19 @@ The following table describes which actions a WIPP user can do depending on thei
     <td><b>U</b></td>
     <td><b>D</b></td>
     <td><b></b></td>
+    <td><b>C</b></td>
+    <td><b>R</b></td>
+    <td><b>U</b></td>
+    <td><b>D</b></td>
+    <td><b></b></td>
   </tr>
   <tr>
     <td><i>Private (is owner)</i></td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td>Y</td>
+    <td></td>
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
@@ -841,6 +1065,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>N</td>
     <td>N</td>
     <td></td>
+    <td>X</td>
+    <td>N</td>
+    <td>N</td>
+    <td>N</td>
+    <td></td>
   </tr>
   <tr>
     <td><i>Public (not owner)</i></td>
@@ -848,6 +1077,11 @@ The following table describes which actions a WIPP user can do depending on thei
     <td>Y</td>
     <td>Y</td>
     <td>Y</td>
+    <td></td>
+    <td>X</td>
+    <td>Y</td>
+    <td>N</td>
+    <td>N</td>
     <td></td>
     <td>X</td>
     <td>Y</td>
