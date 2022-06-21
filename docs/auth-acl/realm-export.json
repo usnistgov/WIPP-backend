@@ -751,11 +751,15 @@
       "secret": "**********",
       "redirectUris": [
         "http://localhost:4200/*",
-        "https://localhost:4200/*"
+        "https://localhost:4200/*",
+        "http://localhost:8080/api/swagger-ui/oauth2-redirect.html",
+        "https://localhost:8080/api/swagger-ui/oauth2-redirect.html"
       ],
       "webOrigins": [
         "https://localhost:4200",
-        "http://localhost:4200"
+        "http://localhost:4200",
+        "http://localhost:8080",
+        "https://localhost:8080"
       ],
       "notBefore": 0,
       "bearerOnly": false,
