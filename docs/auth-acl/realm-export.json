@@ -61,6 +61,15 @@
         "attributes": {}
       },
       {
+        "id": "75ce82cb-04a4-4061-a1e1-4fb83ee211c0",
+        "name": "developer",
+        "description": "WIPP developer - can manage plugins",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "WIPPKeycloak",
+        "attributes": {}
+      },
+      {
         "id": "c482e1dc-9cf9-4ad8-b2f0-110551c83a2d",
         "name": "user",
         "description": "WIPP user",
@@ -750,11 +759,13 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
+        "http://localhost:8080/api/swagger-ui/oauth2-redirect.html",
         "http://localhost:4200/*",
         "https://localhost:4200/*"
       ],
       "webOrigins": [
         "https://localhost:4200",
+        "http://localhost:8080",
         "http://localhost:4200"
       ],
       "notBefore": 0,

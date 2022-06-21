@@ -24,7 +24,8 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 
 /**
  * Plugin Repository Event Handler
- * All creation/modification/deletion actions via REST are restricted to admin users
+ * All creation/modification/deletion actions via REST are restricted to
+ * users with role 'admin' or 'developer'
  * 
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
@@ -37,13 +38,13 @@ public class PluginEventHandler {
 	PluginRepository pluginRepository;
 	
     @HandleBeforeCreate
-	@PreAuthorize("hasRole('admin')")
+	@PreAuthorize("hasRole('admin') or hasRole('developer')")
     public void handleBeforeCreate(Plugin plugin) {
         // TODO: Plugin JSON validation against schema
     }
 
     @HandleBeforeSave
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('admin') or hasRole('developer')")
     public void handleBeforeSave(Plugin plugin) {
         Optional<Plugin> result = pluginRepository.findById(
                 plugin.getId());
@@ -53,7 +54,7 @@ public class PluginEventHandler {
     }
 
     @HandleBeforeDelete
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('admin') or hasRole('developer')")
     public void handleBeforeDelete(Plugin plugin) {
     	Optional<Plugin> result = pluginRepository.findById(
                 plugin.getId());
