@@ -49,6 +49,8 @@ public class ImagesCollection extends Data {
     private String sourceJob;
     
     private String sourceCatalog;
+
+    private String sourceBackendImport;
     
     private ImagesCollectionImportMethod importMethod;
 
@@ -127,6 +129,14 @@ public class ImagesCollection extends Data {
         return sourceJob;
     }
 
+    public String getSourceBackendImport() {
+        return sourceBackendImport;
+    }
+
+    public void setSourceBackendImport(String sourceBackendImport) {
+        this.sourceBackendImport = sourceBackendImport;
+    }
+
     public boolean isLocked() {
         return locked;
     }
@@ -203,6 +213,6 @@ public class ImagesCollection extends Data {
 		this.importMethod = importMethod;
 	}
 	
-    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG}
+    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG, BACKEND_IMPORT}
 
 }

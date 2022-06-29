@@ -72,23 +72,28 @@ public class ImageConversionService extends FileUploadBase{
 	}
 	
 	public void submitImageToExtractor(Image image) {
+		File tempUploadDir = getTempUploadDir(image.getImagesCollection());
+		this.submitImageToExtractor(image, tempUploadDir);
+	}
+
+	public void submitImageToExtractor(Image image, File sourceDir) {
 		String collectionId = image.getImagesCollection();
-		File tempUploadDir = getTempUploadDir(collectionId);
-		File uploadDir = getUploadDir(collectionId);
+		File tempUploadDir = sourceDir;
+		File uploadDir = getUploadDir(image.getImagesCollection());
 		uploadDir.mkdirs();
 
 		String imgName = image.getFileName();
 		Path tempPath = new File(tempUploadDir, image.getOriginalFileName()).toPath();
 		String outputFileName;
 		boolean isOmeTiff = imgName.endsWith(".ome.tif");
-		
+
 		// handle ome tiff images file names
 		if(!isOmeTiff){
 			outputFileName = FilenameUtils.getBaseName(imgName) + ".ome.tif";
 		} else {
 			outputFileName = imgName;
 		}
-		
+
 		Path outputPath = new File(uploadDir, outputFileName).toPath();
 
 		omeConverterExecutor.submit(() -> doSubmit(
