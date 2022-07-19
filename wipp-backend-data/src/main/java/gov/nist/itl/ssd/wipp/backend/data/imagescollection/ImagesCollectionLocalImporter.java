@@ -18,6 +18,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageConversio
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepository;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,12 +55,15 @@ public class ImagesCollectionLocalImporter {
         try {
             File localImportFolder = new File(config.getLocalImportFolder(), imagesCollection.getSourceBackendImport());
 
-            // Import and convert images
+            // Register images in collection
             imageHandler.addAllInDbFromFolder(imagesCollection.getId(), localImportFolder.getPath());
             List<Image> images = imageRepository.findByImagesCollection(imagesCollection.getId());
 
+            // Copy images to collection temp folder and start conversion
             for(Image image : images) {
-                imageConversionService.submitImageToExtractor(image, localImportFolder);
+                FileUtils.copyFileToDirectory(new File(localImportFolder, image.getFileName()),
+                        imageHandler.getTempFilesFolder(imagesCollection.getId()));
+                imageConversionService.submitImageToExtractor(image);
             }
 
             // Import metadata files
