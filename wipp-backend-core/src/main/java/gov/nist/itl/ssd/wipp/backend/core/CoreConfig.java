@@ -95,6 +95,9 @@ public class CoreConfig {
     @Value("${storage.temp.jobs}")
     private String jobsTempFolder;
 
+    @Value("${storage.local.import}")
+    private String localImportFolder;
+
     @Value("${ome.converter.threads:2}")
     private int omeConverterThreads;
     
@@ -203,6 +206,10 @@ public class CoreConfig {
 
     public String getJobsTempFolder() {
         return jobsTempFolder;
+    }
+
+    public String getLocalImportFolder() {
+        return localImportFolder;
     }
     
     public int getFetchingPixelsMax() {

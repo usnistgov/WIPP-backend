@@ -39,6 +39,14 @@ Please follow the instructions for version 2.3.0 [here](https://github.com/argop
     * `storage` of `capacity` is set to 100Gi by default, this value can be modified in `hostPath-wippdata-volume.yaml` and `hostPath-wippdata-pvc.yaml`
     * run `hostPath-deploy.sh` to setup the WIPP data PV and PVC
 
+**Local backend import option**  
+Default root folder configuration for the local backend import of images collections is:
+* `${user.home}/WIPP-plugins/local-import` in `dev` profile and
+* `/data/WIPP-plugins/local-import` in `prod` profile
+
+This default configuration can be changed in `wipp-backend-application/pom.xml` (property `storage.local.import`) when running locally or in the deployment 
+manifest when running in a Kubernetes cluster (an additional volume needs to be mounted if the new location is not in the WIPP root data folder).
+
 ## Compiling
 ```shell
 mvn clean install
