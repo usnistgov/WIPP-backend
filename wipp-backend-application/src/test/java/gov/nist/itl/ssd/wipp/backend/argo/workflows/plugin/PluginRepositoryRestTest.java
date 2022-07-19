@@ -2,8 +2,8 @@ package gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
 import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
-import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.Plugin;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

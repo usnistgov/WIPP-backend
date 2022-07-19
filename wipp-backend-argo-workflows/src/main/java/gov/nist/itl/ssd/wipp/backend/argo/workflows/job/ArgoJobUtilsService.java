@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginIO;
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.Plugin;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginIO;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;

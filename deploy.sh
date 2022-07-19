@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+ #!/usr/bin/env bash
 
 export $(egrep -v '^#' .env)
 
@@ -19,6 +19,7 @@ sed -i.bak \
     -e "s|TOLERATIONS_VALUE|${TOLERATIONS}|g" \
     -e "s|OME_CONVERTER_THREADS_VALUE|${OME_CONVERTER_THREADS}|g" \
     -e "s|KEYCLOAK_AUTH_URL_VALUE|${KEYCLOAK_AUTH_URL}|g" \
+    -e "s|WORKFLOW_PLUGINHARDWAREREQUIREMENTS_ENABLED_VALUE|${WORKFLOW_PLUGINHARDWAREREQUIREMENTS_ENABLED}|g" \
     deploy/kubernetes/backend-deployment.yaml
 rm deploy/kubernetes/backend-deployment.yaml.bak
 

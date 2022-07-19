@@ -1,7 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.workflow;
 
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.Plugin;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginRepository;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
@@ -14,7 +14,6 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;

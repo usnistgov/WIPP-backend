@@ -66,6 +66,7 @@
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
+				<workflow.pluginHardwareRequirements.enabled>false</workflow.pluginHardwareRequirements.enabled>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
 				<storage.root>${user.home}/WIPP-plugins</storage.root>
 				<storage.workflows>${user.home}/WIPP-plugins/workflows</storage.workflows>
@@ -95,6 +96,7 @@
 				<mongodb.database>wipp-plugins</mongodb.database>
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
+				<workflow.pluginHardwareRequirements.enabled>false</workflow.pluginHardwareRequirements.enabled>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
 				<storage.root>/data/WIPP-plugins</storage.root>
 				<storage.workflows>/data/WIPP-plugins/workflows</storage.workflows>

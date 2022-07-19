@@ -65,6 +65,8 @@ spec:
               value: OME_CONVERTER_THREADS_VALUE
             - name: KEYCLOAK_AUTH_URL
               value: KEYCLOAK_AUTH_URL_VALUE
+            - name: WORKFLOW_PLUGINHARDWAREREQUIREMENTS_ENABLED
+              value: WORKFLOW_PLUGINHARDWAREREQUIREMENTS_ENABLED_VALUE
           volumeMounts:
             - mountPath: /data/WIPP-plugins
               name: data
