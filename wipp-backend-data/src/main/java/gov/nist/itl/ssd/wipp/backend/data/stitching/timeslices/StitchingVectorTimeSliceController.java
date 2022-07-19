@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -160,10 +162,17 @@ public class StitchingVectorTimeSliceController {
     	if (!downloadToken.isPresent() || !downloadToken.get().getDataId().equals(stitchingVectorId)) {
     		throw new ForbiddenException("Invalid download token.");
     	}
+
+        // Load security context for system operations
+        SecurityUtils.runAsSystem();
     	
     	// Check existence of stitching file
         File stitchingFile = stitchingVectorTimeSliceRepository
                 .getGlobalPositionsFile(stitchingVectorId, timeSliceId);
+
+        // Clear security context after system operations
+        SecurityContextHolder.clearContext();
+
         if (!stitchingFile.exists()) {
             response.sendError(404);
             return;
