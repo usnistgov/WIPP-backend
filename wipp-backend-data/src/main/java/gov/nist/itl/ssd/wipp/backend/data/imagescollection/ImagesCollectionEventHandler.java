@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -57,6 +58,9 @@ public class ImagesCollectionEventHandler {
     @Autowired
     private ImagesCollectionLogic imagesCollectionLogic;
 
+    @Autowired
+    private ImagesCollectionLocalImporter localImporter;
+
     @PreAuthorize("isAuthenticated()")
     @HandleBeforeCreate
     public void handleBeforeCreate(ImagesCollection imagesCollection) {
@@ -75,6 +79,11 @@ public class ImagesCollectionEventHandler {
         if (imagesCollection.getImportMethod() == null) {
         	imagesCollection.setImportMethod(ImagesCollectionImportMethod.UPLOADED);
         }
+
+        // Assert source import folder is not empty and exists if import method is BACKEND_IMPORT
+        if(imagesCollection.getImportMethod().equals(ImagesCollectionImportMethod.BACKEND_IMPORT)) {
+            imagesCollectionLogic.assertCollectionBackendImportSourceNotEmpty(imagesCollection);
+        }
         
         // Collections from Catalog are locked by default
         if (imagesCollection.getImportMethod() != null
@@ -83,6 +92,12 @@ public class ImagesCollectionEventHandler {
         }
     }
 
+    @HandleAfterCreate
+    public void handleAfterCreate(ImagesCollection imagesCollection) {
+        if(imagesCollection.getImportMethod().equals(ImagesCollectionImportMethod.BACKEND_IMPORT)) {
+            localImporter.importFromLocalFolder(imagesCollection);
+        }
+    }
     @HandleBeforeSave
     @PreAuthorize("isAuthenticated() and (hasRole('admin') or #imagesCollection.owner == principal.name)")
     public void handleBeforeSave(ImagesCollection imagesCollection) {

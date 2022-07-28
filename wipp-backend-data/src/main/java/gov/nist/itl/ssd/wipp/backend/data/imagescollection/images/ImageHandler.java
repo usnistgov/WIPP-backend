@@ -53,25 +53,26 @@ public class ImageHandler extends FileHandler {
     @Override
     protected void addAllInDb(String imagesCollectionId) {
         File[] files = getFiles(imagesCollectionId);
-        if (files == null) {
-            return;
-        }
-
-        List<Image> images = Arrays.stream(files).map(f -> new Image(
-                imagesCollectionId, f.getName(), f.getName(), getFileSize(f), false))
-                .collect(Collectors.toList());
-        imageRepository.saveAll(images);
-        imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
+        this.addAllInDbFromFiles(imagesCollectionId, files, false);
     }
     
     public void addAllInDbFromTemp(String imagesCollectionId) {
         File[] files = getTempFiles(imagesCollectionId);
+        this.addAllInDbFromFiles(imagesCollectionId, files, true);
+    }
+
+    public void addAllInDbFromFolder(String imagesCollectionId, String path) {
+        File[] files = new File(path).listFiles(f -> (f.isFile() && !f.isHidden()));
+        this.addAllInDbFromFiles(imagesCollectionId, files, true);
+    }
+
+    private void addAllInDbFromFiles(String imagesCollectionId, File[] files, boolean setImporting) {
         if (files == null) {
             return;
         }
 
         List<Image> images = Arrays.stream(files).map(f -> new Image(
-                imagesCollectionId, f.getName(), f.getName(), getFileSize(f), true))
+                        imagesCollectionId, f.getName(), f.getName(), getFileSize(f), setImporting))
                 .collect(Collectors.toList());
         imageRepository.saveAll(images);
         imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
@@ -110,7 +111,7 @@ public class ImageHandler extends FileHandler {
             return XMLTools.indentXML(
                     service.getOMEXML(sourceMetadata), 3, true);
         } catch (FormatException ex) {
-            throw new IOException("Unsuported format", ex);
+            throw new IOException("Unsupported format", ex);
         } catch (ServiceException ex) {
             throw new IOException("Error generating OME XML file.", ex);
         }

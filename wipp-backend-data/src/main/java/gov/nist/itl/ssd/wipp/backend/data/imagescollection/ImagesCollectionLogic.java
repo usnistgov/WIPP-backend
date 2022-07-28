@@ -11,10 +11,14 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
+import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
+
+import java.io.File;
 
 /**
  *
@@ -25,6 +29,9 @@ public class ImagesCollectionLogic {
 
     @Autowired
     private ImagesCollectionRepository imagesCollectionRepository;
+
+    @Autowired
+    CoreConfig config;
 
     public void assertCollectionNotLocked(ImagesCollection imagesCollection) {
         if (imagesCollection.isLocked()) {
@@ -38,8 +45,8 @@ public class ImagesCollectionLogic {
         }
     }
 
-    public void assertCollectionHasNoImportError(ImagesCollection imagesColleciton) {
-        if (imagesColleciton.getNumberOfImportErrors() != 0) {
+    public void assertCollectionHasNoImportError(ImagesCollection imagesCollection) {
+        if (imagesCollection.getNumberOfImportErrors() != 0) {
             throw new ClientException("Some images have not been imported correctly.");
         }
     }
@@ -48,6 +55,23 @@ public class ImagesCollectionLogic {
         if (imagesCollectionRepository.countByName(name) != 0) {
             throw new ClientException("An images collection named \""
                     + name + "\" already exists.");
+        }
+    }
+
+    public void assertCollectionBackendImportSourceNotEmpty(ImagesCollection imagesCollection) {
+        if (StringUtils.isEmpty(imagesCollection.getSourceBackendImport())) {
+            throw new ClientException("Missing source folder name for backend import.");
+        }
+        String rootLocalImportFolder = config.getLocalImportFolder();
+        if (StringUtils.isEmpty(rootLocalImportFolder)) {
+            throw new ClientException("Root local import has not been configured, " +
+                    "this import option cannot be used.");
+        }
+        File importFolder = new File(config.getLocalImportFolder(), imagesCollection.getSourceBackendImport());
+        if(!importFolder.exists() || !importFolder.isDirectory()) {
+            throw new ClientException("Folder to import at location, " +
+                    importFolder.getAbsolutePath() +
+                    " does not exist or is not a directory.");
         }
     }
 

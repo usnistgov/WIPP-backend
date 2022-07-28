@@ -84,6 +84,7 @@
 				<storage.notebooks>${user.home}/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>${user.home}/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<storage.local.import>${user.home}/WIPP-plugins/local-import</storage.local.import>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
@@ -114,6 +115,7 @@
 				<storage.notebooks>/data/WIPP-plugins/notebooks</storage.notebooks>
 				<storage.notebooks.tmp>/data/WIPP-plugins/temp/notebooks</storage.notebooks.tmp>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
+				<storage.local.import>/data/WIPP-plugins/local-import</storage.local.import>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
 			</properties>
