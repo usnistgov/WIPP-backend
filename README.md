@@ -63,11 +63,22 @@ mvn spring-boot:run
  - http://localhost:8080/v2/api-docs (OpenAPI spec)
 
 ## Docker packaging
+There are two ways to build Docker images for WIPP-backend:
+
+- For local development, first compile the project (so it produces `wipp-backend-application/target/wipp-backend-application-...-exec.war`), then build Docker image from `Dockerfile.localdev`.
+
 The Maven `prod` profile should be used for Docker packaging, even for testing/development purposes:
 ```sh
 mvn clean package -P prod
+docker build --no-cache -f Dockerfile.localdev . -t wipp_backend
+```
+
+- For CI builds or if you don't have Java/Maven installed on host, simply build Docker image from `Dockerfile`
+```sh
 docker build --no-cache . -t wipp_backend
 ```
+
+
 For a Docker deployment of WIPP on a Kubernetes cluster, scripts and configuration files are available in the [WIPP repository](https://github.com/usnistgov/WIPP/tree/master/deployment).
 
 ## Deployment
