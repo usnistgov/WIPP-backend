@@ -9,6 +9,8 @@ public class ArgoTemplatePluginContainer {
     private List<String> args;
     private List<Map<String, Object>> volumeMounts;
 
+    private ArgoTemplatePluginContainerResources resources;
+
     public String getImage() {
         return image;
     }
@@ -39,5 +41,13 @@ public class ArgoTemplatePluginContainer {
 
     public void setVolumeMounts(List<Map<String, Object>> volumeMounts) {
         this.volumeMounts = volumeMounts;
+    }
+
+    public ArgoTemplatePluginContainerResources getResources() {
+        return resources;
+    }
+
+    public void setResources(ArgoTemplatePluginContainerResources resources) {
+        this.resources = resources;
     }
 }

@@ -11,9 +11,9 @@
  */
 package gov.nist.itl.ssd.wipp.backend.argo.workflows.workflow;
 
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.Plugin;
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginIO;
-import gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin.PluginRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.Plugin;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginIO;
+import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginRepository;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;

@@ -9,7 +9,7 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.argo.workflows.plugin;
+package gov.nist.itl.ssd.wipp.backend.core.model.computation;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
