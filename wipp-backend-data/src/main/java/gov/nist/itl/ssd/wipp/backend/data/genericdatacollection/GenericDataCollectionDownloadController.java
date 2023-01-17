@@ -29,11 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
@@ -47,7 +43,7 @@ import io.swagger.annotations.Api;
 *
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
-@Controller
+@RestController
 @Api(tags="GenericDataCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/genericDataCollections/{genericDataCollectionId}/download")
 public class GenericDataCollectionDownloadController {
