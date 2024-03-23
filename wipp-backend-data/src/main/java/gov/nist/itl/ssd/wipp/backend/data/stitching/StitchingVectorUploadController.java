@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
-import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 
@@ -36,7 +36,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="StitchingVector Entity")
+@Tag(name="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/upload")
 public class StitchingVectorUploadController {
 

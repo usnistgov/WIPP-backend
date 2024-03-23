@@ -22,7 +22,8 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,6 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
-import io.swagger.annotations.Api;
 
 /**
 * CSV Collections download controller
@@ -50,7 +50,7 @@ import io.swagger.annotations.Api;
 * @author Mylene Simon <mylene.simon at nist.gov>
 */
 @RestController
-@Api(tags="CsvCollection Entity")
+@Tag(name="CsvCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/csvCollections/{csvCollectionId}/download")
 public class CsvCollectionDownloadController {
 

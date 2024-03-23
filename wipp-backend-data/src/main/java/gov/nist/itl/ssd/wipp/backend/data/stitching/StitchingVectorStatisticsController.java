@@ -16,7 +16,6 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
 import gov.nist.itl.ssd.wipp.backend.core.rest.DownloadUrl;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
-import io.swagger.annotations.Api;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -27,7 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="StitchingVector Entity")
+@Tag(name="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/{stitchingVectorId}/statistics")
 public class StitchingVectorStatisticsController {
 

@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.core.model.job;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
@@ -26,8 +27,9 @@ import java.util.List;
  * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
-@RepositoryRestResource
 
+@Tag(name="Job Entity")
+@RepositoryRestResource
 public interface JobRepository<T extends Job> extends PrincipalFilteredRepository<T, String> {
 
 	@Override
@@ -43,7 +45,7 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
 	 */
 	@Query(" { '$and' : ["
 			+ "{'$or':["
-			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
 			+ "{'publiclyShared':true}"
 			+ "]} , "
 			+ "{'status' : {$eq : ?0}}"
@@ -55,7 +57,7 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
 	 */
 	@Query(" { '$and' : ["
     		+ "{'$or':["
-    		+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+    		+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
     		+ "	{'publiclyShared':true}"
     		+ "]} , "
     		+ "{'name' : {$regex : '?0', $options: 'i'}}, {'status' : {$eq : ?1}}"

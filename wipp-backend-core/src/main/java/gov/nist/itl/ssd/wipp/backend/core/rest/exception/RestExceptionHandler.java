@@ -11,7 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.rest.exception;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

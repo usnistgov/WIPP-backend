@@ -17,7 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.CustomResourceSupport;
  *
  * @author Antoine Vandecreme
  */
-public class StitchingVectorTimeSlice extends CustomResourceSupport {
+public class StitchingVectorTimeSlice { //extends CustomResourceSupport {
 
     private final int sliceNumber;
 

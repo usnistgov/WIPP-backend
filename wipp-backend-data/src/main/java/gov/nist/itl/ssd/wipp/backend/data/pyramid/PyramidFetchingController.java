@@ -18,16 +18,19 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import loci.formats.ome.OMEXMLMetadata;
 import ome.units.quantity.Length;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberRange;
+import org.apache.commons.lang3.IntegerRange;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.NumberRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,7 +63,6 @@ import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVector;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSlice;
 import gov.nist.itl.ssd.wipp.backend.data.stitching.timeslices.StitchingVectorTimeSliceRepository;
-import io.swagger.annotations.Api;
 
 
 /**
@@ -70,7 +72,7 @@ import io.swagger.annotations.Api;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="Pyramid Entity")
+@Tag(name="Pyramid Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramids/{pyramidId}/fetching")
 public class PyramidFetchingController {
 
@@ -384,9 +386,9 @@ public class PyramidFetchingController {
 	                    case 2:
 	                        int first = Integer.parseInt(intervalSplit[0]);
 	                        int last = Integer.parseInt(intervalSplit[1]);
-	                        NumberRange nr = new NumberRange(first, last);
-	                        for (Integer i = nr.getMinimumInteger();
-	                                i <= nr.getMaximumInteger();
+	                        IntegerRange nr = IntegerRange.of(first, last);
+	                        for (Integer i = nr.getMinimum();
+	                                i <= nr.getMaximum();
 	                                i++) {
 	                            result.add(i + framesOffset);
 	                        }

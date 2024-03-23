@@ -23,7 +23,6 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepositor
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFile;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileRepository;
-import io.swagger.annotations.Api;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -34,7 +33,8 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="ImagesCollection Entity")
+@Tag(name="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/download")
 public class ImagesCollectionDownloadController {
 

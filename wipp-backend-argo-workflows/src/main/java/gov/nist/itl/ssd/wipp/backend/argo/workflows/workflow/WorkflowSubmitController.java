@@ -9,8 +9,8 @@ import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
-import io.swagger.annotations.Api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  *
  */
 @Controller
-@Api(tags="Workflow Entity")
+@Tag(name="Workflow Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/workflows/{workflowId}/submit")
 public class WorkflowSubmitController {
     @Autowired

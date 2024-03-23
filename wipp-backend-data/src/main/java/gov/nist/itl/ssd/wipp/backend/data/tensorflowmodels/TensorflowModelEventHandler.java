@@ -55,7 +55,7 @@ public class TensorflowModelEventHandler {
     }
 
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #tensorflowModel.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #tensorflowModel.owner == authentication.name)")
     public void handleBeforeSave(TensorflowModel tensorflowModel) {
     	// Assert data exists
         Optional<TensorflowModel> result = tensorflowModelRepository.findById(

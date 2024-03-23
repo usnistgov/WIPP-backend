@@ -69,7 +69,7 @@ public class JobEventHandler {
     }
     
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #job.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #job.owner == authentication.name)")
     public void handleBeforeSave(Job job) {
     	// Assert job exists
         Optional<Job> result = jobRepository.findById(
@@ -105,7 +105,7 @@ public class JobEventHandler {
     }
     
     @HandleBeforeDelete
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #job.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #job.owner == authentication.name)")
     public void handleBeforeDelete(Job job) {
     	// Assert job exists
     	Optional<Job> result = jobRepository.findById(

@@ -11,6 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.pyramidannotation;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -22,6 +23,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
+@Tag(name="PyramidAnnotation Entity")
 @RepositoryRestResource
 public interface PyramidAnnotationRepository extends PrincipalFilteredRepository<PyramidAnnotation, String>, PyramidAnnotationRepositoryCustom {
 
@@ -30,7 +32,7 @@ public interface PyramidAnnotationRepository extends PrincipalFilteredRepository
     void delete(PyramidAnnotation t);
 
     @PostAuthorize("hasRole('admin') "
-			+ "or (isAuthenticated() and returnObject?.owner == principal.name) "
+			+ "or (isAuthenticated() and returnObject?.owner == authentication.name) "
 			+ "or returnObject?.publiclyShared == true")
     PyramidAnnotation findByPyramid(@Param("pyramid") String pyramid);
 

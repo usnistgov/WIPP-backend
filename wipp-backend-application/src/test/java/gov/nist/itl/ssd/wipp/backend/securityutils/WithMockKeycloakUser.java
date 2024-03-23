@@ -37,7 +37,7 @@ import org.springframework.security.test.context.support.WithSecurityContext;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@WithSecurityContext(factory = WithMockKeycloakUserSecurityContextFactory.class)
+//@WithSecurityContext(factory = WithMockKeycloakUserSecurityContextFactory.class)
 public @interface WithMockKeycloakUser {
 
 	/**

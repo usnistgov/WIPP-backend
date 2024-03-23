@@ -11,6 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.computation;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author Philippe Dessauw <philippe.dessauw at nist.gov>
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
+@Tag(name="Plugin Entity")
 @RepositoryRestResource
 public interface PluginRepository extends MongoRepository<Plugin, String> {
     @Query("{}")

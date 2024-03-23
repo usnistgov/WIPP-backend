@@ -13,13 +13,14 @@ package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -27,14 +28,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import gov.nist.itl.ssd.wipp.backend.Application;
 import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
-import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
+//import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 
 /**
  * Collection of tests for {@link PyramidRepository} exposed methods
@@ -44,7 +46,8 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
 				properties = { "spring.data.mongodb.port=0" })
 public class PyramidRepositoryTest {
@@ -59,7 +62,7 @@ public class PyramidRepositoryTest {
 	
 	Pyramid publicPyramidA, publicPyramidB, privatePyramidA, privatePyramidB;
 	
-	@Before
+	@BeforeAll
 	public void setUp() {
 		this.mvc = webAppContextSetup(context)
 				.apply(springSecurity())
@@ -101,14 +104,14 @@ public class PyramidRepositoryTest {
 		// Anonymous user should not be able to read a private pyramid
 		try {
 			pyramidRepository.findById(privatePyramidA.getId());
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findById_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		// Non-admin user1 should be able to read own private pyramid
@@ -120,14 +123,14 @@ public class PyramidRepositoryTest {
 		// Non-admin user1 should not be able to read a private pyramid from user2
 		try {
 			pyramidRepository.findById(privatePyramidB.getId());
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findById_adminCallingShouldReturnAllItems() throws Exception {
 		
 		// Admin should be able to read a public pyramid from user1
@@ -152,7 +155,7 @@ public class PyramidRepositoryTest {
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findAll_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -166,7 +169,7 @@ public class PyramidRepositoryTest {
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findAll_adminCallingShouldReturnAllItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -191,7 +194,7 @@ public class PyramidRepositoryTest {
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findByNameContainingIgnoreCase_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -205,7 +208,7 @@ public class PyramidRepositoryTest {
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findByNameContainingIgnoreCase_adminCallingShouldReturnAllItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);

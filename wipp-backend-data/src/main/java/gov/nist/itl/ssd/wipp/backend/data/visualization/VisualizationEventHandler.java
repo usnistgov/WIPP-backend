@@ -49,7 +49,7 @@ public class VisualizationEventHandler {
     }
 	
 	@HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #visualization.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #visualization.owner == authentication.name)")
     public void handleBeforeSave(Visualization visualization) {
     	// Assert visualization exists
         Optional<Visualization> result = visualizationRepository.findById(

@@ -15,12 +15,12 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFileHandler;
-import io.swagger.annotations.Api;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @Controller
-@Api(tags="ImagesCollection Entity")
+@Tag(name="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/copy")
 public class ImagesCollectionCopyController {
 

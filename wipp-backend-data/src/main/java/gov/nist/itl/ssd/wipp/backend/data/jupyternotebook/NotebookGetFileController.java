@@ -17,7 +17,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
-import javax.servlet.http.HttpServletResponse;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +31,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
-import io.swagger.annotations.Api;
 
 /**
 *
 * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
 */
 @Controller
-@Api(tags="Notebook Entity")
+@Tag(name="Notebook Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/notebooks/{notebookId}/getFile")
 public class NotebookGetFileController {
 

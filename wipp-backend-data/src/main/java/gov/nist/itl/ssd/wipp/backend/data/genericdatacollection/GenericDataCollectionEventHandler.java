@@ -77,7 +77,7 @@ public class GenericDataCollectionEventHandler {
     }
 
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #genericDataCollection.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #genericDataCollection.owner == authentication.name)")
     public void handleBeforeSave(GenericDataCollection genericDataCollection) {
     	// Assert collection exists
         Optional<GenericDataCollection> result = genericDataCollectionRepository.findById(
@@ -111,7 +111,7 @@ public class GenericDataCollectionEventHandler {
     }
 
     @HandleBeforeDelete
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #genericDataCollection.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #genericDataCollection.owner == authentication.name)")
     public void handleBeforeDelete(GenericDataCollection genericDataCollection) {
     	// Assert collection exists
     	Optional<GenericDataCollection> result = genericDataCollectionRepository.findById(

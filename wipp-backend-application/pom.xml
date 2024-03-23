@@ -4,22 +4,23 @@
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-application</artifactId>
 	<name>wipp-backend-app</name>
-	<version>3.1.0-SNAPSHOT</version>
+	<version>3.2.0-SNAPSHOT</version>
 
 	<packaging>war</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.release>21</maven.compiler.release>
+		<java.version>21</java.version>
 	</properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.12.RELEASE</version>
+		<version>3.2.3</version>
 		<relativePath />
 	</parent>
+
 
 	<build>
 		<plugins>
@@ -44,11 +45,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+<!--				<version>3.12.1</version>-->
 				<configuration>
-					<compilerArgs>
-						<arg>-Xlint</arg>
-					</compilerArgs>
+					<parameters>true</parameters>
+<!--					<compilerArgument>-parameters</compilerArgument>-->
+<!--					<compilerArgs>-->
+<!--						<arg>-Xlint</arg>-->
+<!--						<arg>-parameters</arg>-->
+<!--					</compilerArgs>-->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -123,6 +127,11 @@
 	</profiles>
 
 	<dependencies>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-properties-migrator</artifactId>-->
+<!--			<scope>runtime</scope>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>gov.nist.itl.ssd.wipp</groupId>
 			<artifactId>wipp-backend-data</artifactId>
@@ -141,7 +150,8 @@
 		</dependency>
 		<dependency>
 		    <groupId>de.flapdoodle.embed</groupId>
-		    <artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
+			<version>4.12.2</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>

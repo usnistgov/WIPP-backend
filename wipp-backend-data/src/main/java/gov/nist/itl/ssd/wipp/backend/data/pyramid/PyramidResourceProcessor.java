@@ -45,7 +45,7 @@ public class PyramidResourceProcessor implements RepresentationModelProcessor<En
         String baseUri = selfUri.replace(pyramidBaseUri,
         		CoreConfig.PYRAMIDS_BASE_URI + "/"
                 + pyramid.getId());
-        resource.add(new Link(baseUri, "baseUri"));
+        resource.add(Link.of(baseUri, "baseUri"));
 
         Link timeSlicesLink = linkTo(PyramidTimeSliceController.class,
                 pyramid.getId())

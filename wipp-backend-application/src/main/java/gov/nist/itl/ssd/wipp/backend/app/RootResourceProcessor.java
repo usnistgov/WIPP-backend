@@ -70,7 +70,7 @@ public class RootResourceProcessor
                 try {
                     Class clazz = Class.forName(beanClassName);
                     URI uri = entityLinks.linkFor(clazz).toUri();
-                    Link link = new Link(uri + "/{id}",
+                    Link link = Link.of(uri + "/{id}",
                             toCamelCase(clazz.getSimpleName()));
                     links.add(link);
                 } catch (ClassNotFoundException ex) {

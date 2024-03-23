@@ -25,7 +25,8 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,6 @@ import gov.nist.itl.ssd.wipp.backend.data.pyramid.PyramidRepository;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSlice;
 import gov.nist.itl.ssd.wipp.backend.data.pyramid.timeslices.PyramidTimeSliceRepository;
 import gov.nist.itl.ssd.wipp.backend.data.visualization.manifest.Manifest;
-import io.swagger.annotations.Api;
 
 /**
  * Controller for downloading visualization, returns a ZIP folder with pyramids + manifest
@@ -61,7 +61,7 @@ import io.swagger.annotations.Api;
  *
  */
 @Controller
-@Api(tags="Visualization Entity")
+@Tag(name="Visualization Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/visualizations/{visualizationId}/download")
 public class VisualizationDownloadController {
 

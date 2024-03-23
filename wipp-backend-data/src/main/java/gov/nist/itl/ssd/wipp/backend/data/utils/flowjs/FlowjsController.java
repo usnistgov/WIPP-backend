@@ -18,8 +18,8 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.files.FileUploadBase;

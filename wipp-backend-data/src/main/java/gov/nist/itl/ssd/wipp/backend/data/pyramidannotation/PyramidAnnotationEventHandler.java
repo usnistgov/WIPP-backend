@@ -52,7 +52,7 @@ public class PyramidAnnotationEventHandler {
     }
 
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #pyramidAnnotation.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #pyramidAnnotation.owner == authentication.name)")
     public void handleBeforeSave(PyramidAnnotation pyramidAnnotation) {
     	// Assert annotation exists
         Optional<PyramidAnnotation> result = pyramidAnnotationRepository.findById(

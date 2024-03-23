@@ -49,7 +49,7 @@ public class StitchingVectorEventHandler {
     }
 
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #stitchingVector.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #stitchingVector.owner == authentication.name)")
     public void handleBeforeSave(StitchingVector stitchingVector) {
     	// Assert data exists
         Optional<StitchingVector> result = stitchingVectorRepository.findById(

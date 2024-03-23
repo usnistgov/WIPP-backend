@@ -59,7 +59,7 @@ public class WorkflowEventHandler {
     }
 	
 	@HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #workflow.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #workflow.owner == authentication.name)")
     public void handleBeforeSave(Workflow workflow) {
     	// Assert workflow exists
         Optional<Workflow> result = workflowRepository.findById(

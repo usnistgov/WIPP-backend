@@ -69,7 +69,7 @@ public class CsvCollectionEventHandler {
     }
 
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #csvCollection.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #csvCollection.owner == authentication.name)")
     public void handleBeforeSave(CsvCollection csvCollection) {
     	// Assert collection exists
         Optional<CsvCollection> result = csvCollectionRepository.findById(
@@ -108,7 +108,7 @@ public class CsvCollectionEventHandler {
     }
     
     @HandleBeforeDelete
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #csvCollection.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #csvCollection.owner == authentication.name)")
     public void handleBeforeDelete(CsvCollection csvCollection) {
     	// Assert collection exists
     	Optional<CsvCollection> result = csvCollectionRepository.findById(

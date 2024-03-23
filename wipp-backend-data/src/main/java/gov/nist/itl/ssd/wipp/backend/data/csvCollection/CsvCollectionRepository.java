@@ -11,6 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.csvCollection;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
@@ -24,6 +25,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository
  * @author Samia Benjida <samia.benjida at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
+@Tag(name="CsvCollection Entity")
 @RepositoryRestResource
 public interface CsvCollectionRepository extends PrincipalFilteredRepository<CsvCollection, String>, CsvCollectionRepositoryCustom {
 
@@ -32,7 +34,7 @@ public interface CsvCollectionRepository extends PrincipalFilteredRepository<Csv
 	 */
 	@Query(" { '$and' : ["
 			+ "{'$or':["
-			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
 			+ "{'publiclyShared':true}"
 			+ "]} , "
 			+ "{'name' : {$eq : ?0}}"

@@ -25,7 +25,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import org.apache.commons.io.IOUtils;
@@ -55,7 +56,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.itl.ssd.wipp.backend.data.stitching.StitchingVectorRepository;
-import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadToken;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataDownloadTokenRepository;
@@ -70,7 +70,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="StitchingVector Entity")
+@Tag(name="StitchingVector Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/stitchingVectors/{stitchingVectorId}/timeSlices")
 @ExposesResourceFor(StitchingVectorTimeSlice.class)
 public class StitchingVectorTimeSliceController {
@@ -195,14 +195,14 @@ public class StitchingVectorTimeSliceController {
         LinkBuilder lb = entityLinks.linkFor(StitchingVectorTimeSlice.class,
                 stitchingVectorId);
         Link link = lb.slash(svts.getSliceNumber()).withSelfRel();
-        svts.add(link);
+        //svts.add(link);
 
         // Global positions
         lb = entityLinks.linkFor(StitchingVectorTimeSlice.class,
                 stitchingVectorId);
         link = lb.slash(svts.getSliceNumber()).slash("globalPositions").slash("request")
                 .withRel("globalPositions");
-        svts.add(link);
+        //svts.add(link);
     }
 
     private Page<StitchingVectorTimeSlice> getPage(

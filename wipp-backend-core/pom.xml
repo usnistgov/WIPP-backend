@@ -3,56 +3,57 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.12.RELEASE</version>
+		<version>3.2.3</version>
 		<relativePath />
 	</parent>
 	<groupId>gov.nist.itl.ssd.wipp</groupId>
 	<artifactId>wipp-backend-core</artifactId>
 	<name>wipp-backend-core</name>
-	<version>3.1.0-SNAPSHOT</version>
+	<version>3.2.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<spring-mvc-cache-control.version>1.1.1-RELEASE</spring-mvc-cache-control.version>
-		<springboot-version>2.3.12.RELEASE</springboot-version>
+<!--		<spring-mvc-cache-control.version>1.1.1-RELEASE</spring-mvc-cache-control.version>-->
+<!--		<springboot-version>3.2.3</springboot-version>-->
+		<maven.compiler.release>21</maven.compiler.release>
+		<java.version>21</java.version>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
-		</repository>
-	</repositories>
+<!--	<repositories>-->
+<!--		<repository>-->
+<!--			<id>spring-releases</id>-->
+<!--			<url>https://repo.spring.io/libs-release</url>-->
+<!--		</repository>-->
+<!--	</repositories>-->
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
-		</pluginRepository>
-	</pluginRepositories>
+<!--	<pluginRepositories>-->
+<!--		<pluginRepository>-->
+<!--			<id>spring-releases</id>-->
+<!--			<url>https://repo.spring.io/libs-release</url>-->
+<!--		</pluginRepository>-->
+<!--	</pluginRepositories>-->
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-parent</artifactId>
-				<version>${springboot-version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+<dependencies>
+<!--	<dependencyManagement>-->
+<!--		<dependencies>-->
+<!--			<dependency>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-starter-parent</artifactId>-->
+<!--				<version>${springboot-version}</version>-->
+<!--				<type>pom</type>-->
+<!--				<scope>import</scope>-->
+<!--			</dependency>-->
 
-			<dependency>
-				<groupId>org.keycloak.bom</groupId>
-				<artifactId>keycloak-adapter-bom</artifactId>
-				<version>11.0.2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<dependencies>
+<!--&lt;!&ndash;			<dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;				<groupId>org.keycloak.bom</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;				<artifactId>keycloak-adapter-bom</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;				<version>13.0.1</version>&ndash;&gt;-->
+<!--&lt;!&ndash;				<type>pom</type>&ndash;&gt;-->
+<!--&lt;!&ndash;				<scope>import</scope>&ndash;&gt;-->
+<!--&lt;!&ndash;			</dependency>&ndash;&gt;-->
+<!--		</dependencies>-->
+<!--	</dependencyManagement>-->
+<!--	<dependencies>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -64,11 +65,11 @@
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.3</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>commons-logging</groupId>-->
+<!--			<artifactId>commons-logging</artifactId>-->
+<!--			<version>1.1.3</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -81,13 +82,21 @@
 		</dependency>
 		
 		<dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-spring-boot-starter</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.keycloak</groupId>-->
+<!--            <artifactId>keycloak-spring-boot-starter</artifactId>-->
+<!--        </dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -101,11 +110,18 @@
 		    <groupId>org.springframework.security</groupId>
 		    <artifactId>spring-security-config</artifactId>
 		</dependency> -->
-		<dependency>
-	        <groupId>io.springfox</groupId>
-	        <artifactId>springfox-boot-starter</artifactId>
-	        <version>3.0.0</version>
-	    </dependency>
+<!--		<dependency>-->
+<!--	        <groupId>io.springfox</groupId>-->
+<!--	        <artifactId>springfox-boot-starter</artifactId>-->
+<!--	        <version>3.0.0</version>-->
+<!--	    </dependency>-->
+
+	<dependency>
+		<groupId>org.springdoc</groupId>
+		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		<version>2.4.0</version>
+	</dependency>
 
 	</dependencies>
+
 </project>

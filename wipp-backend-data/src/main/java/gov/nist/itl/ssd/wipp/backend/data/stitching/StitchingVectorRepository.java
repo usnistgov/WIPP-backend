@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.stitching;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -21,6 +22,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 * @author Antoine Vandecreme
 * @author Mylene Simon <mylene.simon at nist.gov>
 */
+@Tag(name="StitchingVector Entity")
 @RepositoryRestResource
 public interface StitchingVectorRepository extends PrincipalFilteredRepository<StitchingVector, String>, StitchingVectorRepositoryCustom {
 

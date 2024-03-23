@@ -16,7 +16,6 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="ImagesCollection Entity")
+@Tag(name="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/metadataFiles")
 @ExposesResourceFor(MetadataFile.class)
 public class MetadataFileController {

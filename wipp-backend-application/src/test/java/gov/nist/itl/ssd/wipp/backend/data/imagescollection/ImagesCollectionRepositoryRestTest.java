@@ -11,44 +11,28 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.imagescollection;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-import java.security.Principal;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.representations.AccessToken;
+import gov.nist.itl.ssd.wipp.backend.Application;
+import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import gov.nist.itl.ssd.wipp.backend.Application;
-import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
-import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * <h1>Collection of tests for {@link ImagesCollectionRepositoryEventHandler}</h1>
@@ -67,7 +51,8 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
  * @author Mylene Simon <mylene.simon at nist.gov>
  *
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ContextConfiguration
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
 				properties = { "spring.data.mongodb.port=0" })
@@ -84,7 +69,7 @@ public class ImagesCollectionRepositoryRestTest {
 	
 	ImagesCollection publicCollA, publicCollB, privateCollA, privateCollB;
 	
-	@Before
+	@BeforeAll
 	public void setUp() {
 		mvc = webAppContextSetup(context)
 				.apply(springSecurity())

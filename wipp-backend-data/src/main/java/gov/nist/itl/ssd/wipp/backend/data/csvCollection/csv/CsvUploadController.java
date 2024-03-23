@@ -16,8 +16,8 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollectionRepository;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowFile;
-import io.swagger.annotations.Api;
 import gov.nist.itl.ssd.wipp.backend.data.utils.flowjs.FlowjsController;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * @author Samia Benjida <samia.benjida at nist.gov>
  */
 @RestController
-@Api(tags="CsvCollection Entity")
+@Tag(name="CsvCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/csvCollections/{csvCollectionId}/csv")
 public class CsvUploadController  extends FlowjsController {
 

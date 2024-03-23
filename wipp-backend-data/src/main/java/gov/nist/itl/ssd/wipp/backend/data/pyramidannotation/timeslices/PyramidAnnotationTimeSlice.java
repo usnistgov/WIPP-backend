@@ -16,7 +16,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.CustomResourceSupport;
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  */
-public class PyramidAnnotationTimeSlice extends CustomResourceSupport {
+public class PyramidAnnotationTimeSlice {//extends CustomResourceSupport {
 	
     private final int sliceNumber;
 

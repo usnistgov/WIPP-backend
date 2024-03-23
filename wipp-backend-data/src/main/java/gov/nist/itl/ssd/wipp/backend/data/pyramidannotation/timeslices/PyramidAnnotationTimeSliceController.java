@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,14 +55,13 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotation;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationConfig;
 import gov.nist.itl.ssd.wipp.backend.data.pyramidannotation.PyramidAnnotationRepository;
-import io.swagger.annotations.Api;
 
 /**
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="PyramidAnnotation Entity")
+@Tag(name="PyramidAnnotation Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/pyramidAnnotations/{pyramidAnnotationId}/timeSlices")
 @ExposesResourceFor(PyramidAnnotationTimeSlice.class)
 public class PyramidAnnotationTimeSliceController {
@@ -173,14 +173,14 @@ public class PyramidAnnotationTimeSliceController {
 		LinkBuilder lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
 				pyramidAnnotationId);
 		Link link = lb.slash(pats.getSliceNumber()).withSelfRel();
-		pats.add(link);
+		//pats.add(link);
 
 		// Annotation positions
 		lb = entityLinks.linkFor(PyramidAnnotationTimeSlice.class,
 				pyramidAnnotationId);
 		link = lb.slash(pats.getSliceNumber()).slash("annotationPositions")
 				.withRel("annotationPositions");
-		pats.add(link);
+		//pats.add(link);
 	}
 
 	private Page<PyramidAnnotationTimeSlice> getPage(

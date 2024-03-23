@@ -46,7 +46,7 @@ public class PyramidEventHandler {
     }
 
     @HandleBeforeSave
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #pyramid.owner == principal.name)")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or #pyramid.owner == authentication.name)")
     public void handleBeforeSave(Pyramid pyramid) {
     	// Assert collection exists
         Optional<Pyramid> result = pyramidRepository.findById(

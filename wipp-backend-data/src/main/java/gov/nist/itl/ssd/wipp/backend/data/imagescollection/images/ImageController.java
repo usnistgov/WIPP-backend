@@ -21,7 +21,6 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ForbiddenException;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.ImagesCollectionRepository;
-import io.swagger.annotations.Api;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -32,7 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="ImagesCollection Entity")
+@Tag(name="ImagesCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/imagesCollections/{imagesCollectionId}/images")
 @ExposesResourceFor(Image.class)
 public class ImageController {
@@ -286,7 +286,7 @@ public class ImageController {
 		UriTemplate uriTemplate = UriTemplate.of(imagesFilterLink.getHref(),
 				new TemplateVariables(tv));
 
-		Link link = new Link(uriTemplate, "filterByFileNameRegex");
+		Link link = Link.of(uriTemplate, "filterByFileNameRegex");
 
 		resources.add(paginationParameterTemplatesHelper.appendPaginationParameterTemplates(link));
 

@@ -12,6 +12,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.pyramid;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
@@ -20,6 +21,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 * @author Antoine Vandecreme <antoine.vandecreme at nist.gov>
 * @author Mylene Simon <mylene.simon at nist.gov>
 */
+@Tag(name="Pyramid Entity")
 @RepositoryRestResource
 public interface PyramidRepository extends PrincipalFilteredRepository<Pyramid, String> {
 

@@ -3,6 +3,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 
@@ -14,6 +15,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  *
  */
+@Tag(name="Workflow Entity")
 public interface WorkflowRepository extends PrincipalFilteredRepository<Workflow, String> {
 	
 	@Override

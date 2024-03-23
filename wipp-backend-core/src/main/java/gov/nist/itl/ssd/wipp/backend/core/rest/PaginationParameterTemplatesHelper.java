@@ -46,7 +46,7 @@ public class PaginationParameterTemplatesHelper {
 		UriComponents uriComponents = UriComponentsBuilder.fromUriString(uri).build();
 		TemplateVariables variables = pageableResolver.getPaginationTemplateVariables(null, uriComponents);
 
-		return new Link(uriTemplate.with(variables), link.getRel());
+		return Link.of(uriTemplate.with(variables), link.getRel());
 
  	}
 }

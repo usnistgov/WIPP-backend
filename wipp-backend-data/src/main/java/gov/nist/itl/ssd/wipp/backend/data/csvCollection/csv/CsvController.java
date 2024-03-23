@@ -17,8 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollection;
 import gov.nist.itl.ssd.wipp.backend.data.csvCollection.CsvCollectionRepository;
 
-import io.swagger.annotations.Api;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +43,7 @@ import java.util.Optional;
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
 @RestController
-@Api(tags="CsvCollection Entity")
+@Tag(name="CsvCollection Entity")
 @RequestMapping(CoreConfig.BASE_URI + "/csvCollections/{csvCollectionId}/csv")
 @ExposesResourceFor(Csv.class)
 public class CsvController {

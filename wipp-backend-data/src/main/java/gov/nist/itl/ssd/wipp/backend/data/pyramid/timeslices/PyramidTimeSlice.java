@@ -17,7 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.CustomResourceSupport;
 *
 * @author Antoine Vandecreme
 */
-public class PyramidTimeSlice extends CustomResourceSupport{
+public class PyramidTimeSlice {//extends CustomResourceSupport{
 	
 	private final String name;
 

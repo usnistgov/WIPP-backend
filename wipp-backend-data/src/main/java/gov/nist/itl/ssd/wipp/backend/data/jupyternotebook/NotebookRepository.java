@@ -11,6 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.jupyternotebook;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -21,6 +22,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository
  * @author Mohamed Ouladi <mohamed.ouladi at nist.gov>
  * @author Mylene Simon <mylene.simon at nist.gov>
  */
+@Tag(name="Notebook Entity")
 @RepositoryRestResource
 public interface NotebookRepository extends PrincipalFilteredRepository<Notebook, String>{
 	@Override

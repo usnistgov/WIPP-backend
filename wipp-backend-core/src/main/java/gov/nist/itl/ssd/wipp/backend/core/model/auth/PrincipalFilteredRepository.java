@@ -29,7 +29,7 @@ public interface PrincipalFilteredRepository<T, ID extends Serializable>
 	 */
 	@Override
 	@PostAuthorize("hasRole('admin') "
-			+ "or (isAuthenticated() and returnObject.orElse(null)?.owner == principal.name) "
+			+ "or (isAuthenticated() and returnObject.orElse(null)?.owner == authentication.name) "
 			+ "or returnObject.orElse(null)?.publiclyShared == true")
 	Optional<T> findById(ID id);
 
@@ -39,7 +39,7 @@ public interface PrincipalFilteredRepository<T, ID extends Serializable>
 	 */
 	@Override
 	@Query("{'$or':["
-			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
 			+ "{'publiclyShared':true}"
 			+ "]}")
 	Page<T> findAll(Pageable page);
@@ -49,7 +49,7 @@ public interface PrincipalFilteredRepository<T, ID extends Serializable>
 	 */
     @Query(" { '$and' : ["
     		+ "{'$or':["
-    		+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+    		+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
     		+ "	{'publiclyShared':true}"
     		+ "]} , "
     		+ "{'name' : {$regex : '?0', $options: 'i'} } "

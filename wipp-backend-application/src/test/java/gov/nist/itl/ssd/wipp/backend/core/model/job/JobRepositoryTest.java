@@ -13,15 +13,16 @@ package gov.nist.itl.ssd.wipp.backend.core.model.job;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -38,7 +40,7 @@ import gov.nist.itl.ssd.wipp.backend.Application;
 import gov.nist.itl.ssd.wipp.backend.app.SecurityConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
-import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
+//import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
 
 /**
  * Collection of tests for {@link JobRepository} exposed methods
@@ -49,7 +51,8 @@ import gov.nist.itl.ssd.wipp.backend.securityutils.WithMockKeycloakUser;
  *
  */
 @SuppressWarnings({"unchecked","rawtypes"})
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(classes = { Application.class, SecurityConfig.class }, 
 				properties = { "spring.data.mongodb.port=0" })
 public class JobRepositoryTest {
@@ -68,7 +71,7 @@ public class JobRepositoryTest {
 	Job publicJobA, publicJobB, privateJobA, privateJobB;
 	Workflow publicWorkflowA, publicWorkflowB, privateWorkflowA, privateWorkflowB;
 	
-	@Before
+	@BeforeAll
 	public void setUp() {
 		this.mvc = webAppContextSetup(context)
 				.apply(springSecurity())
@@ -138,14 +141,14 @@ public class JobRepositoryTest {
 		// Anonymous user should not be able to read a private job
 		try {
 			jobRepository.findById(privateJobA.getId());
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findById_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		// Non-admin user1 should be able to read own private job
@@ -157,14 +160,14 @@ public class JobRepositoryTest {
 		// Non-admin user1 should not be able to read a private job from user2
 		try {
 			jobRepository.findById(privateJobB.getId());
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findById_adminCallingShouldReturnAllItems() throws Exception {
 		
 		// Admin should be able to read a public job from user1
@@ -189,7 +192,7 @@ public class JobRepositoryTest {
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findAll_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -203,7 +206,7 @@ public class JobRepositoryTest {
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findAll_adminCallingShouldReturnAllItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -228,7 +231,7 @@ public class JobRepositoryTest {
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findByNameContainingIgnoreCase_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -242,7 +245,7 @@ public class JobRepositoryTest {
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findByNameContainingIgnoreCase_adminCallingShouldReturnAllItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -271,7 +274,7 @@ public class JobRepositoryTest {
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findByStatus_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -287,7 +290,7 @@ public class JobRepositoryTest {
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findByStatus_adminCallingShouldReturnAllItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -319,7 +322,7 @@ public class JobRepositoryTest {
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findByNameContainingIgnoreCaseAndStatus_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() 
 			throws Exception {
 		
@@ -338,7 +341,7 @@ public class JobRepositoryTest {
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findByNameContainingIgnoreCaseAndStatus_adminCallingShouldReturnAllItems() 
 			throws Exception {
 		
@@ -367,14 +370,14 @@ public class JobRepositoryTest {
 		});
 		try {
 			jobRepository.findByWippWorkflow(privateWorkflowA.getId(), pageable);
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findByWippWorkflow_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -392,14 +395,14 @@ public class JobRepositoryTest {
 		});
 		try {
 			jobRepository.findByWippWorkflow(privateWorkflowB.getId(), pageable);
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findByWippWorkflow_adminCallingShouldReturnAllItems() throws Exception {
 		
 		Pageable pageable = PageRequest.of(0, 10);
@@ -424,14 +427,14 @@ public class JobRepositoryTest {
 		});
 		try {
 			jobRepository.findByWippWorkflowOrderByCreationDateAsc(privateWorkflowA.getId());
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 	
 	@Test
-	@WithMockKeycloakUser(username="user1", roles={ "user" })
+	@WithMockUser(username="user1", roles={ "user" })
 	public void findByWippWorkflowOrderByCreationDateAsc_nonAdminCallingShouldReturnOnlyOwnOrPublicItems() 
 			throws Exception {
 		
@@ -448,14 +451,14 @@ public class JobRepositoryTest {
 		});
 		try {
 			jobRepository.findByWippWorkflowOrderByCreationDateAsc(privateWorkflowB.getId());
-			fail("Expected AccessDenied security error");
+			Assertions.fail("Expected AccessDenied security error");
 		} catch (AccessDeniedException e) {
 			// expected
 		}
 	}
 
 	@Test
-	@WithMockKeycloakUser(username="admin", roles={ "admin" })
+	@WithMockUser(username="admin", roles={ "admin" })
 	public void findByWippWorkflowOrderByCreationDateAsc_adminCallingShouldReturnAllItems() 
 			throws Exception {
 		

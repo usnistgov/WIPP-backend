@@ -11,6 +11,7 @@
  */
 package gov.nist.itl.ssd.wipp.backend.data.genericdatacollection;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
@@ -23,6 +24,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.auth.PrincipalFilteredRepository
 *
 * @author Mohamed Ouladi <mohamed.ouladi at labshare.org>
 */
+@Tag(name="GenericDataCollection Entity")
 @RepositoryRestResource
 public interface GenericDataCollectionRepository extends PrincipalFilteredRepository<GenericDataCollection, String>, GenericDataCollectionRepositoryCustom{
 	
@@ -31,7 +33,7 @@ public interface GenericDataCollectionRepository extends PrincipalFilteredReposi
 	 */
 	@Query(" { '$and' : ["
 			+ "{'$or':["
-			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':principal.name)}},"
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
 			+ "{'publiclyShared':true}"
 			+ "]} , "
 			+ "{'name' : {$eq : ?0}}"

@@ -26,10 +26,10 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public abstract class CustomResourceSupport extends RepresentationModel {
 
-    @AccessType(Type.PROPERTY)
+    //  @AccessType(Type.PROPERTY)
     public void setLinks(List<Link> links) {
-        List<Link> actual = super.getLinks().toList();
-        actual.clear();
-        actual.addAll(links);
+//        List<Link> actual = super.getLinks().toList();
+//        actual.clear();
+//        actual.addAll(links);
     }
 }
