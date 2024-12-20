@@ -29,6 +29,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -244,6 +246,15 @@ public class ImageController {
         resources.forEach(
                 resource -> processResource(imagesCollectionId, resource));
         return new ResponseEntity<>(resources, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getAllImagesList", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
+    public HttpEntity<List<Image>> getAllImagesList(
+            @PathVariable("imagesCollectionId") String imagesCollectionId) {
+
+        List<Image> files = imageRepository.findByImagesCollection(imagesCollectionId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
     protected void processResource(String imagesCollectionId,

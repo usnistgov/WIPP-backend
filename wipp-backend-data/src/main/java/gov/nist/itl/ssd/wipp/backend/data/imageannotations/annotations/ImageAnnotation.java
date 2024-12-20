@@ -32,7 +32,7 @@ public class ImageAnnotation {
 
     private String taskId;
 
-    private String datamuroFileName;
+    private String datumaroFileName;
 
     private String annotoriousFileName;
 
@@ -77,12 +77,12 @@ public class ImageAnnotation {
         this.taskId = taskId;
     }
 
-    public String getDatamuroFileName() {
-        return datamuroFileName;
+    public String getDatumaroFileName() {
+        return datumaroFileName;
     }
 
-    public void setDatamuroFileName(String datamuroFileName) {
-        this.datamuroFileName = datamuroFileName;
+    public void setDatumaroFileName(String datumaroFileName) {
+        this.datumaroFileName = datumaroFileName;
     }
 
     public String getAnnotoriousFileName() {

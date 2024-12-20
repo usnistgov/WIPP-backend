@@ -116,6 +116,9 @@ public class CoreConfig {
     @Value("${fetching.pixels.max}")
     private int fetchingPixelsMax;
 
+    @Value("${annot.api.url}")
+    private String annotApiUrl;
+
 	public String getWippVersion() {
 		return wippVersion;
 	}
@@ -247,6 +250,6 @@ public class CoreConfig {
     public int getOmeConverterThreads() {
         return omeConverterThreads;
     }
-    
-    
+
+    public String getAnnotApiUrl() { return annotApiUrl; }
 }

@@ -17,6 +17,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.data.Data;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.IdExposed;
 import gov.nist.itl.ssd.wipp.backend.core.rest.annotation.ManualRef;
+import gov.nist.itl.ssd.wipp.backend.data.imageannotations.ImageAnnotationsCollection;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -52,6 +53,9 @@ public class ImagesCollection extends Data {
     private String sourceCatalog;
 
     private String sourceBackendImport;
+
+    @ManualRef(ImageAnnotationsCollection.class)
+    private String sourceAnnotationCollection;
     
     private ImagesCollectionImportMethod importMethod;
 
@@ -215,15 +219,13 @@ public class ImagesCollection extends Data {
     	this.publiclyShared = publiclyShared; 
     }
 
-	public String getSourceCatalog() {
-        return sourceCatalog;
+	public String getSourceCatalog() { return sourceCatalog; }
 
-	}
+    public String getSourceAnnotationCollection() { return sourceAnnotationCollection; }
 
-	public ImagesCollectionImportMethod getImportMethod() {
-        return importMethod;
-        
-	}
+    public void setSourceAnnotationCollection(String sourceAnnotationCollection) { this.sourceAnnotationCollection = sourceAnnotationCollection; }
+
+	public ImagesCollectionImportMethod getImportMethod() { return importMethod; }
 
 	public void setImportMethod(ImagesCollectionImportMethod importMethod) {
 		this.importMethod = importMethod;
@@ -237,7 +239,7 @@ public class ImagesCollection extends Data {
         this.format = format;
     }
 	
-    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG, BACKEND_IMPORT}
+    public enum ImagesCollectionImportMethod {UPLOADED, JOB, CATALOG, BACKEND_IMPORT, ANNOT}
 
     public enum ImagesCollectionFormat {OMETIFF, OMEZARR, RAW}
 

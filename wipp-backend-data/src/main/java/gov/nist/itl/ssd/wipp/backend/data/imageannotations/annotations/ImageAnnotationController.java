@@ -17,6 +17,8 @@ import gov.nist.itl.ssd.wipp.backend.data.imageannotations.ImageAnnotationsColle
 import gov.nist.itl.ssd.wipp.backend.data.imageannotations.ImageAnnotationsCollectionRepository;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +49,9 @@ import java.util.Optional;
 @RequestMapping(CoreConfig.BASE_URI + "/imageAnnotationsCollections/{imageAnnotationsCollectionId}/annotations")
 @ExposesResourceFor(ImageAnnotation.class)
 public class ImageAnnotationController {
+
+    @Autowired
+    private CoreConfig config;
 
     @Autowired
     private EntityLinks entityLinks;
@@ -118,6 +124,38 @@ public class ImageAnnotationController {
             throw new NotFoundException("Collection not found");
         }
         imageAnnotationHandler.delete(imageAnnotationsCollectionId, imageFileName);
+    }
+
+    @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.HEAD)
+    @PreAuthorize("hasRole('admin') or @imageAnnotationsCollectionSecurity.checkAuthorize(#imageAnnotationsCollectionId, false)")
+    public void headFile(
+            @PathVariable("imageAnnotationsCollectionId") String imageAnnotationsCollectionId,
+            @PathVariable("fileName") String fileName,
+            HttpServletResponse response) throws IOException {
+        File file = this.getFile(imageAnnotationsCollectionId, fileName);
+        if (!file.exists()) {
+            throw new NotFoundException("File does not exist.");
+        }
+        response.setContentLengthLong(file.length());
+    }
+    @RequestMapping(value = "/{fileName:.+}", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @imageAnnotationsCollectionSecurity.checkAuthorize(#imageAnnotationsCollectionId, false)")
+    public void getFile(
+            @PathVariable("imageAnnotationsCollectionId") String imageAnnotationsCollectionId,
+            @PathVariable("fileName") String fileName,
+            HttpServletResponse response) throws IOException {
+        File file = this.getFile(imageAnnotationsCollectionId, fileName);
+        response.setContentLengthLong(file.length());
+        try (InputStream fis = new FileInputStream(file)) {
+            IOUtils.copyLarge(fis, response.getOutputStream());
+            response.flushBuffer();
+        } catch (FileNotFoundException ex) {
+            throw new NotFoundException("File does not exist.", ex);
+        }
+    }
+
+    public File getFile(String imageAnnotationsCollectionId, String fileName) {
+        return new File(new File(config.getImageAnnotationsFolder(), imageAnnotationsCollectionId), fileName);
     }
 
     protected void processResource(String imageAnnotationsCollectionId,

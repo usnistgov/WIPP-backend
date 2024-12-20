@@ -137,7 +137,8 @@ public class SecurityConfig
      */
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, CoreConfig.BASE_URI + "/workflows/{workflowId}/exit");
+		return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, CoreConfig.BASE_URI + "/workflows/{workflowId}/exit",
+				CoreConfig.BASE_URI + "/imageAnnotationsCollections/webhookReceiver/{taskId}");
 	}
 
 	/** Enable CORS for all requests **/

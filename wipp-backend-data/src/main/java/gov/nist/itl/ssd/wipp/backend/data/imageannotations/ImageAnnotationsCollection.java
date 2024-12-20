@@ -30,6 +30,8 @@ public class ImageAnnotationsCollection {
 
     private String imagesCollectionId;
 
+    private String startMaskCollectionId;
+
     private String taskId;
 
     private boolean publiclyShared;
@@ -80,6 +82,10 @@ public class ImageAnnotationsCollection {
     public void setImagesCollectionId(String imagesCollectionId) {
         this.imagesCollectionId = imagesCollectionId;
     }
+
+    public String getStartMaskCollectionId() { return startMaskCollectionId; }
+
+    public void setStartMaskCollectionId(String startMaskCollectionId) { this.startMaskCollectionId = startMaskCollectionId; }
 
     public String getTaskId() {
         return taskId;
