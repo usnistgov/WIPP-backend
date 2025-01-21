@@ -40,6 +40,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -129,7 +131,8 @@ public class CsvController {
         resource.add(link);
     }
 
-    /*@RequestMapping(
+    // APPROACH 1: BYTE[]
+    @RequestMapping(
             value="/{fileName:.+}/content",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -137,43 +140,19 @@ public class CsvController {
     @PreAuthorize("isAuthenticated() and (hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public ResponseEntity<byte[]> getContent(
             @PathVariable("csvCollectionId") String csvCollectionId,
-            @PathVariable("fileName") String fileName) throws FileNotFoundException {
-        // (1) Get Csv
-        StringBuilder csv = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(coreConfig.getCsvCollectionsFolder() + "/" + csvCollectionId + "/" + fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                csv.append(line).append(",");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            @PathVariable("fileName") String fileName) throws IOException
+    {
+        String path = coreConfig.getCsvCollectionsFolder() + "/" + csvCollectionId + "/" + fileName;
+        byte[] csvBytes = Files.readAllBytes(Paths.get(path));
 
-        // (2) Convert Into Bytes
-        byte[] bytes = new byte[0];
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-            bytes = mapper.writeValueAsString(csv.toString()).getBytes();
-        }
-        catch (JsonProcessingException e) { e.printStackTrace(); }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("text/csv"));
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename("file.csv").build());
 
-        // (3) Setup Response Head
-        HttpHeaders head = new HttpHeaders();
-        head.add(
-                "content-disposition",
-                "attachment; filename=\"" + fileName
-        );
-        List<String> exposedHead = List.of("content-disposition");
-        head.setAccessControlExposeHeaders(exposedHead);
-
-        return ResponseEntity
-                .ok()
-                .headers(head)
-                .contentType(MediaType.APPLICATION_JSON)
-                .contentLength(bytes.length)
-                .body(bytes);
-    }*/
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csvBytes);
+    }
 
     @RequestMapping(
             value = "/{fileName:.+}/downloadRequest",
