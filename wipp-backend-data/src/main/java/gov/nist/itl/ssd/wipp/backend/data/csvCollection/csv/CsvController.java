@@ -93,14 +93,7 @@ public class CsvController {
             + "(hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
     public void deleteAllFiles(
             @PathVariable("csvCollectionId") String csvCollectionId) {
-        Optional<CsvCollection> tc =csvCollectionRepository.findById(
-                csvCollectionId);
-        if (!tc.isPresent()) {
-            throw new NotFoundException("Collection not found");
-        }
-        if (tc.get().isLocked()) {
-            throw new ClientException("Collection locked.");
-        }
+        checkBeforeDelete(csvCollectionId);
         csvHandler.deleteAll(csvCollectionId);
     }
 
@@ -110,6 +103,11 @@ public class CsvController {
     public void deleteFile(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PathVariable("fileName") String fileName) {
+        checkBeforeDelete(csvCollectionId);
+        csvHandler.delete(csvCollectionId, fileName);
+    }
+
+    private void checkBeforeDelete(String csvCollectionId) {
         Optional<CsvCollection> tc = csvCollectionRepository.findById(
                 csvCollectionId);
         if (!tc.isPresent()) {
@@ -118,7 +116,6 @@ public class CsvController {
         if (tc.get().isLocked()) {
             throw new ClientException("Collection locked.");
         }
-        csvHandler.delete(csvCollectionId, fileName);
     }
 
     protected void processResource(String csvCollectionId,
