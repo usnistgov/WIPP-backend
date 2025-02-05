@@ -2,6 +2,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imageannotations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
+import gov.nist.itl.ssd.wipp.backend.core.model.events.AllImagesDoneConvertingEvent;
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import gov.nist.itl.ssd.wipp.backend.data.imageannotations.annotations.ImageAnnotation;
 import gov.nist.itl.ssd.wipp.backend.data.imageannotations.annotations.ImageAnnotationHandler;
@@ -14,6 +15,7 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageHandler;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.ImageRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +63,9 @@ public class ImageAnnotationsTaskWebhookReceiver {
     @Autowired
     private ImageConversionService imageConversionService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @RequestMapping(
             value = "",
             method = RequestMethod.GET,
@@ -94,12 +99,21 @@ public class ImageAnnotationsTaskWebhookReceiver {
                 .retrieve()
                 .toBodilessEntity();
 
-        // Create mask collection
-        ImagesCollection maskCollection = new ImagesCollection(imageAnnotationsCollection.getName() + "-masks",
-                true, ImagesCollection.ImagesCollectionImportMethod.ANNOT, ImagesCollection.ImagesCollectionFormat.OMETIFF); // TODO: increment
-        maskCollection.setOwner(imageAnnotationsCollection.getOwner());
-        maskCollection.setSourceAnnotationCollection(imageAnnotationsCollection.getId());
-        maskCollection = imagesCollectionRepository.save(maskCollection);
+        // Create/get mask collection
+        boolean isPartOfIterativeAiPipeline = false;
+        ImagesCollection maskCollection = null;
+        if (imageAnnotationsCollection.getTargetMaskCollectionId() != null ) {
+            isPartOfIterativeAiPipeline = true;
+            maskCollection = imagesCollectionRepository.findById(imageAnnotationsCollection.getTargetMaskCollectionId()).orElse(null);
+        }
+        if (maskCollection == null) {
+            maskCollection = new ImagesCollection(imageAnnotationsCollection.getName() + "-masks",
+                    true, ImagesCollection.ImagesCollectionImportMethod.ANNOT, ImagesCollection.ImagesCollectionFormat.OMETIFF);
+            maskCollection.setOwner(imageAnnotationsCollection.getOwner());
+            maskCollection.setSourceAnnotationCollection(imageAnnotationsCollection.getId());
+            maskCollection = imagesCollectionRepository.save(maskCollection);
+            // TODO: set as annot target mask coll?
+        }
         String maskCollectionId = maskCollection.getId();
         File imagesCollectionTempFolder = new File(new File(config.getImageAnnotationsFolder(), imageAnnotationsCollection.getId()), "masks");
 
@@ -121,10 +135,9 @@ public class ImageAnnotationsTaskWebhookReceiver {
             };
             // Check mask image
             if(new File(imagesCollectionTempFolder, imageAnnotation.getImageFileName()).exists()) {
-                ImageAnnotation.ImageAnnotationMask mask = new ImageAnnotation.ImageAnnotationMask();
-                mask.setImagesCollectionId(maskCollectionId);
-                mask.setImageFileName(imageAnnotation.getImageFileName());
-                imageAnnotation.setImageMask(mask);
+                imageAnnotation.setImageMask(
+                        new ImageAnnotation.ImageAnnotationMask(maskCollectionId, imageAnnotation.getImageFileName())
+                );
                 annotationFound = true;
             }
             // Update annotation status in database if needed
@@ -135,10 +148,14 @@ public class ImageAnnotationsTaskWebhookReceiver {
         });
 
         // Import and convert images
-        imageHandler.addAllInDbFromFolder(maskCollectionId, imagesCollectionTempFolder.getPath());
-        List<Image> images = imageRepository.findByImagesCollection(maskCollectionId);
+        List<Image> images = imageHandler.addAllInDbFromFolder(maskCollectionId, imagesCollectionTempFolder.getPath());
         for(Image image : images) {
             imageConversionService.submitImageToExtractor(image, imagesCollectionTempFolder, true);
+        }
+
+        // if no images need to be converted, send event to start workflow
+        if(isPartOfIterativeAiPipeline && images.isEmpty()) {
+            eventPublisher.publishEvent(new AllImagesDoneConvertingEvent(maskCollectionId));
         }
 
         // Clear security context after system operations

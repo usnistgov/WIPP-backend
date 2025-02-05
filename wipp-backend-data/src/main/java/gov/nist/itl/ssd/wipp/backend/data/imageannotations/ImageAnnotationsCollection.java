@@ -32,11 +32,19 @@ public class ImageAnnotationsCollection {
 
     private String startMaskCollectionId;
 
+    private String targetMaskCollectionId;
+
     private String taskId;
 
     private boolean publiclyShared;
 
     public ImageAnnotationsCollection() {
+    }
+
+    public ImageAnnotationsCollection(String name) {
+        this.name = name;
+        this.publiclyShared = false;
+        this.creationDate = new Date();
     }
 
     public String getId() {
@@ -103,4 +111,11 @@ public class ImageAnnotationsCollection {
         this.publiclyShared = publiclyShared;
     }
 
+    public String getTargetMaskCollectionId() {
+        return targetMaskCollectionId;
+    }
+
+    public void setTargetMaskCollectionId(String targetMaskCollectionId) {
+        this.targetMaskCollectionId = targetMaskCollectionId;
+    }
 }

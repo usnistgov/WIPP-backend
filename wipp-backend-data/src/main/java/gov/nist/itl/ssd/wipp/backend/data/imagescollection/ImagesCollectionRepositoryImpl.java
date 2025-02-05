@@ -15,6 +15,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 
+import gov.nist.itl.ssd.wipp.backend.core.model.events.AllImagesDoneConvertingEvent;
+import gov.nist.itl.ssd.wipp.backend.core.model.events.WorkflowSubmittedEvent;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
 import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.MetadataFile;
 
@@ -24,6 +26,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -38,6 +41,9 @@ public class ImagesCollectionRepositoryImpl
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 
     @Override
     public void updateImagesCaches(String imagesCollectionId) {
@@ -93,6 +99,10 @@ public class ImagesCollectionRepositoryImpl
                 .set("numberImportingImages", numberOfImportingImages)
                 .set("numberOfImportErrors", numberOfImportErrors),
                 ImagesCollection.class);
+
+		// Emit `AllImagesDoneConvertingEvent` event if numberImportingImages is 0
+		if(numberOfImportingImages == 0)
+			eventPublisher.publishEvent(new AllImagesDoneConvertingEvent(imagesCollectionId));
     }
 
     @Override

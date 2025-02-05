@@ -36,4 +36,6 @@ public interface PluginRepository extends MongoRepository<Plugin, String> {
 	Page<Plugin> findByNameContainingIgnoreCase(@Param("name") String name, Pageable p);
 	
 	List<Plugin> findByOrderByNameAsc();
+
+    Plugin findOneByNameAndVersion(@Param("name") String name, @Param("version") String version);
  }

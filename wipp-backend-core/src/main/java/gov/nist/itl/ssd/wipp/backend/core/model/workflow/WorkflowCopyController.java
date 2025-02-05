@@ -45,7 +45,7 @@ public class WorkflowCopyController
 {
 
     @Autowired
-    private JobRepository<Job> jobRepository;
+    private JobRepository jobRepository;
 
     @Autowired
     private WorkflowRepository workflowRepository;

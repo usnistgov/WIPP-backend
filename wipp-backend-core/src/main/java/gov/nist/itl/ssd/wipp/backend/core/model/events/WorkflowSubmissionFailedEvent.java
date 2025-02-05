@@ -9,22 +9,23 @@
  * any other characteristic. We would appreciate acknowledgement if the
  * software is used.
  */
-package gov.nist.itl.ssd.wipp.backend.core.model.workflow;
+package gov.nist.itl.ssd.wipp.backend.core.model.events;
+
+import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 
 /**
+ * Event fired when workflow submission failed
  * @author Mylene Simon <mylene.simon at nist.gov>
- * @author Mylene Simon <mylene.simon at nist.gov>
- *
  */
-public enum WorkflowStatus {
+public class WorkflowSubmissionFailedEvent {
 
-	CREATED,
-	SUBMITTED,
-    RUNNING,
-    SUCCEEDED,
-    FAILED,
-    ERROR,
-    CANCELLED,
-    PENDING;
-	
+    private final Workflow workflow;
+
+    public WorkflowSubmissionFailedEvent(Workflow workflow) {
+        this.workflow = workflow;
+    }
+
+    public Workflow getWorkflow() {
+        return workflow;
+    }
 }

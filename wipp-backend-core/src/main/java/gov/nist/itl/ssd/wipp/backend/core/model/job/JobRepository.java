@@ -30,10 +30,10 @@ import java.util.List;
 
 @Tag(name="Job Entity")
 @RepositoryRestResource
-public interface JobRepository<T extends Job> extends PrincipalFilteredRepository<T, String> {
+public interface JobRepository extends PrincipalFilteredRepository<Job, String> {
 
 	@Override
-    void delete(T t);
+    void delete(Job job);
 
     @RestResource(exported = false)
     long countByName(@Param("name") String name);
@@ -51,7 +51,7 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
 			+ "]} , "
 			+ "{'status' : {$eq : ?0}}"
 			+ "]}")
-    Page<T> findByStatus(@Param("status") JobStatus status, Pageable p);
+    Page<Job> findByStatus(@Param("status") JobStatus status, Pageable p);
 
 	/*
 	 * Filter collection resources access by name, status and depending on user
@@ -63,21 +63,21 @@ public interface JobRepository<T extends Job> extends PrincipalFilteredRepositor
     		+ "]} , "
     		+ "{'name' : {$regex : '?0', $options: 'i'}}, {'status' : {$eq : ?1}}"
     		+ "]}")
-    Page<T> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
+    Page<Job> findByNameContainingIgnoreCaseAndStatus(@Param("name") String name,
                                                     @Param("status") String status, Pageable p);
 
     /*
      * Check user is authorized to access workflow before retrieving jobs
      */
     @PreAuthorize("hasRole('admin') or @workflowSecurity.checkAuthorize(#wippWorkflow, false)")
-    Page<T> findByWippWorkflow(@Param("wippWorkflow") String workflow,
+    Page<Job> findByWippWorkflow(@Param("wippWorkflow") String workflow,
                                Pageable p);
 
     /*
      * Check user is authorized to access workflow before retrieving jobs
      */
     @PreAuthorize("hasRole('admin') or @workflowSecurity.checkAuthorize(#wippWorkflow, false)")
-    List<T> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
+    List<Job> findByWippWorkflowOrderByCreationDateAsc(@Param("wippWorkflow") String workflow);
     
     @RestResource(exported = false)
     List<Job> findByWippWorkflow(String workflow);

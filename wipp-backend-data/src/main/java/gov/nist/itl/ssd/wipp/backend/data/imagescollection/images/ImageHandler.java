@@ -14,6 +14,7 @@ package gov.nist.itl.ssd.wipp.backend.data.imagescollection.images;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,19 +58,19 @@ public class ImageHandler extends FileHandler {
         this.addAllInDbFromFiles(imagesCollectionId, files, false);
     }
     
-    public void addAllInDbFromTemp(String imagesCollectionId) {
+    public List<Image> addAllInDbFromTemp(String imagesCollectionId) {
         File[] files = getTempFiles(imagesCollectionId);
-        this.addAllInDbFromFiles(imagesCollectionId, files, true);
+        return this.addAllInDbFromFiles(imagesCollectionId, files, true);
     }
 
-    public void addAllInDbFromFolder(String imagesCollectionId, String path) {
+    public List<Image> addAllInDbFromFolder(String imagesCollectionId, String path) {
         File[] files = new File(path).listFiles(f -> (f.isFile() && !f.isHidden()));
-        this.addAllInDbFromFiles(imagesCollectionId, files, true);
+        return this.addAllInDbFromFiles(imagesCollectionId, files, true);
     }
 
-    private void addAllInDbFromFiles(String imagesCollectionId, File[] files, boolean setImporting) {
+    private List<Image> addAllInDbFromFiles(String imagesCollectionId, File[] files, boolean setImporting) {
         if (files == null) {
-            return;
+            return new ArrayList<>();
         }
 
         List<Image> images = Arrays.stream(files).map(f -> new Image(
@@ -77,6 +78,7 @@ public class ImageHandler extends FileHandler {
                 .collect(Collectors.toList());
         imageRepository.saveAll(images);
         imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
+        return images;
     }
 
     @Override

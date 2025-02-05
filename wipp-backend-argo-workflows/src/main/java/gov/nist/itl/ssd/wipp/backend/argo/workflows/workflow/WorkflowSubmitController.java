@@ -3,6 +3,8 @@ package gov.nist.itl.ssd.wipp.backend.argo.workflows.workflow;
 import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.model.computation.Plugin;
 import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginRepository;
+import gov.nist.itl.ssd.wipp.backend.core.model.events.WorkflowSubmissionFailedEvent;
+import gov.nist.itl.ssd.wipp.backend.core.model.events.WorkflowSubmittedEvent;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
@@ -11,6 +13,7 @@ import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -52,6 +55,9 @@ public class WorkflowSubmitController {
 
     @Autowired
     private WorkflowConverter converter;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
     
     private static final Logger LOGGER = Logger.getLogger(WorkflowSubmitController.class.getName());
 
@@ -125,6 +131,9 @@ public class WorkflowSubmitController {
 			workflow = executeSubmissionCommand(workflow, workflowFilePath);
             workflow.setStatus(WorkflowStatus.SUBMITTED);
 
+            // Emit `WorkflowSubmittedEvent` event
+            eventPublisher.publishEvent(new WorkflowSubmittedEvent(workflow));
+
             // Save the workflow and send the HTTP response
             workflowRepository.save(workflow);
             return EntityModel.of(workflow);
@@ -132,6 +141,8 @@ public class WorkflowSubmitController {
         } catch (Exception ex) {
         	workflow.setStatus(WorkflowStatus.ERROR);
         	workflow.setErrorMessage(ex.getMessage());
+            // Emit `WorkflowSubmissionFailedEvent` event
+            eventPublisher.publishEvent(new WorkflowSubmissionFailedEvent(workflow));
         	workflowRepository.save(workflow);
             LOGGER.log(Level.SEVERE, "Cannot start workflow: " + ex.getMessage());
         	throw new ClientException("Error while submitting workflow: " + ex.getMessage());

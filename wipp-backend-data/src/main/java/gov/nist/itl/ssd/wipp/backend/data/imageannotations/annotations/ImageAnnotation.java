@@ -109,6 +109,11 @@ public class ImageAnnotation {
         public ImageAnnotationMask() {
         }
 
+        public ImageAnnotationMask(String imagesCollectionId, String imageFileName) {
+            this.imagesCollectionId = imagesCollectionId;
+            this.imageFileName = imageFileName;
+        }
+
         public String getImagesCollectionId() {
             return imagesCollectionId;
         }

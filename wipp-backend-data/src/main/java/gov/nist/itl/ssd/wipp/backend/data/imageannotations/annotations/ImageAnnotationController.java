@@ -15,6 +15,7 @@ import gov.nist.itl.ssd.wipp.backend.core.CoreConfig;
 import gov.nist.itl.ssd.wipp.backend.core.rest.exception.NotFoundException;
 import gov.nist.itl.ssd.wipp.backend.data.imageannotations.ImageAnnotationsCollection;
 import gov.nist.itl.ssd.wipp.backend.data.imageannotations.ImageAnnotationsCollectionRepository;
+import gov.nist.itl.ssd.wipp.backend.data.imagescollection.images.Image;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -152,6 +153,15 @@ public class ImageAnnotationController {
         } catch (FileNotFoundException ex) {
             throw new NotFoundException("File does not exist.", ex);
         }
+    }
+
+    @RequestMapping(value = "/getAllAnnotationsList", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @imageAnnotationsCollectionSecurity.checkAuthorize(#imageAnnotationsCollectionId, false)")
+    public HttpEntity<List<ImageAnnotation>> getAllAnnotations(
+            @PathVariable("imageAnnotationsCollectionId") String imageAnnotationsCollectionId) {
+
+        List<ImageAnnotation> files = imageAnnotationRepository.findByImageAnnotationsCollection(imageAnnotationsCollectionId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
     public File getFile(String imageAnnotationsCollectionId, String fileName) {

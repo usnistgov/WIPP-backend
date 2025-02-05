@@ -17,6 +17,8 @@ import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginIO;
 import gov.nist.itl.ssd.wipp.backend.core.model.computation.PluginRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandler;
 import gov.nist.itl.ssd.wipp.backend.core.model.data.DataHandlerService;
+import gov.nist.itl.ssd.wipp.backend.core.model.events.WorkflowExecutionEndedEvent;
+import gov.nist.itl.ssd.wipp.backend.core.model.events.WorkflowSubmissionFailedEvent;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.Job;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.job.JobStatus;
@@ -27,6 +29,7 @@ import gov.nist.itl.ssd.wipp.backend.core.rest.exception.ClientException;
 import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +62,9 @@ public class WorkflowExitController {
 
     @Autowired
     private DataHandlerService dataHandlerService;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @RequestMapping(
             value = "",
@@ -142,6 +148,9 @@ public class WorkflowExitController {
         workflow.setEndTime(new Date());
         workflow.setStatus(wfStatus);
         workflowRepository.save(workflow);
+
+        // Emit `WorkflowExecutionEndedEvent` event
+        eventPublisher.publishEvent(new WorkflowExecutionEndedEvent(workflow));
         
         // Clear security context after system operations
         SecurityContextHolder.clearContext();
