@@ -18,8 +18,11 @@ import gov.nist.itl.ssd.wipp.backend.core.model.events.WorkflowSubmittedEvent;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.Workflow;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowRepository;
 import gov.nist.itl.ssd.wipp.backend.core.model.workflow.WorkflowStatus;
+import gov.nist.itl.ssd.wipp.backend.core.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.logging.Level;
@@ -44,6 +47,7 @@ public class IterativeTrainingPipelineEventListener {
     /**
      * Listen for WorkflowSubmittedEvent and update training iteration if needed
      */
+    @Async
     @EventListener
     void handleWorkflowSubmittedEvent(WorkflowSubmittedEvent event) {
         this.updateIterationStatusIfWorkflowOfInterest(event.getWorkflow(), IterativeTrainingPipeline.IterationStatus.RUNNING);
@@ -52,6 +56,7 @@ public class IterativeTrainingPipelineEventListener {
     /**
      * Listen for WorkflowSubmissionFailedEvent and update training iteration if needed
      */
+    @Async
     @EventListener
     void handleWorkflowSubmissionFailedEvent(WorkflowSubmissionFailedEvent event) {
         this.updateIterationStatusIfWorkflowOfInterest(event.getWorkflow(), IterativeTrainingPipeline.IterationStatus.FAILED);
@@ -60,6 +65,7 @@ public class IterativeTrainingPipelineEventListener {
     /**
      * Listen for WorkflowExecutionEndedEvent and update training iteration if needed
      */
+    @Async
     @EventListener
     void handleWorkflowExecutionEndedEvent(WorkflowExecutionEndedEvent event) {
         Workflow workflow = event.getWorkflow();
@@ -72,25 +78,33 @@ public class IterativeTrainingPipelineEventListener {
     /**
      * Listen for AllImagesDoneConvertingEvent and update training iteration workflow status if needed
      */
+    @Async
     @EventListener
     void handleAllImagesDoneConvertingEvent(AllImagesDoneConvertingEvent event) {
-        String collectionId = event.getCollectionId();
-        if(collectionId != null) {
-            IterativeTrainingPipeline pipeline = iterativeTrainingPipelineRepository.findOneByGroundTruthCollection(collectionId);
-            if(pipeline != null && pipeline.getIterations() != null) {
-                IterativeTrainingPipeline.TrainingIteration previousIteration = pipeline.getIterations().stream()
-                        .filter(it -> (pipeline.getIterations().size()) == it.getIterationNumber())
-                        .findFirst()
-                        .orElse(null);
-                if (previousIteration != null) {
-                    Workflow iterationWorkflow = workflowRepository.findById(previousIteration.getTrainingWorkflow()).orElse(null);
-                    if(iterationWorkflow != null && WorkflowStatus.PENDING.equals(iterationWorkflow.getStatus())) {
-                        // change status from PENDING to CREATED so that it can be modified/submitted
-                        iterationWorkflow.setStatus(WorkflowStatus.CREATED);
-                        workflowRepository.save(iterationWorkflow);
+        // Load security context for system operations
+        SecurityUtils.runAsSystem();
+        try {
+            String collectionId = event.getCollectionId();
+            if (collectionId != null) {
+                IterativeTrainingPipeline pipeline = iterativeTrainingPipelineRepository.findOneByGroundTruthCollection(collectionId);
+                if (pipeline != null && pipeline.getIterations() != null) {
+                    IterativeTrainingPipeline.TrainingIteration previousIteration = pipeline.getIterations().stream()
+                            .filter(it -> (pipeline.getIterations().size()) == it.getIterationNumber())
+                            .findFirst()
+                            .orElse(null);
+                    if (previousIteration != null) {
+                        Workflow iterationWorkflow = workflowRepository.findById(previousIteration.getTrainingWorkflow()).orElse(null);
+                        if (iterationWorkflow != null && WorkflowStatus.PENDING.equals(iterationWorkflow.getStatus())) {
+                            // change status from PENDING to CREATED so that it can be modified/submitted
+                            iterationWorkflow.setStatus(WorkflowStatus.CREATED);
+                            workflowRepository.save(iterationWorkflow);
+                        }
                     }
                 }
             }
+        } finally {
+            // Clear security context after system operations
+            SecurityContextHolder.clearContext();
         }
     }
 
