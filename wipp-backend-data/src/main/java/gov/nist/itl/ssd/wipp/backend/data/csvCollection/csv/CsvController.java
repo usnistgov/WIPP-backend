@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -131,19 +130,18 @@ public class CsvController {
         resource.add(link);
     }
 
-    // APPROACH 1: BYTE[]
     @RequestMapping(
             value="/{fileName:.+}/content",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @PreAuthorize("isAuthenticated() and (hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, true))")
+    @PreAuthorize("isAuthenticated() and (hasRole('admin') or @csvCollectionSecurity.checkAuthorize(#csvCollectionId, false))")
     public ResponseEntity<byte[]> getContent(
             @PathVariable("csvCollectionId") String csvCollectionId,
             @PathVariable("fileName") String fileName) throws IOException
     {
-        String path = coreConfig.getCsvCollectionsFolder() + "/" + csvCollectionId + "/" + fileName;
-        byte[] csvBytes = Files.readAllBytes(Paths.get(path));
+        File file = csvHandler.getFile(csvCollectionId, fileName);
+        byte[] csvBytes = Files.readAllBytes(file.toPath());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("text/csv"));
@@ -164,7 +162,7 @@ public class CsvController {
             @PathVariable("fileName") String fileName) {
         // Generate and send unique download URL
         String tokenParam = generateDownloadTokenParam(csvCollectionId);
-        String filePath = "/" + fileName;
+        String filePath = File.separator + fileName;
         String downloadLink = linkTo(CsvController.class,
                 csvCollectionId).toString() + filePath + tokenParam;
         return new DownloadUrl(downloadLink);
