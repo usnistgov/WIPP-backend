@@ -65,6 +65,7 @@
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
 				<workflow.pluginHardwareRequirements.enabled>false</workflow.pluginHardwareRequirements.enabled>
+				<workflow.notifications.url>http://host.docker.internal:8080</workflow.notifications.url>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
 				<slurm.wippdata.path>${user.home}/WIPP-plugins-slurm</slurm.wippdata.path>
 				<storage.root>${user.home}/WIPP-plugins</storage.root>
@@ -99,6 +100,7 @@
 				<workflow.management.system>argo</workflow.management.system>
 				<workflow.binary>argo</workflow.binary>
 				<workflow.pluginHardwareRequirements.enabled>false</workflow.pluginHardwareRequirements.enabled>
+				<workflow.notifications.url>http://wipp-backend.wipp.svc.cluster.local:8080</workflow.notifications.url>
 				<kube.wippdata.pvc>wippdata-pvc</kube.wippdata.pvc>
 				<slurm.wippdata.path>/mnt/data/WIPP-plugins</slurm.wippdata.path>
 				<storage.root>/data/WIPP-plugins</storage.root>

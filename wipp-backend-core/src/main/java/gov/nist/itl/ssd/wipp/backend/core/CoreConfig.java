@@ -119,6 +119,9 @@ public class CoreConfig {
     @Value("${annot.api.url}")
     private String annotApiUrl;
 
+    @Value("${workflow.notifications.url}")
+    private String workflowNotificationsUrl;
+
 	public String getWippVersion() {
 		return wippVersion;
 	}
@@ -252,4 +255,12 @@ public class CoreConfig {
     }
 
     public String getAnnotApiUrl() { return annotApiUrl; }
+
+    public String getWorkflowNotificationsUrl() {
+        return workflowNotificationsUrl;
+    }
+
+    public void setWorkflowNotificationsUrl(String workflowNotificationsUrl) {
+        this.workflowNotificationsUrl = workflowNotificationsUrl;
+    }
 }

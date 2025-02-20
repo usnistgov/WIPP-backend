@@ -92,6 +92,7 @@ public class ImageAnnotationsTaskWebhookReceiver {
         annotationsDownloadRequestBody.setFormat(new String[]{"datumaro", "svg", "mask"});
         annotationsDownloadRequestBody.setAnnotation_dir("/app/upload_data/" + imageAnnotationsCollection.getId());
         annotationsDownloadRequestBody.setMask_dir("/app/upload_data/" + imageAnnotationsCollection.getId() + "/masks");
+        annotationsDownloadRequestBody.setMask_type(1);
         ResponseEntity<Void> response = restClient.post()
                 .uri(config.getAnnotApiUrl() + "/download")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -169,6 +170,7 @@ public class ImageAnnotationsTaskWebhookReceiver {
         private String[] format;
         private String annotation_dir;
         private String mask_dir;
+        private int mask_type;
 
         public AnnotationsDownloadRequestBody() {
         }
@@ -204,5 +206,9 @@ public class ImageAnnotationsTaskWebhookReceiver {
         public void setMask_dir(String mask_dir) {
             this.mask_dir = mask_dir;
         }
+
+        public int getMask_type() { return mask_type; }
+
+        public void setMask_type(int mask_type) { this.mask_type = mask_type; }
     }
 }

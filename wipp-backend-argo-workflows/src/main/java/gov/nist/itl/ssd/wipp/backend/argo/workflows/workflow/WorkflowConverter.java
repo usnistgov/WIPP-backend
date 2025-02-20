@@ -285,9 +285,10 @@ public class WorkflowConverter {
 
         container.setImage("byrnedo/alpine-curl:latest");
 
-        String url = WebMvcLinkBuilder.linkTo(
-                WorkflowExitController.class, workflow.getId())
-                .withRel("exit").getHref();
+        String url = coreConfig.getWorkflowNotificationsUrl() + "/api/workflows/" + workflow.getId() + "/exit";
+//                WebMvcLinkBuilder.linkTo(
+//                WorkflowExitController.class, workflow.getId())
+//                .withRel("exit").getHref();
         LOGGER.log(Level.INFO, "workflow url: " + url);
 
         List<String> args = new ArrayList<>();
