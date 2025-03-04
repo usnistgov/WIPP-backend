@@ -14,8 +14,8 @@ Requirements for development environment setup.
 
 ### Identity and Access Management
 * Keycloak 11.0.2
-* Default dev configuration expects Keycloak at `http://localhost:8081/auth` (see 
-`wipp-backend-application/src/main/resources/application.properties`. Sample 
+* Default dev configuration expects Keycloak at `http://localhost:8081` (see 
+`wipp-backend-application/src/main/resources/application.properties`). Sample 
 Docker run command:
 `docker run -p 8081:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak:11.0.2` (see https://www.keycloak.org/getting-started/getting-started-docker)
 * Import WIPP realm available in folder `docs/auth-acl`

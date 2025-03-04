@@ -583,7 +583,7 @@ The following table describes which actions a WIPP user can do depending on thei
     <td></td>
   </tr>
   <tr>
-    <td><b>Tensorflow models</b></td>
+    <td><b>AI models</b></td>
     <td><b>C</b></td>
     <td><b>R</b></td>
     <td><b>U</b></td>

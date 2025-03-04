@@ -1,6 +1,7 @@
 package gov.nist.itl.ssd.wipp.backend.data.tensorboard;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 import gov.nist.itl.ssd.wipp.backend.core.model.data.BaseDataHandler;
@@ -26,6 +27,9 @@ public class TensorboardLogsDataHandler extends BaseDataHandler implements DataH
     @Autowired
     private TensorboardLogsRepository tensorboardLogsRepository;
 
+	@Autowired
+	private TensorBoardLogsController tensorBoardLogsController;
+
 	@Override
 	public void importData(Job job, String outputName) throws JobExecutionException {
 		
@@ -46,12 +50,19 @@ public class TensorboardLogsDataHandler extends BaseDataHandler implements DataH
 			throw new JobExecutionException("Cannot move tensorboard logs to final destination.");
 		}
 		setOutputId(job, outputName, tl.getId());
-	}
+
+		// Automatic export of CSV files containing TensorBoard data
+        try {
+            tensorBoardLogsController.exportCSV(tl.getId());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	@Override
 	public String exportDataAsParam(String value) {
 		String tensorboardLogsId = value;
-		File inputTensorboardLogs = new File(config.getTensorflowModelsFolder(), tensorboardLogsId);
+		File inputTensorboardLogs = new File(config.getAiModelsFolder(), tensorboardLogsId);
 		String tensorboardLogsPath = inputTensorboardLogs.getAbsolutePath();
 		return tensorboardLogsPath;
 	}
