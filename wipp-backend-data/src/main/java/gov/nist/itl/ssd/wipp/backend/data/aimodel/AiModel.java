@@ -98,6 +98,8 @@ public class AiModel extends Data {
 		return creationDate;
 	}
 
+	public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
+
 	public String getSourceJob() {
         return sourceJob;
     }
