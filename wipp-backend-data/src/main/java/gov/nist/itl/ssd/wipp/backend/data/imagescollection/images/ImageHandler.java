@@ -70,14 +70,39 @@ public class ImageHandler extends FileHandler {
 
     public List<Image> addAllInDbFromFolderAndRelativePaths(String imagesCollectionId, String path, List<String> relativePaths) {
         //File[] files = new File(path).listFiles(f -> (f.isFile() && !f.isHidden()));
-        File[] files = relativePaths.stream()
-                .map(relativePath -> new File(path, relativePath))
-                .filter(file -> file.isFile() && !file.isHidden())
-                .toArray(File[]::new);
-        return this.addAllInDbFromFiles(imagesCollectionId, files, true);
+        // File[] files = relativePaths.stream()
+        //         .map(relativePath -> new File(path, relativePath))
+        //         .filter(file -> file.isFile() && !file.isHidden())
+        //         .toArray(File[]::new);
+        // return this.addAllInDbFromFiles(imagesCollectionId, files, true);
+
+
+        List<Image> images = relativePaths.stream()
+            .map(relativePath -> {
+                File imageFile = new File(path, relativePath);
+                return new Image(imagesCollectionId, imageFile.getName(), 
+                    imageFile.getName(), relativePath, getFileSize(imageFile), true);
+            })
+            .collect(Collectors.toList());
+        imageRepository.saveAll(images);
+        imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
+        return images;
     }
 
     private List<Image> addAllInDbFromFiles(String imagesCollectionId, File[] files, boolean setImporting) {
+        if (files == null) {
+            return new ArrayList<>();
+        }
+
+        List<Image> images = Arrays.stream(files).map(f -> new Image(
+                        imagesCollectionId, f.getName(), f.getName(), getFileSize(f), setImporting))
+                .collect(Collectors.toList());
+        imageRepository.saveAll(images);
+        imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
+        return images;
+    }
+
+    private List<Image> addAllInDbFromRelativePaths(String imagesCollectionId, File[] files, boolean setImporting) {
         if (files == null) {
             return new ArrayList<>();
         }
@@ -94,6 +119,18 @@ public class ImageHandler extends FileHandler {
     protected void deleteAllInDb(String imagesCollectionId) {
         imageRepository.deleteByImagesCollection(imagesCollectionId);
         imagesCollectionRepository.updateImagesCaches(imagesCollectionId);
+    }
+
+    @Override
+    protected void addInDb(String imagesCollectionId, String fileName) {
+        File file = getFile(imagesCollectionId, fileName);
+        imageRepository.save(new Image(
+	                imagesCollectionId,
+	                fileName,
+                    fileName,
+	                getFileSize(file),
+                    false));
+        imagesCollectionRepository.updateMetadataFilesCaches(imagesCollectionId);
     }
 
     @Override

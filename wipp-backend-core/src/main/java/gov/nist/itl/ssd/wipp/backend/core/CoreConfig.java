@@ -110,6 +110,9 @@ public class CoreConfig {
     @Value("${storage.local.import}")
     private String localImportFolder;
 
+    @Value("${storage.nexuslims.import}")
+    private String nexusLimsImportFolder;
+
     @Value("${ome.converter.threads:2}")
     private int omeConverterThreads;
     
@@ -124,6 +127,9 @@ public class CoreConfig {
 
     @Value("${workflow.notifications.url}")
     private String workflowNotificationsUrl;
+
+    @Value("${nexuslims.url}")
+    private String nexusLimsUrl;
 
 	public String getWippVersion() {
 		return wippVersion;
@@ -248,6 +254,10 @@ public class CoreConfig {
     public String getLocalImportFolder() {
         return localImportFolder;
     }
+
+    public String getNexusLimsImportFolder() {
+        return nexusLimsImportFolder;
+    }
     
     public int getFetchingPixelsMax() {
         return fetchingPixelsMax;
@@ -269,5 +279,9 @@ public class CoreConfig {
 
     public void setWorkflowNotificationsUrl(String workflowNotificationsUrl) {
         this.workflowNotificationsUrl = workflowNotificationsUrl;
+    }
+
+    public String getNexusLimsUrl() {
+        return nexusLimsUrl;
     }
 }

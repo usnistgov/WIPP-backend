@@ -53,13 +53,13 @@
 		<dependency>
 			<groupId>com.glencoesoftware</groupId>
 			<artifactId>raw2ometiff</artifactId>
-			<version>0.7.0</version>
+			<version>0.10.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.glencoesoftware</groupId>
 			<artifactId>bioformats2raw</artifactId>
-			<version>0.9.2</version>
+			<version>0.12.1</version>
 		</dependency>
 
 		<dependency>
@@ -96,6 +96,25 @@
 				<configuration>
 					<parameters>true</parameters>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>xjc</id>
+						<goals><goal>xjc</goal></goals>
+						<configuration>
+							<sources>
+								<source>${project.basedir}/src/main/resources/xsd/nexus-experiment.xsd</source>
+							</sources>
+							<packageName>gov.nist.itl.ssd.wipp.backend.data.nexuslims</packageName>
+							<outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
+							<clearOutputDir>true</clearOutputDir>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

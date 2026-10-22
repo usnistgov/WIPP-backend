@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public abstract class FileHandler {
 
     protected abstract void deleteAllInDb(String imagesCollectionId);
 
+    protected abstract void addInDb(
+            String imagesCollectionId, String fileName);
+
     protected abstract void deleteInDb(
             String imagesCollectionId, String fileName);
 
@@ -57,6 +61,17 @@ public abstract class FileHandler {
         imagesFolder.getParentFile().mkdirs();
         FileUtils.copyDirectory(folder, imagesFolder);
         addAllInDb(imagesCollectionId);
+    }
+
+    public void importFileCopy(String imagesCollectionId, File file)
+            throws IOException {
+        File imagesFolder = getFilesFolder(imagesCollectionId);
+        String fileName = file.getName();
+        imagesFolder.mkdirs();
+        Files.copy(file.toPath(),
+	                new File(imagesFolder, fileName).toPath(),
+	                StandardCopyOption.REPLACE_EXISTING);
+        addInDb(imagesCollectionId, fileName);
     }
 
     /**

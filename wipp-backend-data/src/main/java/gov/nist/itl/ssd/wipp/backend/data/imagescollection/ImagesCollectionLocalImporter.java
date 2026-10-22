@@ -21,10 +21,13 @@ import gov.nist.itl.ssd.wipp.backend.data.imagescollection.metadatafiles.Metadat
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Service class for local backend import
@@ -68,6 +71,45 @@ public class ImagesCollectionLocalImporter {
             File metadataFolder = new File(localImportFolder, "metadata_files");
             if(metadataFolder.exists()) {
                 metadataHandler.importFolderCopy(imagesCollection.getId(), metadataFolder);
+            }
+
+        } catch (IOException ex) {
+            throw new ClientException("Error while importing data.");
+        }
+    }
+
+    protected void importFromNexusLims(String activityName, List<String> activityImageLocations, String dataPid) {
+        try {
+            System.out.println("ImportFromNexusLims");
+            File nexusLimsFolder = new File(config.getNexusLimsImportFolder());
+            System.out.println(nexusLimsFolder);
+            System.out.println(activityImageLocations);
+
+            // Create images collection for the activity
+            ImagesCollection activityCollection = new ImagesCollection(activityName, true,
+                        ImagesCollection.ImagesCollectionImportMethod.NEXUSLIMS, ImagesCollection.ImagesCollectionFormat.OMETIFF);
+            activityCollection.setDataPid(dataPid);
+            activityCollection.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
+            activityCollection.setNotes("Images imported from NexusLims, PID " + dataPid + ".");
+            imagesCollectionRepository.save(activityCollection);
+
+            // Register images in collection
+            List<Image> images = imageHandler.addAllInDbFromFolderAndRelativePaths(activityCollection.getId(), 
+                        nexusLimsFolder.getPath(), activityImageLocations);
+
+            // Start conversion (without source image deletion)
+            for(Image image : images) {
+                System.out.println("Start conversion of image " + image.getFileName() + " from location " + image.getOriginalFilePath());
+                imageConversionService.submitImageToExtractor(image, nexusLimsFolder, false);
+            }
+
+            // Import metadata files
+            for(String imageLocation : activityImageLocations) {
+                File imageMetadataFile = new File(nexusLimsFolder, imageLocation + ".json");
+                if(imageMetadataFile.exists()) {
+                    System.out.println("Importing metadata file " + imageMetadataFile.getPath());
+                    metadataHandler.importFileCopy(activityCollection.getId(), imageMetadataFile);
+                }
             }
 
         } catch (IOException ex) {

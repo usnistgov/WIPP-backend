@@ -62,6 +62,16 @@ public class MetadataFileHandler extends FileHandler {
     }
 
     @Override
+    protected void addInDb(String imagesCollectionId, String fileName) {
+        File file = getFile(imagesCollectionId, fileName);
+        metadataFileRepository.save(new MetadataFile(
+	                imagesCollectionId,
+	                fileName,
+	                getFileSize(file)));
+        imagesCollectionRepository.updateMetadataFilesCaches(imagesCollectionId);
+    }
+
+    @Override
     protected void deleteInDb(String imagesCollectionId, String fileName) {
         metadataFileRepository.deleteByImagesCollectionAndFileName(
                 imagesCollectionId, fileName);

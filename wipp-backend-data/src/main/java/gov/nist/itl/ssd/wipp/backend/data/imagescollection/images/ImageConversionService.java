@@ -114,7 +114,12 @@ public class ImageConversionService extends FileUploadBase{
 		uploadDir.mkdirs();
 
 		String imgName = image.getFileName();
-		Path tempPath = new File(tempUploadDir, image.getOriginalFileName()).toPath();
+		Path tempPath;
+		if(image.getOriginalFilePath() != null && !image.getOriginalFilePath().isBlank()) {
+			tempPath = new File(tempUploadDir, image.getOriginalFilePath()).toPath();
+		} else {
+			tempPath = new File(tempUploadDir, image.getOriginalFileName()).toPath();
+		}
 		String outputFileName;
 		boolean isOmeTiff = imgName.endsWith(".ome.tif");
 

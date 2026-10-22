@@ -86,10 +86,12 @@
 				<storage.image.annotations>${user.home}/WIPP-plugins/image-annotations</storage.image.annotations>
 				<storage.temp.jobs>${user.home}/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<storage.local.import>${user.home}/WIPP-plugins/local-import</storage.local.import>
+				<storage.nexuslims.import>${user.home}/nexus-lims-data</storage.nexuslims.import>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<tensorboard.uri>http://localhost:6006</tensorboard.uri>
 				<ome.converter.threads>6</ome.converter.threads>
 				<annot.api.url>http://localhost:8000</annot.api.url>
+				<nexuslims.url>http://127.0.0.1</nexuslims.url>
 			</properties>
 		</profile>
 
@@ -122,9 +124,11 @@
 				<storage.image.annotations>/data/WIPP-plugins/image-annotations</storage.image.annotations>
 				<storage.temp.jobs>/data/WIPP-plugins/temp/jobs</storage.temp.jobs>
 				<storage.local.import>/data/WIPP-plugins/local-import</storage.local.import>
+				<storage.nexuslims.import>/data/nexus-lims-data</storage.nexuslims.import>
 				<fetching.pixels.max>125000000</fetching.pixels.max>
 				<ome.converter.threads>6</ome.converter.threads>
 				<annot.api.url>http://wipp-annot.cvat:8000</annot.api.url>
+				<nexuslims.url>http://nexuslims</nexuslims.url>
 			</properties>
 		</profile>
 	</profiles>
