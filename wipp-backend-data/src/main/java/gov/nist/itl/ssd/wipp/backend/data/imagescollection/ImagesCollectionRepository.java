@@ -52,6 +52,18 @@ public interface ImagesCollectionRepository
 			+ "{'dataPid' : {$eq : ?1}}"
 			+ "]}")
 	Page<ImagesCollection> findByNameAndDataPid(@Param("name") String name, @Param("dataPid") String dataPid, Pageable p);
+
+	/*
+	 * Filter collection resources access by data pid depending on user
+	 */
+	@Query(" { '$and' : ["
+			+ "{'$or':["
+			+ "{'owner': ?#{ hasRole('admin') ? {$exists:true} : (hasRole('ANONYMOUS') ? '':authentication.name)}},"
+			+ "{'publiclyShared':true}"
+			+ "]} , "
+			+ "{'dataPid' : {$eq : ?0}}"
+			+ "]}")
+	Page<ImagesCollection> findByDataPid(@Param("dataPid") String dataPid, Pageable p);
 	
 	/*
 	 * Filter collection resources access by name, number of images and depending on user
