@@ -29,6 +29,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
@@ -257,6 +258,16 @@ public class ImageController {
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/filterByFileNameRegexAll", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('admin') or @imagesCollectionSecurity.checkAuthorize(#imagesCollectionId, false)")
+    public HttpEntity<List<Image>> getAllImagesMatchingRegex(
+            @PathVariable("imagesCollectionId") String imagesCollectionId,
+            @RequestParam(value = "regex") String regex) {
+        List<Image> files = imageRepository.findByImagesCollectionAndFileNameRegex(
+                imagesCollectionId, regex, Sort.by("fileName").ascending());
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+
     protected void processResource(String imagesCollectionId,
             EntityModel<Image> resource) {
         Image file = resource.getContent();
@@ -296,16 +307,12 @@ public class ImageController {
                 .slash("images")
                 .slash("filterByFileNameRegex")
                 .withRel("filterByFileNameRegex");
-
-		TemplateVariable regexTv = new TemplateVariable("regex",
-				TemplateVariable.VariableType.REQUEST_PARAM);
-
-		UriTemplate regexFilterUriTemplate = UriTemplate.of(imagesRegexFilterLink.getHref(),
-				new TemplateVariables(regexTv));
-
-		Link regexFilterLink = Link.of(regexFilterUriTemplate, "filterByFileNameRegex");
-
-		resources.add(paginationParameterTemplatesHelper.appendPaginationParameterTemplates(regexFilterLink));
+        TemplateVariable regexTv = new TemplateVariable("regex",
+                        TemplateVariable.VariableType.REQUEST_PARAM);
+        UriTemplate regexFilterUriTemplate = UriTemplate.of(imagesRegexFilterLink.getHref(),
+                        new TemplateVariables(regexTv));
+        Link regexFilterLink = Link.of(regexFilterUriTemplate, "filterByFileNameRegex");
+        resources.add(paginationParameterTemplatesHelper.appendPaginationParameterTemplates(regexFilterLink));
 
         // Add filterByFileNameTimePattern link to collection resource
         Link imagesTimePatternLink = entityLinks.linkForItemResource(
@@ -313,16 +320,25 @@ public class ImageController {
                 .slash("images")
                 .slash("filterByFileNameTimePattern")
                 .withRel("filterByFileNameTimePattern");
-
         TemplateVariable timePatternTv = new TemplateVariable("timePattern",
                 TemplateVariable.VariableType.REQUEST_PARAM);
-
         UriTemplate timePatternFilterUriTemplate = UriTemplate.of(imagesTimePatternLink.getHref(),
                 new TemplateVariables(timePatternTv));
-
         Link timePatternFilterLink = Link.of(timePatternFilterUriTemplate, "filterByFileNameTimePattern");
-
         resources.add(paginationParameterTemplatesHelper.appendPaginationParameterTemplates(timePatternFilterLink));
+
+        // Add filterByFileNameRegexAll link to collection resource
+        Link imagesRegexAllFilterLink = entityLinks.linkForItemResource(
+                ImagesCollection.class, imagesCollectionId)
+                .slash("images")
+                .slash("filterByFileNameRegexAll")
+                .withRel("filterByFileNameRegexAll");
+        TemplateVariable regexAllTv = new TemplateVariable("regex",
+                TemplateVariable.VariableType.REQUEST_PARAM);
+        UriTemplate regexAllFilterUriTemplate = UriTemplate.of(imagesRegexAllFilterLink.getHref(),
+                new TemplateVariables(regexAllTv));
+        Link regexAllFilterLink = Link.of(regexAllFilterUriTemplate, "filterByFileNameRegexAll");
+        resources.add(regexAllFilterLink);
 
     }
     

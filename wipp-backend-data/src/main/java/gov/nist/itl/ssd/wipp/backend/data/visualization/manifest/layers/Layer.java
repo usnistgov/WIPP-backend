@@ -46,7 +46,7 @@ public class Layer {
 	
 	private int framesOffset;
 	
-	private int[] framesList;
+	private String[] framesList;
 	
 	private int paddingSize;
 	
@@ -138,11 +138,11 @@ public class Layer {
 		this.framesOffset = framesOffset;
 	}
 
-	public int[] getFramesList() {
+	public String[] getFramesList() {
 		return framesList;
 	}
 
-	public void setFramesList(int[] framesList) {
+	public void setFramesList(String[] framesList) {
 		this.framesList = framesList;
 	}
 
